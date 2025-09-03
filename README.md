@@ -4,9 +4,7 @@ Tester Build v0.9 — September 2025
 
 A browser-based app to view, search, filter, and archive your Nostr notes. Built as a single-page HTML app — no backend, runs entirely in your browser.
 
-Here’s a simple README you can drop in your repo or send with the app when you share it for testing:
-
-⸻
+Note: This is a tester build and still a work in progress. Expect updates and changes.
 
 Nostr Notes Archive
 
