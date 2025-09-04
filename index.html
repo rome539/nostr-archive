@@ -1797,13 +1797,16 @@ function normalizeNpub(input) {
 }
 
         // Enhanced relay list with better reliability
-        const RELAYS = [
-            'wss://relay.damus.io',
-            'wss://relay.nostr.band', 
-            'wss://nos.lol',
-            'wss://relay.snort.social',
-            'wss://nostr.wine'
-        ];
+    const RELAYS = [
+    'wss://relay.snort.social',
+    'wss://relay.nostrplebs.com',
+    'wss://relay.damus.io',
+    'wss://offchain.pub',
+    'wss://nostr.wine',
+    'wss://nostr.land',
+    'wss://nos.lol',
+    'wss://relay.nostr.band'
+];
 
         // Initialize the app
       document.addEventListener('DOMContentLoaded', function () {
@@ -2784,10 +2787,6 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
             
             const batchEvents = await fetchBatchFromRelay(relayUrl, pubkey, until, batchSize);
             
-            if (batchEvents.length === 0) {
-                break;
-            }
-            
             allEvents.push(...batchEvents);
             
             const oldestEvent = batchEvents[batchEvents.length - 1];
@@ -2801,13 +2800,14 @@ if (batchEvents.length === 0) {
     break;
 }
 
-// Stop if we're getting very small batches consistently (relay likely empty)
-if (batchEvents.length < 10 && batchNumber > 5) {
+// Rate limiting - longer delay for aggressive fetching
+await new Promise(resolve => setTimeout(resolve, 150)); // Increased to 100ms
+
+// Safety check - if we've been fetching for too long, break
+if (batchNumber > 100) { // Allow up to 100 batches (200k notes max)
+    console.log(`Reached safety limit of ${batchNumber} batches for ${relayUrl}`);
     break;
 }
-
-// Rate limiting - longer delay for aggressive fetching
-await new Promise(resolve => setTimeout(resolve, 100)); // Increased to 100ms
             
         } catch (error) {
             console.error(`Error fetching batch ${batchNumber} from ${relayUrl}:`, error);
@@ -3072,10 +3072,9 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             const subscription = ['REQ', 'batch-' + Date.now(), filter];
             ws.send(JSON.stringify(subscription));
             
-            // Increased timeout for large fetches
             timeoutId = setTimeout(() => {
-                resolveOnce(events);
-            }, 15000); // Increased from 8s to 15s
+    resolveOnce(events);
+}, 30000); // Increased to 30s for older notes
         };
         
         ws.onmessage = function(event) {
