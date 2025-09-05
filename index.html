@@ -511,31 +511,46 @@
         }
 
 /* Hashtag pills — follow current theme */
+/* Unified hashtag styling - follows primary theme color */
 .hashtag {
-  background: color-mix(in srgb, var(--primary-color) 18%, var(--card-background));
-  border: 1px solid color-mix(in srgb, var(--primary-color) 40%, var(--card-background));
-  color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 18%, var(--card-background)) !important;
+  border: 1px solid color-mix(in srgb, var(--primary-color) 40%, var(--card-background)) !important;
+  color: var(--primary-color) !important;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
   cursor: pointer;
-}
-.hashtag:hover {
-  background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background));
-  border-color: var(--primary-hover);
-  color: #fff; /* better contrast on hover */
+  transition: all 0.15s ease;
+  user-select: none;
 }
 
-/* Hashtags in reply cards = purple theme */
-.note-card.reply-card .hashtag {
-  background: color-mix(in srgb, var(--purple-color) 18%, var(--card-background));
-  border-color: color-mix(in srgb, var(--purple-color) 40%, var(--card-background));
-  color: var(--purple-color);
+.hashtag:hover {
+  background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background)) !important;
+  border-color: var(--primary-hover) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
 }
-.note-card.reply-card .hashtag:hover {
-  background: color-mix(in srgb, var(--purple-color) 32%, var(--card-background));
-  border-color: var(--purple-color);
-  color: #fff;
+
+/* Selected state */
+.hashtag[data-selected="true"] {
+  background: var(--primary-color) !important;
+  color: white !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Remove ALL the old reply/archived specific rules */
+.note-card.reply-card .hashtag,
+.note-card.archived .hashtag {
+  background: color-mix(in srgb, var(--primary-color) 18%, var(--card-background)) !important;
+  border-color: color-mix(in srgb, var(--primary-color) 40%, var(--card-background)) !important;
+  color: var(--primary-color) !important;
+}
+
+.note-card.reply-card .hashtag:hover,
+.note-card.archived .hashtag:hover {
+  background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background)) !important;
+  border-color: var(--primary-hover) !important;
+  color: #fff !important;
 }
 
 /* Hashtags in archived cards = success theme */
@@ -900,24 +915,57 @@ kbd {
   border-radius: 3px;
   cursor: pointer;
   font-size: 12px;
+  transition: all 0.2s ease;
 }
 
-/* Default (light themes, etc.) */
+/* Default theme */
 .copy-btn {
-  background: #3498db;
-  color: #fff;
+  background: var(--primary-color);
+  color: white;
+  border: 1px solid var(--primary-color);
 }
 
-/* Neon green override */
+.copy-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Dark themes */
+[data-theme="dark-nostr"] .copy-btn,
+[data-theme="bitcoin-gold"] .copy-btn {
+  background: var(--primary-color);
+  color: white;
+  border: 1px solid var(--primary-color);
+}
+
+[data-theme="dark-nostr"] .copy-btn:hover,
+[data-theme="bitcoin-gold"] .copy-btn:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Nostr Purple theme */
+[data-theme="nostr-purple"] .copy-btn {
+  background: var(--primary-color);
+  color: white;
+  border: 1px solid var(--primary-color);
+}
+
+[data-theme="nostr-purple"] .copy-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* Neon Green theme */
 [data-theme="neon-green"] .copy-btn {
-  background: var(--accent-weak-2);
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
+  background: var(--accent-weak-2) !important;
+  border: 1px solid var(--accent-border) !important;
+  color: var(--accent) !important;
+  text-shadow: 0 0 3px var(--accent);
 }
 
 [data-theme="neon-green"] .copy-btn:hover {
-  background: var(--accent-weak);
-  box-shadow: 0 0 6px rgba(0,255,0,0.35);
+  background: var(--accent-weak) !important;
+  box-shadow: 0 0 6px rgba(0,255,0,0.4) !important;
 }
 
 /* Stack Import button + hint with tight spacing */
@@ -961,6 +1009,33 @@ kbd {
 
 .note-image:hover {
     transform: scale(1.02);
+}
+
+/* Load More button theming */
+#load-more-btn {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border: 1px solid var(--primary-color) !important;
+}
+
+#load-more-btn:hover {
+    background: var(--primary-hover) !important;
+    transform: translateY(-1px);
+}
+
+/* Neon Green Load More button */
+[data-theme="neon-green"] #load-more-btn {
+    background: var(--accent-weak) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+    text-shadow: 0 0 4px var(--accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+}
+
+[data-theme="neon-green"] #load-more-btn:hover {
+    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
 }
 
 .youtube-thumbnail {
@@ -1207,13 +1282,6 @@ input[type="date"]:focus {
     box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3) !important;
 }
 
-/* FINAL OVERRIDES — Nostr Purple theme */
-body[data-theme="nostr-purple"] .note-card .hashtag,
-[data-theme="nostr-purple"] .note-card .hashtag {
-  background: color-mix(in srgb, var(--purple-color) 18%, #fff) !important;
-  border-color: color-mix(in srgb, var(--purple-color) 35%, #fff) !important;
-  color: var(--purple-color) !important;
-}
 body[data-theme="nostr-purple"] .note-card .hashtag:hover,
 [data-theme="nostr-purple"] .note-card .hashtag:hover {
   background: color-mix(in srgb, var(--purple-color) 28%, #fff) !important;
@@ -1655,6 +1723,10 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;"><span class="emoji">🗑️</span> Clear Cache</button>
 </div>
 
+<button id="storage-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
+    Storage Info
+</button>
+
         <div class="sidebar-section">
     <h4>Keyboard Shortcuts</h4>
     <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
@@ -1664,6 +1736,14 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         <div><kbd>Del</kbd> Remove selected</div>
     </div>
 </div>
+
+        <div class="sidebar-section">
+            <h4>About</h4>
+            <button id="app-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
+                App Info
+            </button>
+        </div>
+        
         
     <div class="sidebar-section">
             <h4>Theme</h4>
@@ -1753,7 +1833,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         let selectedNotes = new Set(); // Track selected notes for bulk operations
         let selectedTags = new Set(); // NEW: multi-select tags
         let notesPerPage = 100;
-let currentPage = 1;
+        let currentPage = 1;
 
 // IndexedDB setup with Dexie
 let db = null;
@@ -1825,6 +1905,13 @@ function normalizeNpub(input) {
         function setupEventListeners() {
             document.getElementById('connect-btn').addEventListener('click', connectWithPubkey);
             document.getElementById('disconnect-btn').addEventListener('click', disconnect);
+            document.getElementById('storage-info-btn').addEventListener('click', showStorageInfo);
+
+          // Add null check for app-info-btn
+            const appInfoBtn = document.getElementById('app-info-btn');
+            if (appInfoBtn) {
+                appInfoBtn.addEventListener('click', showAppInfo);
+            }    
 
            // Add null checks for import elements
     const importBtn = document.getElementById('import-btn');
@@ -2183,7 +2270,6 @@ function saveArchivedNotes() {
                     namedArchives[name].delete(noteId);
                 });
             } else {
-                archivedNotes.add(noteId);
                 // Add to "My Archive" if it exists, otherwise create it
                 if (!namedArchives['My Archive']) {
                     namedArchives['My Archive'] = new Set();
@@ -2350,6 +2436,10 @@ function closeArchiveModal(event) {
 
        async function connectWithPubkey() {
     // Move these to the very start
+
+     // TEMPORARY: Force fresh fetch
+    useIndexedDB = true;
+    
     const connectBtn = document.getElementById('connect-btn');
     connectBtn.classList.add('loading');
     connectBtn.disabled = true;
@@ -2361,7 +2451,7 @@ function closeArchiveModal(event) {
         // Reset button on error
         connectBtn.classList.remove('loading');
         connectBtn.disabled = false;
-        connectBtn.textContent = ' Load My Notes';
+        connectBtn.textContent = 'Load My Notes';
         return;
     }
     
@@ -2372,14 +2462,14 @@ function closeArchiveModal(event) {
         showError('Please enter your npub');
       connectBtn.classList.remove('loading');
     connectBtn.disabled = false;
-    connectBtn.textContent = ' Load My Notes';
+    connectBtn.textContent = 'Load My Notes';
     return;
 }
     if (!npub.startsWith('npub1')) {
         showError('Invalid npub (must start with "npub1")');
       connectBtn.classList.remove('loading');
     connectBtn.disabled = false;
-    connectBtn.textContent = ' Load My Notes';
+    connectBtn.textContent = 'Load My Notes';
     return;
 }
 
@@ -2387,7 +2477,7 @@ function closeArchiveModal(event) {
         showError('Invalid npub format');
        connectBtn.classList.remove('loading');
     connectBtn.disabled = false;
-    connectBtn.textContent = ' Load My Notes';
+    connectBtn.textContent = 'Load My Notes';
     return;
 }
 
@@ -2396,7 +2486,7 @@ function closeArchiveModal(event) {
         showError('Invalid npub format - could not convert to hex');
        connectBtn.classList.remove('loading');
     connectBtn.disabled = false;
-    connectBtn.textContent = ' Load My Notes';
+    connectBtn.textContent = 'Load My Notes';
     return;
 }
 
@@ -2456,7 +2546,7 @@ document.getElementById('main-app').classList.remove('hidden');
    // Reset button after success
 connectBtn.classList.remove('loading');
 connectBtn.disabled = false;
-connectBtn.textContent = ' Load My Notes';
+connectBtn.textContent = 'Load My Notes';
 }
     
 
@@ -2514,7 +2604,14 @@ let useIndexedDB = true;
 function disableIndexedDB(error) {
     console.warn('IndexedDB disabled due to error:', error);
     useIndexedDB = false;
-    showToast('Using memory-only mode due to storage limitation', 'warning');
+    showToast('Storage limitation detected - using memory-only mode', 'warning');
+    
+    // Log the error type for debugging
+    if (error.name === 'QuotaExceededError') {
+        showToast('Storage quota exceeded - consider clearing old data', 'warning');
+    } else if (error.name === 'InvalidStateError') {
+        console.log('Database state error - likely corruption or version mismatch');
+    }
 }
 
 async function initDatabase(pubkey) {
@@ -2555,6 +2652,8 @@ async function fetchNotesFromRelays(pubkey) {
     const allEvents = [];
     const completedRelays = [];
     
+    console.log('=== STARTING RELAY FETCH ===');
+    
     // Better progress feedback with relay status tracking
     const relayStatuses = new Map();
     const relayPromises = RELAYS.map(async (relay, index) => {
@@ -2568,7 +2667,7 @@ async function fetchNotesFromRelays(pubkey) {
                 setTimeout(() => {
                     relayStatuses.set(relay, 'timeout');
                     reject(new Error('Timeout after 60s'));
-                }, 60000);  // Changed from 30s to 60s
+                }, 60000);
             });
             
             const fetchPromise = fetchAllNotesFromRelay(relay, pubkey, (progress, status) => {
@@ -2597,44 +2696,46 @@ async function fetchNotesFromRelays(pubkey) {
         }
     });
     
-    // Wait for ALL relays to finish (they run simultaneously)
+    // Wait for ALL relays to finish
     const results = await Promise.allSettled(relayPromises);
     
-    // Collect all events
+    // Collect all events with logging
     results.forEach((result, index) => {
         if (result.status === 'fulfilled' && result.value.success) {
+            console.log(`Adding ${result.value.events.length} events from ${result.value.relay}`);
             allEvents.push(...result.value.events);
         }
     });
     
-    updateProgress(100, 'Deduplicating notes...');
+    console.log(`=== TOTAL EVENTS COLLECTED: ${allEvents.length} ===`);
+    updateProgress(80, `Deduplicating ${allEvents.length} notes...`);
 
-    // Memory-conscious deduplication with progress tracking
+    // MEMORY-SAFE DEDUPLICATION for image-heavy accounts
+    console.log('Starting memory-safe deduplication...');
+    const uniqueEvents = await memoryEfficientDeduplication(allEvents);
+    
+    console.log(`=== DEDUPLICATION COMPLETE: ${uniqueEvents.length} unique notes ===`);
+    updateStatus(`✅ Deduplication complete: ${uniqueEvents.length} unique notes (removed ${allEvents.length - uniqueEvents.length} duplicates)`);
+
+    return uniqueEvents;
+}
+
+// NEW: Memory-efficient deduplication for image-heavy accounts
+async function memoryEfficientDeduplication(allEvents) {
+    console.log(`Starting deduplication of ${allEvents.length} events`);
+    
     const uniqueEventsMap = new Map();
+    const chunkSize = 2000; // Process in smaller chunks for image-heavy accounts
     let duplicatesFound = 0;
-    let memoryWarningShown = false;
-
-    // Check memory usage periodically
-    const checkMemoryUsage = () => {
-        if (performance.memory && performance.memory.usedJSHeapSize > 500 * 1024 * 1024) { // 500MB
-            if (!memoryWarningShown) {
-                updateStatus('⚠️ High memory usage detected - processing in smaller chunks');
-                memoryWarningShown = true;
-            }
-            return true;
-        }
-        return false;
-    };
-
-    const processChunk = async (events, startIndex, chunkSize = 10000) => {
-        const highMemory = checkMemoryUsage();
-        const adjustedChunkSize = highMemory ? Math.min(chunkSize, 2000) : chunkSize;
+    
+    for (let startIndex = 0; startIndex < allEvents.length; startIndex += chunkSize) {
+        const endIndex = Math.min(startIndex + chunkSize, allEvents.length);
+        const chunk = allEvents.slice(startIndex, endIndex);
         
-        const endIndex = Math.min(startIndex + adjustedChunkSize, events.length);
+        console.log(`Processing chunk ${Math.floor(startIndex/chunkSize) + 1}: events ${startIndex}-${endIndex}`);
         
-        for (let i = startIndex; i < endIndex; i++) {
-            const event = events[i];
-            if (!event?.id) continue;
+        chunk.forEach(event => {
+            if (!event?.id) return;
             
             const existing = uniqueEventsMap.get(event.id);
             if (!existing) {
@@ -2647,27 +2748,29 @@ async function fetchNotesFromRelays(pubkey) {
                     uniqueEventsMap.set(event.id, event);
                 }
             }
-        }
+        });
         
-        // Update progress every 10k notes or at completion
-        if (endIndex % 10000 === 0 || endIndex === events.length) {
-            const progress = (endIndex / events.length) * 100;
-            updateStatus(`Deduplicating: ${endIndex}/${events.length} processed (${duplicatesFound} duplicates found)`);
-        }
+        // Update progress and yield control
+        const progress = 80 + ((endIndex / allEvents.length) * 15);
+        updateProgress(progress, `Deduplicating: ${endIndex}/${allEvents.length} processed (${duplicatesFound} duplicates found)`);
         
-        if (endIndex < events.length) {
-            // Longer pause if memory is high
-            const pauseMs = highMemory ? 10 : 1;
-            await new Promise(resolve => setTimeout(resolve, pauseMs));
-            await processChunk(events, endIndex, adjustedChunkSize);
+        // Yield control to prevent browser freeze
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        // Memory cleanup
+        if (startIndex % 10000 === 0 && performance.memory) {
+            const memoryMB = performance.memory.usedJSHeapSize / 1024 / 1024;
+            console.log(`Memory usage: ${memoryMB.toFixed(1)} MB`);
+            if (memoryMB > 500) {
+                console.log('High memory usage detected, forcing garbage collection pause');
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
         }
-    };
-
-    await processChunk(allEvents, 0);
-
+    }
+    
     const uniqueEvents = Array.from(uniqueEventsMap.values());
-    updateStatus(`✅ Deduplication complete: ${uniqueEvents.length} unique notes (removed ${duplicatesFound} duplicates)`);
-
+    console.log(`Deduplication complete: ${uniqueEvents.length} unique events (${duplicatesFound} duplicates removed)`);
+    
     return uniqueEvents;
 }
 
@@ -2775,7 +2878,7 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
     const allEvents = [];
     let until = null;
     let batchNumber = 1;
-   const batchSize = 2000
+   const batchSize = 1000
     
     while (true) {
         progressCallback(
@@ -2826,8 +2929,14 @@ async function loadNotesHybrid(pubkey, silent = false) {
         const database = await initDatabase(pubkey);
         
         if (!database || !useIndexedDB) {
-            // Fall back to original method
             return await fetchNotesFromRelays(pubkey);
+        }
+        
+        // FAILSAFE 1: Check database integrity first
+        const isHealthy = await checkDatabaseHealth(pubkey, silent);
+        if (!isHealthy) {
+            if (!silent) updateStatus('Database unhealthy, rebuilding...');
+            return await fetchFreshAndStore(pubkey, silent);
         }
         
         // Check for existing data and last sync time
@@ -2838,44 +2947,226 @@ async function loadNotesHybrid(pubkey, silent = false) {
             updateStatus(`Database ready. Found ${storedCount} stored notes.`);
         }
         
-        // If we have recent data (less than 1 hour old), use it
+        // FAILSAFE 2: Conservative cache validation
         const oneHour = 60 * 60 * 1000;
-        if (lastSync && (Date.now() - lastSync.value) < oneHour && storedCount > 0) {
+        const hasFreshCache = lastSync && 
+                             (Date.now() - lastSync.value) < oneHour && 
+                             storedCount > 50; // Require meaningful amount of data
+        
+        if (hasFreshCache) {
             if (!silent) {
-                updateStatus('Loading from IndexedDB...');
+                updateStatus('Loading from IndexedDB cache...');
             }
             
-           // Load ALL notes from IndexedDB
-const allStoredNotes = await db.notes
-    .orderBy('created_at')
-    .reverse()
-    .toArray();
-
-return allStoredNotes;
-        }
-        
-        // Otherwise, fetch fresh data from relays
-        const freshNotes = await fetchNotesFromRelays(pubkey);
-        
-        // Store the fresh data
-        if (freshNotes.length > 0) {
-            await db.notes.clear(); // Clear old data
-            await db.notes.bulkAdd(freshNotes);
-            await db.settings.put({ key: 'last_sync_time', value: Date.now() });
-            
-            if (!silent) {
-                updateStatus(`Stored ${freshNotes.length} notes in IndexedDB`);
+            try {
+                const allStoredNotes = await db.notes
+                    .orderBy('created_at')
+                    .reverse()
+                    .toArray();
+                
+                // FAILSAFE 3: Validate loaded data quality
+                const validation = validateNotesData(allStoredNotes, storedCount);
+                if (validation.isValid) {
+                    if (!silent) updateStatus(`Cache validated: ${allStoredNotes.length} notes loaded`);
+                    return allStoredNotes;
+                } else {
+                    if (!silent) {
+                        updateStatus(`Cache validation failed: ${validation.reason}. Rebuilding...`);
+                    }
+                    await repairDatabase(pubkey);
+                }
+            } catch (error) {
+                console.error('Error loading from cache:', error);
+                if (!silent) updateStatus('Cache read error, rebuilding...');
+                await repairDatabase(pubkey);
             }
         }
         
-        return freshNotes;
+        // Fetch fresh data and store
+        return await fetchFreshAndStore(pubkey, silent);
         
     } catch (error) {
-        console.error('Hybrid loading error:', error);
+        console.error('Critical loading error:', error);
         disableIndexedDB(error);
-        // Fallback to memory-only
         return await fetchNotesFromRelays(pubkey);
     }
+}
+
+// PRODUCTION FAILSAFE SYSTEM
+
+async function checkDatabaseHealth(pubkey, silent = false) {
+    try {
+        if (!db || !db.isOpen()) {
+            if (!silent) updateStatus('Database connection failed');
+            return false;
+        }
+        
+        // Test basic database operations
+        const testCount = await db.notes.count();
+        const testSettings = await db.settings.toArray();
+        
+        // Check if we can read a sample note
+        if (testCount > 0) {
+            const sampleNote = await db.notes.limit(1).first();
+            
+            // Basic integrity checks
+            if (!sampleNote) {
+                if (!silent) updateStatus('Database count/data mismatch detected');
+                return false;
+            }
+            
+            if (!sampleNote.id || sampleNote.content === undefined || !sampleNote.created_at) {
+                if (!silent) updateStatus('Invalid note structure detected');
+                return false;
+            }
+        }
+        
+        // Test write capability
+        try {
+            await db.settings.put({ key: 'health_check', value: Date.now() });
+            await db.settings.delete('health_check');
+        } catch (writeError) {
+            if (!silent) updateStatus('Database write test failed');
+            return false;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Database health check failed:', error);
+        return false;
+    }
+}
+
+function validateNotesData(notes, expectedCount) {
+    // Check we got reasonable amount of data
+    const minExpected = Math.max(Math.min(expectedCount * 0.8, expectedCount - 100), 20);
+    if (notes.length < minExpected) {
+        return { 
+            isValid: false, 
+            reason: `Got ${notes.length} notes, expected at least ${minExpected}` 
+        };
+    }
+    
+    // Check data structure integrity
+    const validNotes = notes.filter(note => 
+        note && 
+        note.id && 
+        typeof note.id === 'string' &&
+        note.content !== undefined && 
+        note.created_at && 
+        typeof note.created_at === 'number' &&
+        Array.isArray(note.hashtags)
+    );
+    
+    const validRatio = validNotes.length / notes.length;
+    if (validRatio < 0.95) {
+        return { 
+            isValid: false, 
+            reason: `${Math.round((1-validRatio)*100)}% of notes have invalid structure` 
+        };
+    }
+    
+    // Check for duplicate IDs (corruption indicator)
+    const uniqueIds = new Set(validNotes.map(note => note.id));
+    if (uniqueIds.size < validNotes.length * 0.98) {
+        return { 
+            isValid: false, 
+            reason: 'Duplicate note IDs detected (data corruption)' 
+        };
+    }
+    
+    // Check timestamp sanity (notes can't be from the future)
+    const now = Math.floor(Date.now() / 1000);
+    const futureNotes = validNotes.filter(note => note.created_at > now + 3600);
+    if (futureNotes.length > validNotes.length * 0.01) {
+        return { 
+            isValid: false, 
+            reason: 'Invalid timestamps detected' 
+        };
+    }
+    
+    return { isValid: true, reason: 'Data validation passed' };
+}
+
+async function repairDatabase(pubkey) {
+    try {
+        console.log('Repairing database for', pubkey.substring(0, 8) + '...');
+        
+        // Close current connection
+        if (db && db.isOpen()) {
+            await db.close();
+        }
+        
+        // Delete corrupted database
+        const dbName = `nostr-notes-${pubkey}`;
+        await new Promise((resolve) => {
+            const deleteReq = indexedDB.deleteDatabase(dbName);
+            deleteReq.onsuccess = () => {
+                console.log('Corrupted database deleted successfully');
+                resolve();
+            };
+            deleteReq.onerror = () => {
+                console.log('Database deletion failed, continuing anyway');
+                resolve();
+            };
+            deleteReq.onblocked = () => {
+                console.log('Database deletion blocked, forcing continuation');
+                setTimeout(resolve, 2000);
+            };
+            // Safety timeout
+            setTimeout(resolve, 5000);
+        });
+        
+        // Reinitialize fresh database
+        db = null;
+        await initDatabase(pubkey);
+        
+        console.log('Database repair completed successfully');
+        return true;
+    } catch (error) {
+        console.error('Database repair failed:', error);
+        disableIndexedDB(error);
+        return false;
+    }
+}
+
+async function fetchFreshAndStore(pubkey, silent = false) {
+    if (!silent) updateStatus('Fetching fresh data from relays...');
+    
+    const freshNotes = await fetchNotesFromRelays(pubkey);
+    
+    if (freshNotes.length > 0 && db && useIndexedDB) {
+        try {
+            if (!silent) updateStatus('Storing fresh data in IndexedDB...');
+            
+            await db.notes.clear();
+            await db.settings.clear();
+            
+            // Store in chunks to avoid memory issues
+            const chunkSize = 1000;
+            for (let i = 0; i < freshNotes.length; i += chunkSize) {
+                const chunk = freshNotes.slice(i, i + chunkSize);
+                await db.notes.bulkAdd(chunk);
+                
+                if (!silent && freshNotes.length > chunkSize) {
+                    updateStatus(`Stored ${Math.min(i + chunkSize, freshNotes.length)}/${freshNotes.length} notes...`);
+                }
+            }
+            
+            await db.settings.put({ key: 'last_sync_time', value: Date.now() });
+            await db.settings.put({ key: 'total_notes_stored', value: freshNotes.length });
+            
+            if (!silent) {
+                updateStatus(`Successfully stored ${freshNotes.length} notes in IndexedDB`);
+            }
+        } catch (storeError) {
+            console.error('Failed to store fresh data:', storeError);
+            if (!silent) updateStatus('Storage failed, continuing with memory-only mode');
+            disableIndexedDB(storeError);
+        }
+    }
+    
+    return freshNotes;
 }
 
 async function incrementalSync(pubkey, silent = true) {
@@ -3006,6 +3297,7 @@ if (useIndexedDB) {
     } finally {
     if (!silent) {
         showLoading(false);
+        trackLoadTime();
     }
 }
 }// <-- closes async function loadNotes
@@ -3033,6 +3325,8 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         let timeoutId;
         let isResolved = false;
         let connectionStartTime = Date.now();
+        let eventCount = 0;
+        let noticeCount = 0;
         
         const cleanup = (reason = 'unknown') => {
             if (timeoutId) clearTimeout(timeoutId);
@@ -3045,6 +3339,7 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             if (!isResolved) {
                 isResolved = true;
                 const duration = Date.now() - connectionStartTime;
+                console.log(`[${relayUrl}] COMPLETED: ${result.length} events in ${duration}ms (${eventCount} total received, ${noticeCount} notices)`);
                 cleanup(`resolved with ${result.length} events in ${duration}ms`);
                 resolve(result);
             }
@@ -3053,6 +3348,7 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         const rejectOnce = (error) => {
             if (!isResolved) {
                 isResolved = true;
+                console.error(`[${relayUrl}] FAILED: ${error.message} after ${Date.now() - connectionStartTime}ms`);
                 cleanup('error: ' + error.message);
                 reject(error);
             }
@@ -3070,11 +3366,13 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             }
             
             const subscription = ['REQ', 'batch-' + Date.now(), filter];
+            console.log(`[${relayUrl}] CONNECTED: Requesting ${limit} notes${until ? ` until ${new Date(until * 1000).toISOString()}` : ''}`);
             ws.send(JSON.stringify(subscription));
             
             timeoutId = setTimeout(() => {
-    resolveOnce(events);
-}, 30000); // Increased to 30s for older notes
+                console.log(`[${relayUrl}] TIMEOUT: ${events.length} events collected before timeout`);
+                resolveOnce(events);
+            }, 90000); // 90 second timeout for image-heavy accounts
         };
         
         ws.onmessage = function(event) {
@@ -3083,28 +3381,50 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
                 const [type, subId, eventData] = message;
                 
                 if (type === 'EVENT') {
+                    eventCount++;
                     const note = processNote(eventData);
                     if (note) {
                         events.push(note);
+                        // Log progress every 200 notes for image-heavy accounts
+                        if (events.length % 200 === 0) {
+                            console.log(`[${relayUrl}] PROGRESS: ${events.length} valid notes processed (${eventCount} total events received)`);
+                        }
+                    } else {
+                        // Log when notes are rejected by processNote
+                        if (eventCount % 100 === 0) {
+                            console.log(`[${relayUrl}] FILTERING: ${eventCount - events.length} events filtered out of ${eventCount} total`);
+                        }
                     }
                 } else if (type === 'EOSE') {
+                    console.log(`[${relayUrl}] EOSE: End of stream, ${events.length} notes collected`);
                     resolveOnce(events);
                 } else if (type === 'NOTICE') {
+                    noticeCount++;
                     if (message[1] && message[1].toLowerCase().includes('error')) {
-                        console.warn(`Notice from ${relayUrl}:`, message[1]);
+                        console.warn(`[${relayUrl}] ERROR NOTICE:`, message[1]);
+                    } else {
+                        console.log(`[${relayUrl}] NOTICE:`, message[1]);
                     }
+                } else if (type === 'CLOSED') {
+                    console.log(`[${relayUrl}] CLOSED: Subscription closed by relay`);
+                    resolveOnce(events);
+                } else {
+                    console.log(`[${relayUrl}] UNKNOWN MESSAGE TYPE:`, type);
                 }
             } catch (error) {
-                console.error('Error parsing message from', relayUrl, ':', error);
+                console.error(`[${relayUrl}] MESSAGE PARSE ERROR:`, error, 'Raw message:', event.data);
             }
         };
         
         ws.onerror = function(error) {
-            console.error(`WebSocket error on ${relayUrl}:`, error);
+            console.error(`[${relayUrl}] WEBSOCKET ERROR:`, error);
             rejectOnce(new Error('Connection failed'));
         };
         
         ws.onclose = function(event) {
+            const reason = event.reason || 'No reason provided';
+            const code = event.code;
+            console.log(`[${relayUrl}] CONNECTION CLOSED: Code ${code}, Reason: ${reason}, Clean: ${event.wasClean}`);
             if (!isResolved) {
                 resolveOnce(events);
             }
@@ -3137,6 +3457,263 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         isReply: isReply,
         tags: event.tags || []
     };
+}
+
+// ADD these functions after your clearIndexedDB functions (around line 2500):
+
+// 1. ADD this function to show storage usage information
+async function showStorageInfo() {
+    try {
+        let info = {
+            localStorage: 0,
+            indexedDB: 0,
+            totalNotes: allNotes.length,
+            loadedNotes: allNotes.length,
+            archives: Object.keys(namedArchives).length,
+            totalArchived: 0
+        };
+        
+        // Calculate localStorage usage
+        let localStorageSize = 0;
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                localStorageSize += localStorage[key].length + key.length;
+            }
+        }
+        info.localStorage = (localStorageSize / 1024).toFixed(2); // KB
+        
+        // Calculate IndexedDB usage and note count
+        if (db && useIndexedDB) {
+            try {
+                const totalInDB = await db.notes.count();
+                info.totalNotes = totalInDB;
+            } catch (error) {
+                console.log('Could not get IndexedDB count:', error);
+            }
+        }
+        
+        // Calculate archived notes
+        Object.values(namedArchives).forEach(archive => {
+            info.totalArchived += archive.size;
+        });
+        
+        // Show storage info modal
+        const modalHtml = `
+            <div class="modal" onclick="closeStorageInfo(event)">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <button class="modal-close" onclick="closeStorageInfo()">Close</button>
+                    <h3>Storage Information</h3>
+                    <div style="font-family: monospace; line-height: 1.6;">
+                        <p><strong>Notes:</strong></p>
+                        <p>  • Total stored: ${info.totalNotes.toLocaleString()}</p>
+                        <p>  • Currently loaded: ${info.loadedNotes.toLocaleString()}</p>
+                        <p>  • Memory usage: ~${(info.loadedNotes * 0.5).toFixed(1)} KB</p>
+                        
+                        <p><strong>Archives:</strong></p>
+                        <p>  • Number of archives: ${info.archives}</p>
+                        <p>  • Total archived notes: ${info.totalArchived}</p>
+                        
+                        <p><strong>Storage:</strong></p>
+                        <p>  • LocalStorage: ${info.localStorage} KB</p>
+                        <p>  • IndexedDB: ${useIndexedDB ? 'Active' : 'Not available'}</p>
+                        
+                        <p><strong>Performance:</strong></p>
+                        <p>  • Load time: ${getLastLoadTime()}</p>
+                        <p>  • Memory status: ${getMemoryStatus(info.loadedNotes)}</p>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-small" onclick="exportStorageReport()" style="background: var(--primary-color); margin-right: 10px;">
+    Export Report
+</button>
+<button class="btn btn-small" onclick="optimizeStorage()" style="background: var(--success-color);">
+    Optimize Storage
+</button>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+    } catch (error) {
+        showToast('Error getting storage info: ' + error.message, 'error');
+    }
+}
+
+// App info modal function
+async function showAppInfo() {
+    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    
+    const modalHtml = `
+        <div class="modal" onclick="closeAppInfo(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeAppInfo()">Close</button>
+                <h3>${isNeonGreen ? 'Nostr Notes Archive' : '📝 Nostr Notes Archive'}</h3>
+                
+                <div style="line-height: 1.6; margin-bottom: 24px;">
+                    <p><strong>What is this app?</strong></p>
+                    <p>This is a browser-based tool for viewing, organizing, and archiving your Nostr notes. It connects directly to Nostr relays to fetch your posts and allows you to organize them into custom archives for better management.</p>
+                </div>
+
+                <div style="line-height: 1.6; margin-bottom: 24px;">
+                    <p><strong>Key Features:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>View all your original notes and replies</li>
+                        <li>Create custom archives to organize notes</li>
+                        <li>Search by content, hashtags, and date ranges</li>
+                        <li>Filter by images, videos, and note length</li>
+                        <li>Export notes as JSON or Markdown</li>
+                        <li>Fast IndexedDB caching for better performance</li>
+                        <li>Multiple theme options including Neon Green</li>
+                        <li>Keyboard shortcuts for power users</li>
+                    </ul>
+                </div>
+
+                <div style="line-height: 1.6; margin-bottom: 24px;">
+                    <p><strong>Privacy & Security:</strong></p>
+                    <p>Your data stays in your browser. The app only connects to public Nostr relays to read your posts. No data is sent to external servers except for the relay connections needed to fetch your notes.</p>
+                </div>
+
+                <div style="background: var(--background-color); padding: 16px; border-radius: 8px; border-left: 4px solid var(--primary-color); margin-bottom: 24px;">
+                    <p><strong>Created by Romeo</strong></p>
+                    <p style="font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 8px;">
+                        <strong>NPUB:</strong> npub12p5753xcjal8034w5czap3fcdvj9qj36h5873g73ea05emw2gznszr0ann
+                    </p>
+                    <button onclick="copyToClipboard('npub12p5753xcjal8034w5czap3fcdvj9qj36h5873g73ea05emw2gznszr0ann')" 
+                            class="copy-btn" style="margin-top: 8px;">
+                        Copy NPUB
+                    </button>
+                </div>
+
+                <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
+                    <p>Built with ❤️ for the Nostr community</p>
+                    <p style="margin-top: 8px;">Version 1.0 • Open Source • No Tracking</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeAppInfo(event) {
+    if (!event || event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+        document.querySelector('.modal')?.remove();
+    }
+}
+
+// 2. Helper functions for storage info
+function getLastLoadTime() {
+    const lastLoad = localStorage.getItem('nostr-last-load-time');
+    if (lastLoad) {
+        const seconds = (Date.now() - parseInt(lastLoad)) / 1000;
+        return seconds < 60 ? `${seconds.toFixed(1)}s ago` : `${(seconds/60).toFixed(1)}m ago`;
+    }
+    return 'Unknown';
+}
+
+function getMemoryStatus(noteCount) {
+    if (noteCount < 25000) return 'Excellent';
+    if (noteCount < 75000) return 'Good'; 
+    if (noteCount < 150000) return 'Fair';
+    return 'High';
+}
+
+function closeStorageInfo(event) {
+    if (!event || event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+        document.querySelector('.modal')?.remove();
+    }
+}
+
+// 3. ADD storage optimization function
+async function optimizeStorage() {
+    try {
+        let optimized = [];
+        let freedSpace = 0;
+        
+        // Clear old localStorage entries from other users
+        const keysToCheck = Object.keys(localStorage);
+        keysToCheck.forEach(key => {
+            if (key.startsWith('nostr-cached-notes-') && key !== `nostr-cached-notes-${currentPubkey}`) {
+                const size = localStorage[key]?.length || 0;
+                localStorage.removeItem(key);
+                freedSpace += size;
+                optimized.push('Removed old user cache');
+            }
+            if (key.startsWith('nostr-last-pubkey-') && key !== `nostr-last-pubkey-${currentPubkey}`) {
+                localStorage.removeItem(key);
+                optimized.push('Cleaned old pubkey data');
+            }
+        });
+        
+        // Clean up empty archives (this is actually useful)
+        let emptyArchives = 0;
+        Object.keys(namedArchives).forEach(archiveName => {
+            if (namedArchives[archiveName].size === 0) {
+                delete namedArchives[archiveName];
+                emptyArchives++;
+            }
+        });
+        if (emptyArchives > 0) {
+            optimized.push(`Removed ${emptyArchives} empty archives`);
+        }
+        
+        // Clear IndexedDB cache to force fresh relay fetch on next load
+        if (db && useIndexedDB) {
+            await db.settings.delete('last_sync_time');
+            optimized.push('Reset sync cache (will fetch fresh data next time)');
+        }
+        
+        if (optimized.length > 0) {
+            if (emptyArchives > 0) saveArchivedNotes();
+            const spaceSaved = freedSpace > 0 ? ` (freed ${(freedSpace/1024).toFixed(1)} KB)` : '';
+            showToast(`Optimized: ${optimized.join(', ')}${spaceSaved}`, 'success');
+        } else {
+            showToast('Nothing to optimize - storage is clean!', 'success');
+        }
+        
+        closeStorageInfo();
+        
+    } catch (error) {
+        showToast('Error optimizing storage: ' + error.message, 'error');
+    }
+}
+
+function exportStorageReport() {
+    const report = {
+        generated_at: new Date().toISOString(),
+        user_pubkey: currentPubkey ? currentPubkey.substring(0, 16) + '...' : 'none',
+        stats: {
+            total_notes_stored: allNotes.length,
+            notes_currently_loaded: allNotes.length,
+            archives_count: Object.keys(namedArchives).length,
+            total_archived_notes: Object.values(namedArchives).reduce((sum, archive) => sum + archive.size, 0),
+            hashtags_found: new Set(allNotes.flatMap(note => note.hashtags || [])).size,
+            replies_count: allNotes.filter(note => note.isReply).length,
+            original_notes_count: allNotes.filter(note => !note.isReply).length
+        },
+        performance: {
+            indexeddb_active: useIndexedDB,
+            memory_status: getMemoryStatus(allNotes.length),
+            relays_configured: RELAYS.length,
+            last_load_time: getLastLoadTime()
+        },
+        archives: Object.keys(namedArchives).map(name => ({
+            name: name,
+            note_count: namedArchives[name].size
+        }))
+    };
+    
+    downloadFile(
+        JSON.stringify(report, null, 2),
+        `nostr-storage-report-${new Date().toISOString().split('T')[0]}.json`,
+        'application/json'
+    );
+    
+    showToast('Storage report exported!', 'success');
+}
+
+// 5. ADD function to track load times
+function trackLoadTime() {
+    localStorage.setItem('nostr-last-load-time', Date.now().toString());
 }
 
         function extractHashtags(content) {
@@ -3370,8 +3947,27 @@ function toggleTag(tag) {
         // "All Notes" clears all selections AND resets currentTag
         selectedTags.clear();
         currentTag = '';
+        
+        // IMPORTANT: Force update of All Notes button
+        document.querySelectorAll('.tag-filter').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tag === '') {
+                btn.classList.add('active');
+            }
+        });
     } else if (selectedTags.has(tag)) {
         selectedTags.delete(tag);
+        
+        // If no tags selected after removal, activate "All Notes"
+        if (selectedTags.size === 0) {
+            currentTag = '';
+            document.querySelectorAll('.tag-filter').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tag === '') {
+                    btn.classList.add('active');
+                }
+            });
+        }
     } else {
         selectedTags.add(tag);
     }
@@ -3384,6 +3980,12 @@ function toggleTag(tag) {
         // If both are selected, clear them and activate "All Notes"
         selectedTags.clear();
         currentTag = '';
+        document.querySelectorAll('.tag-filter').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tag === '') {
+                btn.classList.add('active');
+            }
+        });
     }
     
     setActiveTagButtons();
@@ -3540,13 +4142,15 @@ if (currentTag.startsWith('__archive_')) {
 if (emptyState) emptyState.classList.add('hidden');
 
 // Only show load more button if we're not currently loading AND there are more notes to show
-const isCurrentlyLoading = !document.getElementById('loading').classList.contains('hidden');
-if (!isCurrentlyLoading && totalToShow < filteredNotes.length) {
+// Show load more button logic
+const hasMoreNotes = totalToShow < filteredNotes.length;
+
+if (hasMoreNotes && filteredNotes.length > 0) {
     loadMoreContainer.classList.remove('hidden');
     paginationInfo.textContent = `Showing ${totalToShow} of ${filteredNotes.length} notes`;
 } else {
     loadMoreContainer.classList.add('hidden');
-    if (!isCurrentlyLoading && filteredNotes.length > notesPerPage) {
+    if (filteredNotes.length > 0) {
         paginationInfo.textContent = `Showing all ${filteredNotes.length} notes`;
     }
 }
@@ -3726,7 +4330,7 @@ if (currentTag.startsWith('__archive_')) {
                     date: new Date(note.created_at * 1000).toISOString(),
                     content: note.content,
                     hashtags: note.hashtags,
-                   archived: archivedNotes.has(note.id) || Object.keys(namedArchives).some(archiveName => namedArchives[archiveName].has(note.id)),
+                  archived: Object.values(namedArchives).some(archive => archive.has(note.id)),
                     isReply: note.isReply
                 }))
             };
@@ -3827,54 +4431,166 @@ function closeModal(event) {
     }
 }
 
-function clearAllCache() {
-    if (confirm('This will clear all cached data, archives, and force a fresh reload. Continue?')) {
-        // Only clear data for the current user, not all users
-        if (currentPubkey) {
-            // Clear cache data for current user
-            localStorage.removeItem(`nostr-last-pubkey-${currentPubkey}`);
-            localStorage.removeItem(`nostr-cached-notes-${currentPubkey}`);
-            localStorage.removeItem(`nostr-cache-updated-at-${currentPubkey}`);
+// REPLACE your existing clearAllCache function (around line 2600) with this enhanced version:
+
+async function clearAllCache() {
+    if (confirm('This will clear ALL data including cached notes, archives, and IndexedDB. This action cannot be undone. Continue?')) {
+        try {
+            // Enhanced IndexedDB clearing - clear everything first
+            await clearIndexedDBCompletely();
             
-            // Clear archives for current user
-            localStorage.removeItem(`nostr-archived-notes-${currentPubkey}`);
-            localStorage.removeItem(`nostr-named-archives-${currentPubkey}`);
+            // Only clear data for the current user, not all users
+            if (currentPubkey) {
+                // Clear cache data for current user
+                localStorage.removeItem(`nostr-last-pubkey-${currentPubkey}`);
+                localStorage.removeItem(`nostr-cached-notes-${currentPubkey}`);
+                localStorage.removeItem(`nostr-cache-updated-at-${currentPubkey}`);
+                
+                // Clear archives for current user
+                localStorage.removeItem(`nostr-archived-notes-${currentPubkey}`);
+                localStorage.removeItem(`nostr-named-archives-${currentPubkey}`);
+            }
+            
+            // Clear global settings (theme, etc.) but NOT other users' data
+            localStorage.removeItem('nostr-saved-npub');
+            localStorage.removeItem('archives-cleanup-done');
+            
+            // Reset all global variables
+            currentPubkey = null;
+            allNotes = [];
+            filteredNotes = [];
+            archivedNotes = new Set();
+            namedArchives = {};
+            currentTag = '';
+            searchQuery = '';
+            currentArchive = 'default';
+            selectedNotes = new Set();
+            selectedTags = new Set();
+            
+            // Reset memory management variables (if you've added them)
+            if (typeof totalNotesCount !== 'undefined') {
+                totalNotesCount = 0;
+                loadedNotesCount = 0;
+                currentChunk = 0;
+                hasMoreNotes = true;
+                isLoadingChunk = false;
+            }
+            
+            // Clear quick filters
+            activeQuickFilters.clear();
+            document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Clear date filters
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            
+            // Clear search
+            document.getElementById('search-input').value = '';
+            
+            // Clear the UI immediately
+            document.getElementById('notes-container').innerHTML = '';
+            document.getElementById('tag-filters').innerHTML = '<button class="tag-filter active" data-tag="">All Notes (0)</button>';
+            document.getElementById('notes-count').textContent = '0 notes';
+            document.getElementById('notes-title').textContent = 'All Notes';
+            document.getElementById('archive-list').innerHTML = '<div style="color: #666; font-style: italic; font-size: 13px;">No archives created yet</div>';
+            
+            // Hide bulk controls and other UI elements
+            document.getElementById('bulk-controls').classList.add('hidden');
+            document.getElementById('load-more-container').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            
+            // Reset database connection completely
+            db = null;
+            useIndexedDB = true; // Reset this flag
+            
+            // Go back to connection screen
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('connection-screen').classList.remove('hidden');
+            document.getElementById('pubkey-input').value = '';
+            
+            showToast('All data cleared successfully! Please reconnect.', 'success');
+            
+        } catch (error) {
+            console.error('Error clearing data:', error);
+            showToast('Error clearing some data: ' + error.message, 'error');
+        }
+    }
+}
+
+// ADD this new function to handle IndexedDB clearing:
+async function clearIndexedDBCompletely() {
+    try {
+        // Close current database connection if open
+        if (db && db.isOpen()) {
+            // Clear all data before closing
+            try {
+                await db.notes.clear();
+                await db.settings.clear();
+            } catch (error) {
+                console.log('Error clearing tables before close:', error);
+            }
+            await db.close();
         }
         
-        // Clear global settings (theme, etc.) but NOT other users' data
-        localStorage.removeItem('nostr-saved-npub');
-        localStorage.removeItem('archives-cleanup-done');
+        // Clear the specific database for current user
+        if (currentPubkey) {
+            const dbName = `nostr-notes-${currentPubkey}`;
+            
+            // Delete the database entirely
+            if (window.indexedDB && window.indexedDB.deleteDatabase) {
+                await new Promise((resolve, reject) => {
+                    const deleteReq = window.indexedDB.deleteDatabase(dbName);
+                    
+                    deleteReq.onsuccess = () => {
+                        console.log(`IndexedDB ${dbName} deleted successfully`);
+                        resolve();
+                    };
+                    
+                    deleteReq.onerror = (event) => {
+                        console.error(`Error deleting IndexedDB ${dbName}:`, event.target.error);
+                        resolve(); // Don't reject - continue with cleanup
+                    };
+                    
+                    deleteReq.onblocked = () => {
+                        console.warn(`IndexedDB ${dbName} deletion blocked`);
+                        // Force resolve after delay
+                        setTimeout(resolve, 2000);
+                    };
+                    
+                    // Timeout safety
+                    setTimeout(() => {
+                        console.warn('IndexedDB deletion timeout');
+                        resolve();
+                    }, 5000);
+                });
+            }
+        }
         
-        // Reset all global variables
-        currentPubkey = null;
-        allNotes = [];
-        filteredNotes = [];
-        archivedNotes = new Set();
-        namedArchives = {};
-        currentTag = '';
-        searchQuery = '';
-        currentArchive = 'default';
-        selectedNotes = new Set();
-        selectedTags = new Set();
+        // Reset database variables completely
+        db = null;
+        useIndexedDB = true; // Reset this flag so it will try IndexedDB again
         
-        // Clear the UI immediately
-        document.getElementById('notes-container').innerHTML = '';
-        document.getElementById('tag-filters').innerHTML = '<button class="tag-filter active" data-tag="">All Notes (0)</button>';
-        document.getElementById('notes-count').textContent = '0 notes';
-        document.getElementById('notes-title').textContent = 'All Notes';
-        document.getElementById('archive-list').innerHTML = '<div style="color: #666; font-style: italic; font-size: 13px;">No archives created yet</div>';
+        console.log('IndexedDB cleared completely');
         
-        // Hide bulk controls and other UI elements
-        document.getElementById('bulk-controls').classList.add('hidden');
-        document.getElementById('load-more-container').classList.add('hidden');
-        document.getElementById('empty-state').classList.add('hidden');
-        
-        // Go back to connection screen
-        document.getElementById('main-app').classList.add('hidden');
-        document.getElementById('connection-screen').classList.remove('hidden');
-        document.getElementById('pubkey-input').value = '';
-        
-        showToast('Cache cleared for current user! Please reconnect.', 'success');
+    } catch (error) {
+        console.error('Error clearing IndexedDB completely:', error);
+        // Reset variables anyway
+        db = null;
+        useIndexedDB = true;
+    }
+}
+
+// OPTIONAL: Add a separate "Clear IndexedDB Only" function for debugging
+async function clearIndexedDBOnly() {
+    if (confirm('Clear IndexedDB cache only? (Archives and settings will be preserved)')) {
+        try {
+            await clearIndexedDB();
+            showToast('IndexedDB cleared. Notes will be refetched from relays on next load.', 'success');
+        } catch (error) {
+            showToast('Error clearing IndexedDB: ' + error.message, 'error');
+        }
     }
 }
 
@@ -4700,6 +5416,60 @@ function clearAllFilters() {
     document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
 }
 
+// TEMPORARY: Add this function to debug the cache issue
+async function forceResetUserCache() {
+    if (!currentPubkey) {
+        console.log('No user connected');
+        return;
+    }
+    
+    try {
+        console.log(`Force resetting cache for user: ${currentPubkey.substring(0, 8)}...`);
+        
+        // Close database
+        if (db && db.isOpen()) {
+            await db.close();
+        }
+        
+        // Delete the specific IndexedDB for this user
+        const dbName = `nostr-notes-${currentPubkey}`;
+        await new Promise((resolve) => {
+            const deleteReq = indexedDB.deleteDatabase(dbName);
+            deleteReq.onsuccess = () => {
+                console.log(`Deleted IndexedDB: ${dbName}`);
+                resolve();
+            };
+            deleteReq.onerror = () => {
+                console.log(`Failed to delete IndexedDB: ${dbName}`);
+                resolve();
+            };
+            deleteReq.onblocked = () => {
+                console.log(`IndexedDB deletion blocked: ${dbName}`);
+                setTimeout(resolve, 2000);
+            };
+        });
+        
+        // Clear localStorage entries for this user
+        localStorage.removeItem(`nostr-archived-notes-${currentPubkey}`);
+        localStorage.removeItem(`nostr-named-archives-${currentPubkey}`);
+        localStorage.removeItem(`nostr-cached-notes-${currentPubkey}`);
+        localStorage.removeItem(`nostr-cache-updated-at-${currentPubkey}`);
+        localStorage.removeItem(`nostr-last-pubkey-${currentPubkey}`);
+        
+        // Reset database connection
+        db = null;
+        
+        console.log('Cache reset complete - reconnect to fetch fresh data');
+        showToast('User cache cleared - please reconnect', 'success');
+        
+        // Disconnect user to force fresh connection
+        disconnect();
+        
+    } catch (error) {
+        console.error('Error resetting cache:', error);
+    }
+}
+
 async function performSearchWithFilters(query, filters) {
     const results = await performAdvancedSearch(query, filters);
     
@@ -4784,11 +5554,17 @@ window.toggleArchiveNote = toggleArchiveNote;
 window.viewArchive = viewArchive;
 window.deleteArchive = deleteArchive;
 window.toggleNoteSelection = toggleNoteSelection;
+window.showStorageInfo = showStorageInfo;
+window.closeStorageInfo = closeStorageInfo;
+window.optimizeStorage = optimizeStorage;
+window.exportStorageReport = exportStorageReport;
 
 // UI and modals
 window.showNoteInfo = showNoteInfo;
 window.selectArchiveOption = selectArchiveOption;
 window.closeArchiveModal = closeArchiveModal;
+window.showAppInfo = showAppInfo;
+window.closeAppInfo = closeAppInfo;
 
 // Archive management
 window.removeFromSpecificArchive = removeFromSpecificArchive;
