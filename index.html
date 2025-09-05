@@ -2072,16 +2072,54 @@ function setupKeyboardShortcuts() {
                 break;
                 
             case 'Escape':
-                // Clear search
-                const searchInput = document.getElementById('search-input');
-                if (searchInput.value) {
-                    searchInput.value = '';
-                    handleSearch();
-                } else {
-                    // Clear selections
-                    deselectAll();
-                }
-                break;
+    // Always clear everything and go back to "All Notes" state
+    const searchInput = document.getElementById('search-input');
+    
+    // Clear search input
+    searchInput.value = '';
+    searchQuery = '';
+    
+    // Clear ALL filters and states
+    activeQuickFilters.clear();
+    selectedTags.clear();
+    currentTag = '';
+    currentArchive = 'default';
+    
+    // Clear all UI active states
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.archive-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.tag-filter').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tag === '') {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Clear date filters
+    document.getElementById('date-from').value = '';
+    document.getElementById('date-to').value = '';
+    
+    // Clear selections
+    deselectAll();
+    
+    // Force reset to all notes
+    filteredNotes = allNotes.slice();
+    resetPagination();
+    renderNotes();
+    
+    // Reset title and count
+    document.getElementById('notes-title').textContent = 'All Notes';
+    document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+    
+    // Blur the search input
+    searchInput.blur();
+    break;
                 
             case 'k':
                 if (e.ctrlKey || e.metaKey) {
@@ -3550,7 +3588,7 @@ async function showAppInfo() {
                 
                 <div style="line-height: 1.6; margin-bottom: 24px;">
                     <p><strong>What is this app?</strong></p>
-                    <p>This is a browser-based tool for viewing, organizing, and archiving your Nostr notes. It connects directly to Nostr relays to fetch your posts and allows you to organize them into custom archives for better management.</p>
+                    <p>This is a browser-based tool for viewing, organizing, and archiving your notes. It connects directly to Nostr relays to fetch your posts and allows you to organize them into custom archives for better management.</p>
                 </div>
 
                 <div style="line-height: 1.6; margin-bottom: 24px;">
@@ -3575,7 +3613,7 @@ async function showAppInfo() {
                 <div style="background: var(--background-color); padding: 16px; border-radius: 8px; border-left: 4px solid var(--primary-color); margin-bottom: 24px;">
                     <p><strong>Created by Romeo</strong></p>
                     <p style="font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 8px;">
-                        <strong>NPUB:</strong> npub12p5753xcjal8034w5czap3fcdvj9qj36h5873g73ea05emw2gznszr0ann
+                        <strong>Npub:</strong> npub12p5753xcjal8034w5czap3fcdvj9qj36h5873g73ea05emw2gznszr0ann
                     </p>
                     <button onclick="copyToClipboard('npub12p5753xcjal8034w5czap3fcdvj9qj36h5873g73ea05emw2gznszr0ann')" 
                             class="copy-btn" style="margin-top: 8px;">
@@ -3855,6 +3893,9 @@ if (repliesBtn)  repliesBtn.addEventListener('click', () => toggleTag('__replies
 
         function filterByTag(tag) {
             currentTag = tag;
+
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
             
             // Update active button
             document.querySelectorAll('.tag-filter').forEach(btn => {
@@ -3943,7 +3984,12 @@ function toggleTag(tag) {
         item.classList.remove('active');
     });
     
+    // ADD THIS: Clear date filters when selecting any tag
+    document.getElementById('date-from').value = '';
+    document.getElementById('date-to').value = '';
+    
     if (!tag) {
+        // rest of existing code...
         // "All Notes" clears all selections AND resets currentTag
         selectedTags.clear();
         currentTag = '';
@@ -4007,57 +4053,68 @@ function noteMatchesTag(note, tag) {
 }
 
         function handleSearch() {
-            searchQuery = document.getElementById('search-input').value.toLowerCase();
-            applyFilters();
-            renderNotes();
-        }
+    searchQuery = document.getElementById('search-input').value.toLowerCase();
+    
+    // If there are active quick filters, use the advanced search system
+    if (activeQuickFilters.size > 0) {
+        applyAllFilters();
+    } else {
+        // Use the simple filter system
+        applyFilters();
+        renderNotes();
+    }
+}
 
       function applyFilters() {
-  // Start from all notes
-  filteredNotes = allNotes.slice();
-
-  // If multiple tags are selected, keep notes that match ANY selected tag
-  if (selectedTags.size > 0) {
-    const tags = Array.from(selectedTags);
-    filteredNotes = filteredNotes.filter(note =>
-      tags.some(tag => noteMatchesTag(note, tag))
-    );
-  } else {
-    // Fall back to old single-select behavior (currentTag)
-    if (currentTag === '__archived') {
-      filteredNotes = filteredNotes.filter(note => archivedNotes.has(note.id));
-    } else if (currentTag === '__original') {
-      filteredNotes = filteredNotes.filter(note => !note.isReply);
-    } else if (currentTag === '__replies') {
-      filteredNotes = filteredNotes.filter(note => note.isReply);
-    } else if (currentTag && currentTag.startsWith('__archive_')) {
-      const archiveName = currentTag.replace('__archive_', '');
-      if (namedArchives[archiveName]) {
-        filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
-      }
-    } else if (currentTag) {
-      filteredNotes = filteredNotes.filter(note => note.hashtags.includes(currentTag));
+    // If we have active quick filters, delegate to the advanced search system
+    if (activeQuickFilters.size > 0) {
+        applyAllFilters();
+        return;
     }
-  }
+    
+    // Original applyFilters logic continues here...
+    filteredNotes = allNotes.slice();
 
-  // Text search still applies
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    filteredNotes = filteredNotes.filter(note =>
-      note.content.toLowerCase().includes(q) ||
-      (note.hashtags && note.hashtags.some(tag => tag.includes(q)))
-    );
-  }
+    // If multiple tags are selected, keep notes that match ANY selected tag
+    if (selectedTags.size > 0) {
+        const tags = Array.from(selectedTags);
+        filteredNotes = filteredNotes.filter(note =>
+            tags.some(tag => noteMatchesTag(note, tag))
+        );
+    } else {
+        // Fall back to old single-select behavior (currentTag)
+        if (currentTag === '__archived') {
+            filteredNotes = filteredNotes.filter(note => archivedNotes.has(note.id));
+        } else if (currentTag === '__original') {
+            filteredNotes = filteredNotes.filter(note => !note.isReply);
+        } else if (currentTag === '__replies') {
+            filteredNotes = filteredNotes.filter(note => note.isReply);
+        } else if (currentTag && currentTag.startsWith('__archive_')) {
+            const archiveName = currentTag.replace('__archive_', '');
+            if (namedArchives[archiveName]) {
+                filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
+            }
+        } else if (currentTag) {
+            filteredNotes = filteredNotes.filter(note => note.hashtags.includes(currentTag));
+        }
+    }
 
-   // Reset pagination when filters change
-  resetPagination();
+    // Text search still applies
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filteredNotes = filteredNotes.filter(note =>
+            note.content.toLowerCase().includes(q) ||
+            (note.hashtags && note.hashtags.some(tag => tag.includes(q)))
+        );
+    }
+
+    // Reset pagination when filters change
+    resetPagination();
 }
 
 
 
         function renderNotes() {
-     
-    
     const container = document.getElementById('notes-container');
     const emptyState = document.getElementById('empty-state');
     const loadMoreContainer = document.getElementById('load-more-container');
@@ -5368,47 +5425,35 @@ function clearAllFilters() {
         btn.classList.remove('active');
     });
     
-    // Clear hashtag filters - but keep tag filter buttons
-    document.querySelectorAll('.tag-filter').forEach(btn => {
-        const tag = btn.dataset.tag;
-        // Only clear hashtag buttons, not the main tag filter buttons
-        if (tag && tag.startsWith('#')) {
-            btn.classList.remove('active');
-        }
-    });
-    
     // Clear date filters
     document.getElementById('date-from').value = '';
     document.getElementById('date-to').value = '';
     
     // Clear search
     document.getElementById('search-input').value = '';
+    searchQuery = '';
     
-    // Reset tag selections and archive states
+    // Reset ALL state variables
     selectedTags.clear();
     currentTag = '';
-    selectedTags.clear();
     currentArchive = 'default';
+    window.inAdvancedSearchMode = false; // Clear advanced search mode
     
-    // Clear archive active states
+    // Clear all UI states
     document.querySelectorAll('.archive-item').forEach(item => {
         item.classList.remove('active');
     });
     
-    // IMPORTANT: Reset to show all notes and activate "All Notes" button
-    searchQuery = '';
-    filteredNotes = allNotes.slice(); // Reset filtered notes to all notes
-    
-    // Manually set "All Notes" as active
     document.querySelectorAll('.tag-filter').forEach(btn => {
+        btn.classList.remove('active');
         if (btn.dataset.tag === '') {
             btn.classList.add('active');
-        } else if (btn.dataset.tag === '__original' || btn.dataset.tag === '__replies') {
-            btn.classList.remove('active');
         }
     });
     
-    // Update display
+    // FORCE reset to all notes (bypass all filtering)
+    filteredNotes = allNotes.slice();
+    resetPagination();
     renderNotes();
     
     // Reset title and count
@@ -5479,10 +5524,6 @@ async function performSearchWithFilters(query, filters) {
     
     renderNotes();
     
-    // UPDATE: Fix the title and count display
-    const title = document.getElementById('notes-title');
-    const count = document.getElementById('notes-count');
-    
     // Build filter description - include BOTH quick filters AND search terms
     const activeFilters = [];
     
@@ -5499,9 +5540,9 @@ async function performSearchWithFilters(query, filters) {
         const searchTerms = query.trim().split(/\s+/);
         searchTerms.forEach(term => {
             if (term.startsWith('#')) {
-                activeFilters.push(term); // Show hashtags as-is
+                activeFilters.push(term);
             } else {
-                activeFilters.push(`"${term}"`); // Show search terms in quotes
+                activeFilters.push(`"${term}"`);
             }
         });
     }
@@ -5512,6 +5553,9 @@ async function performSearchWithFilters(query, filters) {
     }
     
     // Set the title based on what's active
+    const title = document.getElementById('notes-title');
+    const count = document.getElementById('notes-count');
+    
     if (activeFilters.length > 0) {
         title.textContent = `Filtered Notes (${activeFilters.join(' + ')})`;
     } else {
@@ -5520,19 +5564,9 @@ async function performSearchWithFilters(query, filters) {
     
     count.textContent = `${results.length} notes`;
     
-    // Show search results info
-    const filterInfo = [];
-    if (filters.dateFrom) filterInfo.push(`from ${filters.dateFrom.toLocaleDateString()}`);
-    if (filters.dateTo) filterInfo.push(`to ${filters.dateTo.toLocaleDateString()}`);
-    if (filters.contentType) filterInfo.push(filters.contentType);
-    if (filters.hasImages) filterInfo.push('with images');
-    if (filters.hasYouTube) filterInfo.push('with videos');
-    if (filters.minLength) filterInfo.push(`min ${filters.minLength} chars`);
-    
-    const filterText = filterInfo.length > 0 ? ` (${filterInfo.join(', ')})` : '';
-    showToast(`Found ${results.length} notes${filterText}`, 'success');
+    // CRITICAL: Store that we're in advanced search mode
+    window.inAdvancedSearchMode = true;
 }
-
 
 
 
