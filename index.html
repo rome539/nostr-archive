@@ -531,11 +531,20 @@
   transform: translateY(-1px);
 }
 
-/* Selected state */
+/* Active hashtag styling */
 .hashtag[data-selected="true"] {
-  background: var(--primary-color) !important;
-  color: white !important;
-  border-color: var(--primary-color) !important;
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Override for neon-green theme */
+[data-theme="neon-green"] .hashtag[data-selected="true"] {
+    background: var(--accent-weak) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 6px rgba(0, 255, 0, 0.3) !important;
+    text-shadow: 0 0 3px var(--accent) !important;
 }
 
 /* Remove ALL the old reply/archived specific rules */
@@ -1287,19 +1296,21 @@ body[data-theme="nostr-purple"] .note-card .hashtag:hover,
   background: color-mix(in srgb, var(--purple-color) 28%, #fff) !important;
 }
 
-/* FINAL OVERRIDES — Neon Green hashtag pills (wins everywhere) */
-body[data-theme="neon-green"] .note-card .hashtag,
-[data-theme="neon-green"] .note-card.reply-card .hashtag,
-[data-theme="neon-green"] .note-card.archived .hashtag {
-  background: var(--accent-weak-2) !important;
-  border: 1px solid var(--accent-border) !important;
-  color: var(--accent) !important;
-  border-radius: 12px; /* keep pill shape */
+/* neon-green: hashtags inside notes - higher specificity */
+body[data-theme="neon-green"] .note-card .hashtag {
+background: var(--accent-weak-2) !important;
+border: 1px solid var(--accent-border) !important;
+color: var(--accent) !important;
+border-radius: 12px;
 }
-body[data-theme="neon-green"] .note-card .hashtag:hover,
-[data-theme="neon-green"] .note-card.reply-card .hashtag:hover,
-[data-theme="neon-green"] .note-card.archived .hashtag:hover {
-  background: var(--accent-weak) !important;
+body[data-theme="neon-green"] .note-card .hashtag:hover {
+background: var(--accent-weak) !important;
+}
+body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"] {
+background: var(--accent-weak) !important;
+border-color: var(--accent) !important;
+box-shadow: 0 0 6px rgba(0, 255, 0, 0.3) !important;
+text-shadow: 0 0 3px var(--accent) !important;
 }
 
 /* neon-green: buttons */
@@ -1309,20 +1320,31 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   border: 1px solid var(--accent-border);
   text-shadow: 0 0 4px var(--accent);
 }
+
 [data-theme="neon-green"] .btn:hover {
   background: color-mix(in srgb, var(--accent) 28%, #000);
   border-color: var(--accent);
 }
 
+
+
+
 /* neon-green: hashtags inside notes */
 [data-theme="neon-green"] .hashtag {
-  background: var(--accent-weak-2);
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
-  border-radius: 12px;
+background: var(--accent-weak-2);
+border: 1px solid var(--accent-border);
+color: var(--accent);
+border-radius: 12px;
 }
 [data-theme="neon-green"] .hashtag:hover {
-  background: var(--accent-weak);
+background: var(--accent-weak);
+}
+/* Add this line for selected state */
+[data-theme="neon-green"] .hashtag[data-selected="true"] {
+background: var(--accent-weak) !important;
+border-color: var(--accent) !important;
+box-shadow: 0 0 6px rgba(0, 255, 0, 0.3) !important;
+text-shadow: 0 0 3px var(--accent) !important;
 }
 
 /* neon-green: tag filters in sidebar */
@@ -1331,11 +1353,14 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   border-color: var(--accent-border);
   color: var(--accent);
 }
+
 [data-theme="neon-green"] .tag-filter:hover,
 [data-theme="neon-green"] .tag-filter.active {
-  background: var(--accent-weak);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--accent-weak) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+  text-shadow: 0 0 4px var(--accent) !important;
 }
 
 /* neon-green: progress bar */
@@ -1590,15 +1615,6 @@ body[data-theme="nostr-purple"] .note-card .hashtag[data-selected="true"],
     border-color: var(--primary-color) !important;
 }
 
-/* Selected hashtag highlighting for Neon Green theme */
-body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
-[data-theme="neon-green"] .note-card.reply-card .hashtag[data-selected="true"],
-[data-theme="neon-green"] .note-card.archived .hashtag[data-selected="true"] {
-    background: var(--accent) !important;
-    color: #000 !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.6) !important;
-}
 
     </style>
 </head>
@@ -1881,6 +1897,7 @@ function normalizeNpub(input) {
     'wss://relay.snort.social',
     'wss://relay.nostrplebs.com',
     'wss://relay.damus.io',
+    'wss://relay.primal.net',
     'wss://offchain.pub',
     'wss://nostr.wine',
     'wss://nostr.land',
@@ -3497,6 +3514,28 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
     };
 }
 
+function setupLazyLoading() {
+    // Simple lazy loading for images
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    }
+}
+
 // ADD these functions after your clearIndexedDB functions (around line 2500):
 
 // 1. ADD this function to show storage usage information
@@ -3929,14 +3968,14 @@ function setActiveTagButtons() {
     btn.classList.remove('active');
     
     // "All Notes" is active only when nothing is selected AND we're not in archive view
-    if (t === '' && selectedTags.size === 0 && !currentTag.startsWith('__archive_')) {
+    if (t === '' && selectedTags.size === 0 && !currentTag.startsWith('__archive_') && activeQuickFilters.size === 0) {
       btn.classList.add('active');
     } 
-    // Hashtag buttons are active when they're in selectedTags (regardless of archive view)
+    // Hashtag buttons are active when they're in selectedTags
     else if (t !== '' && selectedTags.has(t)) {
       btn.classList.add('active');
     }
-    // Special buttons (Original Notes, Replies) are active when selected
+    // Special buttons - fix these lines
     else if (t === '__original' && selectedTags.has('__original')) {
       btn.classList.add('active');
     }
@@ -3978,34 +4017,53 @@ function applyDateFilters() {
 window.toggleHashtagGroup = toggleHashtagGroup;
         // === Multi-tag selection helpers ===
 function toggleTag(tag) {
-    // ALWAYS clear archive active states when selecting any tag
+    // Clear archive active states when selecting any tag (but NOT quick filters)
     currentArchive = 'default';
     document.querySelectorAll('.archive-item').forEach(item => {
         item.classList.remove('active');
     });
     
-    // ADD THIS: Clear date filters when selecting any tag
+    // Clear date filters when selecting any tag (but NOT quick filters)
     document.getElementById('date-from').value = '';
     document.getElementById('date-to').value = '';
     
     if (!tag) {
-        // rest of existing code...
-        // "All Notes" clears all selections AND resets currentTag
+        // "All Notes" clears ALL selections including quick filters
         selectedTags.clear();
         currentTag = '';
+        activeQuickFilters.clear(); // Clear quick filters only for "All Notes"
         
-        // IMPORTANT: Force update of All Notes button
+        // Clear quick filter buttons
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Set "All Notes" as active
         document.querySelectorAll('.tag-filter').forEach(btn => {
             btn.classList.remove('active');
             if (btn.dataset.tag === '') {
                 btn.classList.add('active');
             }
         });
-    } else if (selectedTags.has(tag)) {
+        
+        // Use simple filtering for "All Notes"
+        window.inAdvancedSearchMode = false;
+        filteredNotes = allNotes.slice();
+        resetPagination();
+        renderNotes();
+        return;
+    } 
+    
+    // For hashtag selection, work WITH quick filters, not against them
+    if (selectedTags.has(tag)) {
         selectedTags.delete(tag);
         
-        // If no tags selected after removal, activate "All Notes"
-        if (selectedTags.size === 0) {
+        // If no tags selected after removal, check if we have quick filters
+        if (selectedTags.size === 0 && activeQuickFilters.size > 0) {
+            // We still have quick filters active, so use advanced search
+            applyAllFilters();
+        } else if (selectedTags.size === 0 && activeQuickFilters.size === 0) {
+            // Nothing active, go to "All Notes"
             currentTag = '';
             document.querySelectorAll('.tag-filter').forEach(btn => {
                 btn.classList.remove('active');
@@ -4013,30 +4071,49 @@ function toggleTag(tag) {
                     btn.classList.add('active');
                 }
             });
+            window.inAdvancedSearchMode = false;
+            filteredNotes = allNotes.slice();
+            resetPagination();
+            renderNotes();
+        } else {
+            // Other tags still selected, continue with advanced search
+            applyAllFilters();
         }
     } else {
         selectedTags.add(tag);
-    }
-    
-    // Check if both original and replies are selected
-    const hasOriginal = selectedTags.has('__original');
-    const hasReplies = selectedTags.has('__replies');
-    
-    if (hasOriginal && hasReplies && selectedTags.size === 2) {
-        // If both are selected, clear them and activate "All Notes"
-        selectedTags.clear();
-        currentTag = '';
-        document.querySelectorAll('.tag-filter').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.tag === '') {
-                btn.classList.add('active');
+        
+        // Check if both original and replies are selected
+        const hasOriginal = selectedTags.has('__original');
+        const hasReplies = selectedTags.has('__replies');
+        
+        if (hasOriginal && hasReplies && selectedTags.size === 2) {
+            // If both are selected, clear them but keep quick filters
+            selectedTags.clear();
+            currentTag = '';
+            
+            if (activeQuickFilters.size > 0) {
+                // Quick filters are active, use advanced search
+                applyAllFilters();
+            } else {
+                // No filters active, go to "All Notes"
+                document.querySelectorAll('.tag-filter').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.tag === '') {
+                        btn.classList.add('active');
+                    }
+                });
+                window.inAdvancedSearchMode = false;
+                filteredNotes = allNotes.slice();
+                resetPagination();
+                renderNotes();
             }
-        });
+        } else {
+            // Normal tag selection - use advanced search to combine with quick filters
+            applyAllFilters();
+        }
     }
     
     setActiveTagButtons();
-    applyFilters();
-    renderNotes();
 }
 
 // Check if a single tag matches a note
@@ -4228,14 +4305,15 @@ if (hasMoreNotes && filteredNotes.length > 0) {
     const isSelected = selectedNotes.has(note.id);
     
     const hashtagsHtml = note.hashtags && note.hashtags.length > 0 ? 
-note.hashtags.map(tag => 
-    `<span class="hashtag" 
+note.hashtags.map(tag => {
+    const isSelected = selectedTags.has(tag);
+    return `<span class="hashtag" 
            onmousedown="startHashtagSelection('${tag}', event)" 
            onmouseenter="continueHashtagSelection('${tag}', event)"
            ontouchstart="startHashtagSelection('${tag}', event)"
            data-tag="${tag}"
-           ${selectedTags.has(tag) ? 'data-selected="true"' : ''}>${tag}</span>`
-).join(' ') : '';
+           ${isSelected ? 'data-selected="true"' : ''}>${tag}</span>`;
+}).join(' ') : '';
     
     // Different styling for replies
     const cardClass = `note-card ${isArchived ? 'archived' : ''} ${isReply ? 'reply-card' : ''}`;
@@ -5308,7 +5386,6 @@ let activeQuickFilters = new Set();
 
 function toggleQuickFilter(type) {
     console.log('toggleQuickFilter called:', type);
-    console.log('currentArchive before:', currentArchive);
     console.log('activeQuickFilters before:', Array.from(activeQuickFilters));
     
     const button = document.querySelector(`[data-filter="${type}"]`);
@@ -5325,26 +5402,33 @@ function toggleQuickFilter(type) {
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
-    // ALWAYS clear archive selection when ANY quick filter operation happens
-    // This ensures that turning filters on OR off exits archive mode
+    // Clear archive selection when ANY quick filter operation happens
+    // but DON'T clear hashtag selections (selectedTags)
     currentArchive = 'default';
     currentTag = '';
-    selectedTags.clear();
     
     // Clear archive active states
     document.querySelectorAll('.archive-item').forEach(item => {
         item.classList.remove('active');
     });
     
-    // Clear tag filter active states
+    // Update "All Notes" button state based on whether we have any selections
     document.querySelectorAll('.tag-filter').forEach(btn => {
-        btn.classList.remove('active');
+        if (btn.dataset.tag === '') {
+            // "All Notes" is only active if no hashtags AND no quick filters are selected
+            if (selectedTags.size === 0 && activeQuickFilters.size === 0) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+        // Don't modify hashtag button states here - let setActiveTagButtons handle them
     });
     
-    // Set "All Notes" as active
-    document.querySelector('.tag-filter[data-tag=""]').classList.add('active');
-    
     console.log('currentArchive after:', currentArchive);
+    console.log('selectedTags preserved:', Array.from(selectedTags));
+    
+    // Apply combined filters (quick filters + hashtag selections)
     applyAllFilters();
 }
 
@@ -5518,13 +5602,23 @@ async function forceResetUserCache() {
 async function performSearchWithFilters(query, filters) {
     const results = await performAdvancedSearch(query, filters);
     
-    // Override normal filtering with search results
-    filteredNotes = results;
-    searchQuery = query;
+    // Apply hashtag filtering AFTER the advanced search results
+    let finalResults = results;
     
+    // Apply hashtag/tag filtering if any tags are selected
+    if (selectedTags.size > 0) {
+        const tags = Array.from(selectedTags);
+        finalResults = finalResults.filter(note =>
+            tags.some(tag => noteMatchesTag(note, tag))
+        );
+    }
+    
+    // Store the final filtered results
+    filteredNotes = finalResults;
+    searchQuery = query;
     renderNotes();
     
-    // Build filter description - include BOTH quick filters AND search terms
+    // Build comprehensive filter description
     const activeFilters = [];
     
     // Add quick filters
@@ -5535,7 +5629,7 @@ async function performSearchWithFilters(query, filters) {
     if (activeQuickFilters.has('youtube')) activeFilters.push('Videos');
     if (activeQuickFilters.has('long')) activeFilters.push('Long');
     
-    // Add search terms/hashtags
+    // Add search terms from text search
     if (query && query.trim()) {
         const searchTerms = query.trim().split(/\s+/);
         searchTerms.forEach(term => {
@@ -5547,12 +5641,28 @@ async function performSearchWithFilters(query, filters) {
         });
     }
     
+    // Add selected hashtags from multi-selection
+    selectedTags.forEach(tag => {
+        if (tag === '__original') {
+            activeFilters.push('Original Notes');
+        } else if (tag === '__replies') {
+            activeFilters.push('Replies');
+        } else if (tag === '__archived') {
+            activeFilters.push('Archived');
+        } else if (tag.startsWith('#')) {
+            // Only add if it's not already in the list from search terms
+            if (!activeFilters.includes(tag)) {
+                activeFilters.push(tag);
+            }
+        }
+    });
+    
     // Manual date filters (only show if no quick date filters)
     if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.has('month') && !activeQuickFilters.has('year')) {
         activeFilters.push('Date Filtered');
     }
     
-    // Set the title based on what's active
+    // Update UI
     const title = document.getElementById('notes-title');
     const count = document.getElementById('notes-count');
     
@@ -5562,9 +5672,9 @@ async function performSearchWithFilters(query, filters) {
         title.textContent = 'All Notes';
     }
     
-    count.textContent = `${results.length} notes`;
+    count.textContent = `${finalResults.length} notes`;
     
-    // CRITICAL: Store that we're in advanced search mode
+    // Store that we're in advanced search mode
     window.inAdvancedSearchMode = true;
 }
 
