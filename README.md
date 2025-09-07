@@ -1,14 +1,13 @@
 # nostr-archive
 
-Tester Build v0.9 — September 2025
+Build v0.9 — September 2025
 
 A browser-based app to view, search, filter, and archive your Nostr notes. Built as a single-page HTML app — no backend, runs entirely in your browser.
 
-Note: This is a tester build and still a work in progress. Expect updates and changes.
+Note: This is still a work in progress. Expect updates and changes.
 
 Nostr Notes Archive
 
-A browser-based app to view, search, filter, and archive your Nostr notes. Built as a single-page HTML app — no backend, runs entirely in your browser.
 
 Features
 	•	Connect with your npub (public key).
