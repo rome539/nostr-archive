@@ -15,6 +15,7 @@
     /* Default Theme */
     --primary-color: #3498db;
     --primary-hover: #2980b9;
+    --secondary-color: #7fb3d3;  /* ADD THIS */
     --success-color: #27ae60;
     --danger-color: #e74c3c;
     --purple-color: #9b59b6;
@@ -29,7 +30,7 @@
 [data-theme="nostr-purple"] {
   --primary-color: #7c3aed;      /* purple used by non-reply cards */
   --primary-hover: #6d28d9;
-  --secondary-color: #f59e0b;
+  --secondary-color: #a78bfa;  /* ADD THIS */
   --secondary-hover: #d97706;
   --success-color: #059669;
   --danger-color: #dc2626;
@@ -46,7 +47,7 @@
 [data-theme="dark-nostr"] {
   --primary-color: #8b5cf6;      /* vivid purple */
   --primary-hover: #7c3aed;      /* deeper hover */
-  --secondary-color: #f59e0b;    /* warm gold */
+  --secondary-color: #a78bfa;    
   --secondary-hover: #d97706;
   --success-color: #22c55e;
   --danger-color:  #ef4444;
@@ -529,22 +530,6 @@
   border-color: var(--primary-hover) !important;
   color: #fff !important;
   transform: translateY(-1px);
-}
-
-/* Active hashtag styling */
-.hashtag[data-selected="true"] {
-    background: var(--primary-color) !important;
-    color: white !important;
-    border-color: var(--primary-color) !important;
-}
-
-/* Override for neon-green theme */
-[data-theme="neon-green"] .hashtag[data-selected="true"] {
-    background: var(--accent-weak) !important;
-    color: var(--accent) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 6px rgba(0, 255, 0, 0.3) !important;
-    text-shadow: 0 0 3px var(--accent) !important;
 }
 
 /* Remove ALL the old reply/archived specific rules */
@@ -1282,6 +1267,17 @@ input[type="date"]:focus {
     border: 1px solid var(--accent-border) !important;
 }
 
+/* Neon green archive name input placeholder */
+[data-theme="neon-green"] #new-archive-name::placeholder {
+    color: var(--accent) !important;
+}
+
+[data-theme="neon-green"] #new-archive-name {
+    background: var(--accent-weak-2) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+}
+
 [data-theme="neon-green"] #search-input::placeholder {
     color: color-mix(in srgb, var(--accent) 60%, transparent) !important;
 }
@@ -1296,21 +1292,19 @@ body[data-theme="nostr-purple"] .note-card .hashtag:hover,
   background: color-mix(in srgb, var(--purple-color) 28%, #fff) !important;
 }
 
-/* neon-green: hashtags inside notes - higher specificity */
-body[data-theme="neon-green"] .note-card .hashtag {
-background: var(--accent-weak-2) !important;
-border: 1px solid var(--accent-border) !important;
-color: var(--accent) !important;
-border-radius: 12px;
+/* FINAL OVERRIDES — Neon Green hashtag pills (wins everywhere) */
+body[data-theme="neon-green"] .note-card .hashtag,
+[data-theme="neon-green"] .note-card.reply-card .hashtag,
+[data-theme="neon-green"] .note-card.archived .hashtag {
+  background: var(--accent-weak-2) !important;
+  border: 1px solid var(--accent-border) !important;
+  color: var(--accent) !important;
+  border-radius: 12px; /* keep pill shape */
 }
-body[data-theme="neon-green"] .note-card .hashtag:hover {
-background: var(--accent-weak) !important;
-}
-body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"] {
-background: var(--accent-weak) !important;
-border-color: var(--accent) !important;
-box-shadow: 0 0 6px rgba(0, 255, 0, 0.3) !important;
-text-shadow: 0 0 3px var(--accent) !important;
+body[data-theme="neon-green"] .note-card .hashtag:hover,
+[data-theme="neon-green"] .note-card.reply-card .hashtag:hover,
+[data-theme="neon-green"] .note-card.archived .hashtag:hover {
+  background: var(--accent-weak) !important;
 }
 
 /* neon-green: buttons */
@@ -1320,31 +1314,20 @@ text-shadow: 0 0 3px var(--accent) !important;
   border: 1px solid var(--accent-border);
   text-shadow: 0 0 4px var(--accent);
 }
-
 [data-theme="neon-green"] .btn:hover {
   background: color-mix(in srgb, var(--accent) 28%, #000);
   border-color: var(--accent);
 }
 
-
-
-
 /* neon-green: hashtags inside notes */
 [data-theme="neon-green"] .hashtag {
-background: var(--accent-weak-2);
-border: 1px solid var(--accent-border);
-color: var(--accent);
-border-radius: 12px;
+  background: var(--accent-weak-2);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  border-radius: 12px;
 }
 [data-theme="neon-green"] .hashtag:hover {
-background: var(--accent-weak);
-}
-/* Add this line for selected state */
-[data-theme="neon-green"] .hashtag[data-selected="true"] {
-background: var(--accent-weak) !important;
-border-color: var(--accent) !important;
-box-shadow: 0 0 6px rgba(0, 255, 0, 0.3) !important;
-text-shadow: 0 0 3px var(--accent) !important;
+  background: var(--accent-weak);
 }
 
 /* neon-green: tag filters in sidebar */
@@ -1353,14 +1336,11 @@ text-shadow: 0 0 3px var(--accent) !important;
   border-color: var(--accent-border);
   color: var(--accent);
 }
-
 [data-theme="neon-green"] .tag-filter:hover,
 [data-theme="neon-green"] .tag-filter.active {
-  background: var(--accent-weak) !important;
-  border-color: var(--accent) !important;
-  color: var(--accent) !important;
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
-  text-shadow: 0 0 4px var(--accent) !important;
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* neon-green: progress bar */
@@ -1600,8 +1580,29 @@ border-color: var(--accent) !important;
     transform: translateY(-1px);
 }
 
-/* Active hashtag styling */
-.hashtag[data-selected="true"] {
+/* Selected hashtag highlighting for Default theme */
+.hashtag[data-selected="true"],
+body .note-card .hashtag[data-selected="true"] {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Selected hashtag highlighting for Dark Nostr theme */
+body[data-theme="dark-nostr"] .note-card .hashtag[data-selected="true"],
+[data-theme="dark-nostr"] .note-card .hashtag[data-selected="true"],
+body[data-theme="dark-nostr"] .note-card.repost-card .hashtag[data-selected="true"],
+body[data-theme="dark-nostr"] .note-card.quote-card .hashtag[data-selected="true"] {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Selected hashtag highlighting for Bitcoin Gold theme */
+body[data-theme="bitcoin-gold"] .note-card .hashtag[data-selected="true"],
+[data-theme="bitcoin-gold"] .note-card .hashtag[data-selected="true"],
+body[data-theme="bitcoin-gold"] .note-card.repost-card .hashtag[data-selected="true"],
+body[data-theme="bitcoin-gold"] .note-card.quote-card .hashtag[data-selected="true"] {
     background: var(--primary-color) !important;
     color: white !important;
     border-color: var(--primary-color) !important;
@@ -1609,13 +1610,156 @@ border-color: var(--accent) !important;
 
 /* Selected hashtag highlighting for Nostr Purple theme */
 body[data-theme="nostr-purple"] .note-card .hashtag[data-selected="true"],
-[data-theme="nostr-purple"] .note-card .hashtag[data-selected="true"] {
+[data-theme="nostr-purple"] .note-card .hashtag[data-selected="true"],
+body[data-theme="nostr-purple"] .note-card.repost-card .hashtag[data-selected="true"],
+body[data-theme="nostr-purple"] .note-card.quote-card .hashtag[data-selected="true"] {
     background: var(--primary-color) !important;
     color: white !important;
     border-color: var(--primary-color) !important;
 }
 
+/* Selected hashtag highlighting for Neon Green theme */
+body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
+[data-theme="neon-green"] .note-card.reply-card .hashtag[data-selected="true"],
+[data-theme="neon-green"] .note-card.archived .hashtag[data-selected="true"] {
+    background: var(--accent-weak) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.6) !important;
+}
 
+/* Background loading indicator */
+.background-loading-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    font-size: 13px;
+    color: var(--text-color);
+    transform: translateX(300px);
+    transition: transform 0.3s ease;
+}
+
+.background-loading-indicator.show {
+    transform: translateX(0);
+}
+
+.background-loading-indicator .progress-text {
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.background-loading-indicator .progress-bar-small {
+    width: 200px;
+    height: 4px;
+    background: var(--background-color);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.background-loading-indicator .progress-fill-small {
+    height: 100%;
+    background: var(--primary-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Smart loading indicators */
+.smart-loading-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card-background);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 24px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    z-index: 2000;
+    text-align: center;
+    min-width: 300px;
+}
+
+.smart-loading-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 12px;
+}
+
+.smart-loading-details {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.smart-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--background-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.smart-progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    width: 0%;
+    transition: width 0.3s ease;
+    animation: smartProgress 2s ease-in-out infinite;
+}
+
+@keyframes smartProgress {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+/* Repost card styling - change to use secondary color */
+.note-card.repost-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
+
+/* Quote card styling - also use secondary color like reposts */
+.note-card.quote-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
+
+/* Update theme-specific repost colors to use secondary */
+[data-theme="dark-nostr"] .note-card.repost-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
+
+[data-theme="bitcoin-gold"] .note-card.repost-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
+
+[data-theme="nostr-purple"] .note-card.repost-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
+
+[data-theme="neon-green"] .note-card.repost-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
+
+/* Theme-specific overrides (these will inherit the secondary color from each theme) */
+[data-theme="default"] .note-card.repost-card,
+[data-theme="default"] .note-card.quote-card,
+[data-theme="dark-nostr"] .note-card.repost-card,
+[data-theme="dark-nostr"] .note-card.quote-card,
+[data-theme="bitcoin-gold"] .note-card.repost-card,
+[data-theme="bitcoin-gold"] .note-card.quote-card,
+[data-theme="nostr-purple"] .note-card.repost-card,
+[data-theme="nostr-purple"] .note-card.quote-card,
+[data-theme="neon-green"] .note-card.repost-card,
+[data-theme="neon-green"] .note-card.quote-card {
+    border-left: 4px solid var(--secondary-color) !important;
+}
     </style>
 </head>
 <body>
@@ -1850,6 +1994,11 @@ body[data-theme="nostr-purple"] .note-card .hashtag[data-selected="true"],
         let selectedTags = new Set(); // NEW: multi-select tags
         let notesPerPage = 100;
         let currentPage = 1;
+
+        // Progressive loading state
+let isBackgroundLoading = false;
+let backgroundLoadingProgress = 0;
+let totalNotesExpected = 0;
 
 // IndexedDB setup with Dexie
 let db = null;
@@ -2605,7 +2754,34 @@ connectBtn.textContent = 'Load My Notes';
 }
     
 
-        function disconnect() {
+        // Add these global variables at the top of your script
+let isLoadingCancelled = false;
+let activeWebSockets = new Set();
+let backgroundLoadingTimeout = null;
+
+// Update the disconnect function to cancel ongoing operations
+function disconnect() {
+    // Set cancellation flag FIRST
+    isLoadingCancelled = true;
+    
+    // Cancel any background loading
+    if (backgroundLoadingTimeout) {
+        clearTimeout(backgroundLoadingTimeout);
+        backgroundLoadingTimeout = null;
+    }
+    
+    // Close all active WebSocket connections
+    activeWebSockets.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+            ws.close(1000, 'User disconnected');
+        }
+    });
+    activeWebSockets.clear();
+    
+    // Hide any loading indicators
+    hideBackgroundLoadingIndicator();
+    showLoading(false);
+    
     // Store the old pubkey before clearing
     const oldPubkey = currentPubkey;
     
@@ -2620,21 +2796,20 @@ connectBtn.textContent = 'Load My Notes';
     searchQuery = '';
 
     // Clear all filters on disconnect
-activeQuickFilters.clear();
-document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-});
-document.getElementById('date-from').value = '';
-document.getElementById('date-to').value = '';
-document.getElementById('search-input').value = '';
-searchQuery = '';
+    activeQuickFilters.clear();
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById('date-from').value = '';
+    document.getElementById('date-to').value = '';
+    document.getElementById('search-input').value = '';
+    searchQuery = '';
     
-    // Clear ONLY cache data, NOT user archives
+    // Clear localStorage cache data only
     localStorage.removeItem('nostr-last-pubkey');
     localStorage.removeItem('nostr-cached-notes'); 
     localStorage.removeItem('nostr-cache-updated-at');
     localStorage.removeItem('nostr-saved-npub');
-    // DO NOT clear: nostr-archived-notes-* and nostr-named-archives-*
     
     // Clear the UI immediately
     document.getElementById('notes-container').innerHTML = '';
@@ -2642,7 +2817,7 @@ searchQuery = '';
     document.getElementById('notes-count').textContent = '0 notes';
     document.getElementById('archive-list').innerHTML = '<div style="color: #666; font-style: italic; font-size: 13px;">No archives created yet</div>';
 
-    // Clear pagination state when switching users
+    // Clear pagination state
     document.getElementById('load-more-container').classList.add('hidden');
     document.getElementById('pagination-info').textContent = 'Showing 0 of 0 notes';
     
@@ -2651,6 +2826,9 @@ searchQuery = '';
     document.getElementById('pubkey-input').value = '';
 
     hideError();
+
+// Reset cancellation flag after cleanup
+    isLoadingCancelled = false;
 }
 
 // IndexedDB fallback handler
@@ -2681,7 +2859,7 @@ async function initDatabase(pubkey) {
         
         db = new Dexie(dbName);
         db.version(1).stores({
-            notes: 'id, pubkey, created_at, content, *hashtags, isReply',
+            notes: 'id, pubkey, created_at, content, *hashtags, isReply, isRepost, isQuote, kind', // ADD isRepost, isQuote, kind
             settings: 'key, value'
         });
         
@@ -2882,11 +3060,11 @@ async function fetchNewNotesFromRelay(relayUrl, pubkey, sinceTimestamp) {
         
         ws.onopen = function() {
             const filter = {
-                kinds: [1],
-                authors: [pubkey],
-                since: sinceTimestamp + 1, // Only notes newer than this
-                limit: 1000 // Reasonable limit for new notes
-            };
+    kinds: [1, 6], // Add kind 6
+    authors: [pubkey],
+    since: sinceTimestamp + 1,
+    limit: 1000
+};
             
             const subscription = ['REQ', 'incremental-' + Date.now(), filter];
             ws.send(JSON.stringify(subscription));
@@ -2977,72 +3155,58 @@ if (batchNumber > 100) { // Allow up to 100 batches (200k notes max)
     return allEvents;
 }
 
-      // Add this function before loadNotes
+   
+// Enhanced hybrid loading with chunked storage
+// Enhanced hybrid loading with chunked storage
 async function loadNotesHybrid(pubkey, silent = false) {
     try {
-        // Try to initialize IndexedDB
-        const database = await initDatabase(pubkey);
+        // Initialize chunked storage
+        const chunkStorage = new ChunkedNoteStorage(pubkey);
+        const chunkStorageReady = await chunkStorage.init();
         
-        if (!database || !useIndexedDB) {
+        if (!chunkStorageReady) {
+            if (!silent) updateStatus('Chunked storage unavailable, using legacy system...');
             return await fetchNotesFromRelays(pubkey);
         }
         
-        // FAILSAFE 1: Check database integrity first
-        const isHealthy = await checkDatabaseHealth(pubkey, silent);
-        if (!isHealthy) {
-            if (!silent) updateStatus('Database unhealthy, rebuilding...');
-            return await fetchFreshAndStore(pubkey, silent);
-        }
+        // Check if we have chunked data
+        const chunkStats = await chunkStorage.getStats();
         
-        // Check for existing data and last sync time
-        const storedCount = await db.notes.count();
-        const lastSync = await db.settings.get('last_sync_time');
-        
-        if (!silent) {
-            updateStatus(`Database ready. Found ${storedCount} stored notes.`);
-        }
-        
-        // FAILSAFE 2: Conservative cache validation
-        const oneHour = 60 * 60 * 1000;
-        const hasFreshCache = lastSync && 
-                             (Date.now() - lastSync.value) < oneHour && 
-                             storedCount > 50; // Require meaningful amount of data
-        
-        if (hasFreshCache) {
+        if (chunkStats && chunkStats.totalNotes > 0) {
             if (!silent) {
-                updateStatus('Loading from IndexedDB cache...');
+                updateStatus(`Found chunked storage: ${chunkStats.totalChunks} chunks, ${chunkStats.totalNotes} notes`);
+                updateStatus(`Loading all notes from chunked storage...`);
             }
             
-            try {
-                const allStoredNotes = await db.notes
-                    .orderBy('created_at')
-                    .reverse()
-                    .toArray();
-                
-                // FAILSAFE 3: Validate loaded data quality
-                const validation = validateNotesData(allStoredNotes, storedCount);
-                if (validation.isValid) {
-                    if (!silent) updateStatus(`Cache validated: ${allStoredNotes.length} notes loaded`);
-                    return allStoredNotes;
-                } else {
-                    if (!silent) {
-                        updateStatus(`Cache validation failed: ${validation.reason}. Rebuilding...`);
-                    }
-                    await repairDatabase(pubkey);
-                }
-            } catch (error) {
-                console.error('Error loading from cache:', error);
-                if (!silent) updateStatus('Cache read error, rebuilding...');
-                await repairDatabase(pubkey);
+            // ALWAYS load all notes from chunks if they exist
+            const allNotes = await chunkStorage.loadAllNotes();
+            
+            if (allNotes.length > 0) {
+                if (!silent) updateStatus(`Loaded ${allNotes.length} notes from ${chunkStats.totalChunks} chunks`);
+                return allNotes;
             }
         }
         
-        // Fetch fresh data and store
-        return await fetchFreshAndStore(pubkey, silent);
+        // No valid chunked data, fetch fresh and store in chunks
+        if (!silent) updateStatus('No chunk data found, fetching fresh and storing in chunks...');
+        
+        const freshNotes = await fetchNotesFromRelays(pubkey);
+        
+        if (freshNotes.length > 0) {
+            // Store in chunked format
+            const stored = await chunkStorage.storeNotesInChunks(freshNotes);
+            
+            if (stored && !silent) {
+                const newStats = await chunkStorage.getStats();
+                updateStatus(`Stored ${freshNotes.length} notes in ${newStats.totalChunks} chunks`);
+            }
+        }
+        
+        return freshNotes;
         
     } catch (error) {
-        console.error('Critical loading error:', error);
-        disableIndexedDB(error);
+        console.error('Chunked loading error:', error);
+        if (!silent) updateStatus('Chunked loading failed, using fallback...');
         return await fetchNotesFromRelays(pubkey);
     }
 }
@@ -3143,6 +3307,27 @@ function validateNotesData(notes, expectedCount) {
     return { isValid: true, reason: 'Data validation passed' };
 }
 
+// Add this function to validate and fix note classifications when loading
+function validateNoteClassification(note) {
+    // Ensure classification fields exist and are boolean
+    const validatedNote = {
+        ...note,
+        isReply: Boolean(note.isReply),
+        isRepost: Boolean(note.isRepost),
+        isQuote: Boolean(note.isQuote),
+        kind: note.kind || 1
+    };
+    
+    // If classifications seem wrong, re-process the note
+    if (validatedNote.kind === 6 && !validatedNote.isRepost) {
+        validatedNote.isRepost = true;
+        validatedNote.isReply = false;
+        validatedNote.isQuote = false;
+    }
+    
+    return validatedNote;
+}
+
 async function repairDatabase(pubkey) {
     try {
         console.log('Repairing database for', pubkey.substring(0, 8) + '...');
@@ -3185,6 +3370,668 @@ async function repairDatabase(pubkey) {
     }
 }
 
+// Chunked Storage System for Phase 2
+class ChunkedNoteStorage {
+    constructor(pubkey) {
+        this.pubkey = pubkey;
+        this.dbName = `nostr-chunks-${pubkey}`;
+        this.db = null;
+    }
+    
+    async init() {
+        try {
+            this.db = new Dexie(this.dbName);
+            this.db.version(1).stores({
+                chunks: 'chunkKey, notes, metadata, created_at, updated_at',
+                indices: 'type, data'
+            });
+            
+            await this.db.open();
+            return true;
+        } catch (error) {
+            console.error('Chunked storage init failed:', error);
+            return false;
+        }
+    }
+    
+    // Generate chunk key from timestamp (YYYY-MM format)
+    getChunkKey(timestamp) {
+        const date = new Date(timestamp * 1000);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    }
+    
+    // Organize notes into monthly chunks
+    // In the ChunkedNoteStorage class, update the organizeNotesIntoChunks method
+organizeNotesIntoChunks(notes) {
+    const chunks = new Map();
+    
+    notes.forEach(note => {
+        const chunkKey = this.getChunkKey(note.created_at);
+        
+        if (!chunks.has(chunkKey)) {
+            chunks.set(chunkKey, {
+                chunkKey,
+                notes: [],
+                metadata: {
+                    startDate: note.created_at,
+                    endDate: note.created_at,
+                    noteCount: 0,
+                    hasReplies: false,
+                    hasReposts: false,  // ADD THIS
+                    hasQuotes: false,   // ADD THIS
+                    hashtags: new Set()
+                }
+            });
+        }
+        
+        const chunk = chunks.get(chunkKey);
+        // IMPORTANT: Store the complete note object with all classifications
+        chunk.notes.push({
+            ...note,
+            isReply: note.isReply || false,
+            isRepost: note.isRepost || false,
+            isQuote: note.isQuote || false
+        });
+        
+        chunk.metadata.noteCount++;
+        chunk.metadata.startDate = Math.min(chunk.metadata.startDate, note.created_at);
+        chunk.metadata.endDate = Math.max(chunk.metadata.endDate, note.created_at);
+        
+        if (note.isReply) {
+            chunk.metadata.hasReplies = true;
+        }
+        if (note.isRepost) {
+            chunk.metadata.hasReposts = true;
+        }
+        if (note.isQuote) {
+            chunk.metadata.hasQuotes = true;
+        }
+        
+        if (note.hashtags) {
+            note.hashtags.forEach(tag => chunk.metadata.hashtags.add(tag));
+        }
+    });
+    
+    // Convert hashtag Sets to arrays for storage
+    chunks.forEach(chunk => {
+        chunk.metadata.hashtags = Array.from(chunk.metadata.hashtags);
+    });
+    
+    return Array.from(chunks.values());
+}
+    
+    // Store notes in chunks
+    async storeNotesInChunks(notes) {
+        if (!this.db) return false;
+        
+        try {
+            const chunks = this.organizeNotesIntoChunks(notes);
+            
+            // Clear existing chunks
+            await this.db.chunks.clear();
+            await this.db.indices.clear();
+            
+            // Store chunks
+            for (const chunk of chunks) {
+                await this.db.chunks.put({
+                    ...chunk,
+                    created_at: Date.now(),
+                    updated_at: Date.now()
+                });
+            }
+            
+            // Build search indices
+            await this.buildSearchIndices(chunks);
+            
+            console.log(`Stored ${chunks.length} chunks covering ${notes.length} notes`);
+            return true;
+            
+        } catch (error) {
+            console.error('Error storing chunks:', error);
+            return false;
+        }
+    }
+    
+    // Build search indices for faster filtering
+    async buildSearchIndices(chunks) {
+        const hashtagIndex = new Map();
+        const dateIndex = new Map();
+        
+        chunks.forEach(chunk => {
+            // Hashtag index
+            chunk.metadata.hashtags.forEach(tag => {
+                if (!hashtagIndex.has(tag)) {
+                    hashtagIndex.set(tag, []);
+                }
+                hashtagIndex.get(tag).push(chunk.chunkKey);
+            });
+            
+            // Date index
+            dateIndex.set(chunk.chunkKey, {
+                startDate: chunk.metadata.startDate,
+                endDate: chunk.metadata.endDate,
+                noteCount: chunk.metadata.noteCount
+            });
+        });
+        
+        // Store indices
+        await this.db.indices.put({
+            type: 'hashtags',
+            data: Object.fromEntries(hashtagIndex)
+        });
+        
+        await this.db.indices.put({
+            type: 'dates',
+            data: Object.fromEntries(dateIndex)
+        });
+    }
+    
+    // Load specific chunks
+    async loadChunks(chunkKeys) {
+        if (!this.db) return [];
+        
+        try {
+            const chunks = await this.db.chunks
+                .where('chunkKey')
+                .anyOf(chunkKeys)
+                .toArray();
+            
+            // Flatten notes from all chunks
+            const allNotes = [];
+            chunks.forEach(chunk => {
+                allNotes.push(...chunk.notes);
+            });
+            
+            return allNotes.sort((a, b) => b.created_at - a.created_at);
+            
+        } catch (error) {
+            console.error('Error loading chunks:', error);
+            return [];
+        }
+    }
+    
+    // Load all notes from all chunks
+    async loadAllNotes() {
+        if (!this.db) return [];
+        
+        try {
+            const allChunks = await this.db.chunks.toArray();
+            const allNotes = [];
+            
+            allChunks.forEach(chunk => {
+                allNotes.push(...chunk.notes);
+            });
+            
+            return allNotes.sort((a, b) => b.created_at - a.created_at);
+            
+        } catch (error) {
+            console.error('Error loading all notes from chunks:', error);
+            return [];
+        }
+    }
+    
+    // Get chunks containing specific hashtags
+    async getChunksForHashtags(hashtags) {
+        if (!this.db) return [];
+        
+        try {
+            const hashtagIndex = await this.db.indices.get('hashtags');
+            if (!hashtagIndex) return [];
+            
+            const relevantChunks = new Set();
+            hashtags.forEach(tag => {
+                if (hashtagIndex.data[tag]) {
+                    hashtagIndex.data[tag].forEach(chunkKey => {
+                        relevantChunks.add(chunkKey);
+                    });
+                }
+            });
+            
+            return Array.from(relevantChunks);
+            
+        } catch (error) {
+            console.error('Error getting chunks for hashtags:', error);
+            return [];
+        }
+    }
+    
+    // Get chunks for date range
+    async getChunksForDateRange(startDate, endDate) {
+        if (!this.db) return [];
+        
+        try {
+            const dateIndex = await this.db.indices.get('dates');
+            if (!dateIndex) return [];
+            
+            const relevantChunks = [];
+            Object.entries(dateIndex.data).forEach(([chunkKey, chunkInfo]) => {
+                // Check if chunk overlaps with date range
+                if (chunkInfo.endDate >= startDate && chunkInfo.startDate <= endDate) {
+                    relevantChunks.push(chunkKey);
+                }
+            });
+            
+            return relevantChunks;
+            
+        } catch (error) {
+            console.error('Error getting chunks for date range:', error);
+            return [];
+        }
+    }
+    
+    // Get storage statistics
+    async getStats() {
+        if (!this.db) return null;
+        
+        try {
+            const chunks = await this.db.chunks.toArray();
+            let totalNotes = 0;
+            let oldestNote = null;
+            let newestNote = null;
+            
+            chunks.forEach(chunk => {
+                totalNotes += chunk.metadata.noteCount;
+                if (!oldestNote || chunk.metadata.startDate < oldestNote) {
+                    oldestNote = chunk.metadata.startDate;
+                }
+                if (!newestNote || chunk.metadata.endDate > newestNote) {
+                    newestNote = chunk.metadata.endDate;
+                }
+            });
+            
+            return {
+                totalChunks: chunks.length,
+                totalNotes,
+                oldestNote: oldestNote ? new Date(oldestNote * 1000) : null,
+                newestNote: newestNote ? new Date(newestNote * 1000) : null,
+                avgNotesPerChunk: Math.round(totalNotes / chunks.length)
+            };
+            
+        } catch (error) {
+            console.error('Error getting storage stats:', error);
+            return null;
+        }
+    }
+}
+
+// Chunk management utilities
+async function getChunkStorageInfo(pubkey) {
+    const chunkStorage = new ChunkedNoteStorage(pubkey);
+    const ready = await chunkStorage.init();
+    
+    if (!ready) return null;
+    
+    return await chunkStorage.getStats();
+}
+
+// Phase 3: Smart Filter-Aware Loading System
+class SmartFilterEngine {
+    constructor(chunkStorage) {
+        this.chunkStorage = chunkStorage;
+        this.loadedChunks = new Map(); // Cache for loaded chunks
+        this.estimatedCounts = new Map(); // Cache for filter estimates
+    }
+    
+    // Get estimated count for filters without loading all data
+    async getEstimatedCount(filters) {
+        const cacheKey = JSON.stringify(filters);
+        if (this.estimatedCounts.has(cacheKey)) {
+            return this.estimatedCounts.get(cacheKey);
+        }
+        
+        try {
+            const relevantChunks = await this.getRelevantChunks(filters);
+            let estimatedCount = 0;
+            
+            // For hashtag filters, we can be more precise
+            if (filters.hashtags && filters.hashtags.length > 0) {
+                const chunks = await this.chunkStorage.getChunksForHashtags(filters.hashtags);
+                // Load chunk metadata to get more accurate estimates
+                for (const chunkKey of chunks) {
+                    const chunk = await this.chunkStorage.db.chunks.get(chunkKey);
+                    if (chunk) {
+                        // Estimate based on hashtag density in chunk
+                        const matchingHashtags = filters.hashtags.filter(tag => 
+                            chunk.metadata.hashtags.includes(tag)
+                        );
+                        const ratio = matchingHashtags.length / Math.max(chunk.metadata.hashtags.length, 1);
+                        estimatedCount += Math.ceil(chunk.metadata.noteCount * ratio * 0.7); // Conservative estimate
+                    }
+                }
+            } else {
+                // For other filters, use chunk note counts
+                for (const chunkKey of relevantChunks) {
+                    const chunk = await this.chunkStorage.db.chunks.get(chunkKey);
+                    if (chunk) {
+                        estimatedCount += chunk.metadata.noteCount;
+                    }
+                }
+            }
+            
+            this.estimatedCounts.set(cacheKey, estimatedCount);
+            return estimatedCount;
+            
+        } catch (error) {
+            console.error('Error estimating count:', error);
+            return 0;
+        }
+    }
+    
+    // Determine which chunks are relevant for given filters
+    async getRelevantChunks(filters) {
+        let relevantChunks = new Set();
+        
+        try {
+            // Start with all chunks
+            const allChunks = await this.chunkStorage.db.chunks.toArray();
+            allChunks.forEach(chunk => relevantChunks.add(chunk.chunkKey));
+            
+            // Filter by hashtags
+            if (filters.hashtags && filters.hashtags.length > 0) {
+                const hashtagChunks = await this.chunkStorage.getChunksForHashtags(filters.hashtags);
+                relevantChunks = new Set(hashtagChunks);
+            }
+            
+            // Filter by date range
+            if (filters.dateFrom || filters.dateTo) {
+                const startDate = filters.dateFrom ? Math.floor(filters.dateFrom.getTime() / 1000) : 0;
+                const endDate = filters.dateTo ? Math.floor(filters.dateTo.getTime() / 1000) : Math.floor(Date.now() / 1000);
+                
+                const dateChunks = await this.chunkStorage.getChunksForDateRange(startDate, endDate);
+                
+                if (relevantChunks.size === allChunks.length) {
+                    // If we started with all chunks, use date chunks
+                    relevantChunks = new Set(dateChunks);
+                } else {
+                    // Intersect with existing relevant chunks
+                    relevantChunks = new Set([...relevantChunks].filter(x => dateChunks.includes(x)));
+                }
+            }
+            
+            // Filter by content type (replies/original)
+            if (filters.contentType) {
+                const filteredChunks = [];
+                for (const chunkKey of relevantChunks) {
+                    const chunk = await this.chunkStorage.db.chunks.get(chunkKey);
+                    if (chunk) {
+                        if (filters.contentType === 'replies' && chunk.metadata.hasReplies) {
+                            filteredChunks.push(chunkKey);
+                        } else if (filters.contentType === 'original' && chunk.metadata.noteCount > 0) {
+                            filteredChunks.push(chunkKey);
+                        }
+                    }
+                }
+                relevantChunks = new Set(filteredChunks);
+            }
+            
+            return Array.from(relevantChunks);
+            
+        } catch (error) {
+            console.error('Error getting relevant chunks:', error);
+            return [];
+        }
+    }
+    
+    // Load notes from relevant chunks with filters applied
+    async loadFilteredNotes(filters, maxNotes = 50000) {
+        try {
+            const relevantChunks = await this.getRelevantChunks(filters);
+            
+            if (relevantChunks.length === 0) {
+                return [];
+            }
+            
+            updateStatus(`Loading from ${relevantChunks.length} relevant chunks...`);
+            
+            // Load chunks in order of relevance (newest first)
+            const sortedChunks = relevantChunks.sort((a, b) => b.localeCompare(a));
+            let allNotes = [];
+            let loadedCount = 0;
+            
+            for (const chunkKey of sortedChunks) {
+                if (loadedCount >= maxNotes) break;
+                
+                // Check if chunk is already loaded
+                if (!this.loadedChunks.has(chunkKey)) {
+                    const chunkNotes = await this.chunkStorage.loadChunks([chunkKey]);
+                    this.loadedChunks.set(chunkKey, chunkNotes);
+                }
+                
+                const chunkNotes = this.loadedChunks.get(chunkKey) || [];
+                allNotes.push(...chunkNotes);
+                loadedCount += chunkNotes.length;
+                
+                // Update progress
+                updateStatus(`Loaded ${loadedCount} notes from ${Object.keys(this.loadedChunks).length} chunks...`);
+            }
+            
+            // Apply fine-grained filters
+            const filteredNotes = this.applyDetailedFilters(allNotes, filters);
+            
+            updateStatus(`Filtered to ${filteredNotes.length} matching notes`);
+            return filteredNotes.slice(0, maxNotes);
+            
+        } catch (error) {
+            console.error('Error loading filtered notes:', error);
+            return [];
+        }
+    }
+    
+    // Apply detailed filters to loaded notes
+    applyDetailedFilters(notes, filters) {
+        return notes.filter(note => {
+            // Text search
+            if (filters.searchText) {
+                const searchTerms = filters.searchText.toLowerCase().split(/\s+/);
+                const searchableText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
+                if (!searchTerms.every(term => searchableText.includes(term))) {
+                    return false;
+                }
+            }
+            
+            // Hashtag filter
+            if (filters.hashtags && filters.hashtags.length > 0) {
+                if (!filters.hashtags.some(tag => note.hashtags && note.hashtags.includes(tag))) {
+                    return false;
+                }
+            }
+            
+            // Date range
+            if (filters.dateFrom && note.created_at < Math.floor(filters.dateFrom.getTime() / 1000)) {
+                return false;
+            }
+            if (filters.dateTo && note.created_at > Math.floor(filters.dateTo.getTime() / 1000)) {
+                return false;
+            }
+            
+            // Content type
+            if (filters.contentType === 'replies' && !note.isReply) {
+                return false;
+            }
+            if (filters.contentType === 'original' && note.isReply) {
+                return false;
+            }
+            
+            // Media filters
+            if (filters.hasImages) {
+                const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
+                if (!imageRegex.test(note.content)) {
+                    return false;
+                }
+            }
+            
+            if (filters.hasYouTube) {
+                const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
+                if (!youtubeRegex.test(note.content)) {
+                    return false;
+                }
+            }
+            
+            // Length filters
+            if (filters.minLength && note.content.length < filters.minLength) {
+                return false;
+            }
+            if (filters.maxLength && note.content.length > filters.maxLength) {
+                return false;
+            }
+            
+            return true;
+        });
+    }
+    
+    // Clear caches
+    clearCaches() {
+        this.loadedChunks.clear();
+        this.estimatedCounts.clear();
+    }
+}
+
+// Smart tag filtering using chunk awareness
+// Smart tag filtering using chunk awareness
+async function performSmartTagFilter(tag) {
+    console.log('=== SMART TAG FILTER DEBUG ===');
+    console.log('Filtering for tag:', tag);
+    
+    try {
+        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+        const ready = await chunkStorage.init();
+        
+        if (!ready) {
+            console.log('Chunk storage not ready, falling back to memory filtering');
+            const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
+            console.log('Memory filtering found:', memoryResults.length, 'results');
+            return memoryResults;
+        }
+        
+        console.log('Chunk storage ready, attempting smart filtering...');
+        
+        const filterEngine = new SmartFilterEngine(chunkStorage);
+        
+        // Convert tag to filter format
+        const filters = {};
+        
+        if (tag.startsWith('#')) {
+            filters.hashtags = [tag];
+            console.log('Set hashtag filter:', filters.hashtags);
+            
+            // DEBUG: Check if hashtag exists in indices
+            const hashtagIndex = await chunkStorage.db.indices.get('hashtags');
+            console.log('Hashtag index:', hashtagIndex);
+            
+            if (hashtagIndex && hashtagIndex.data[tag]) {
+                console.log('Found chunks for hashtag:', hashtagIndex.data[tag]);
+            } else {
+                console.log('No chunks found for hashtag in index, falling back to memory');
+                const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
+                console.log('Memory fallback found:', memoryResults.length, 'results');
+                return memoryResults;
+            }
+            
+        } else if (tag === '__original') {
+            filters.contentType = 'original';
+        } else if (tag === '__replies') {
+            filters.contentType = 'replies';
+        } else if (tag.startsWith('__archive_')) {
+            // Archive filtering still uses memory (archives are typically smaller)
+            const archiveName = tag.replace('__archive_', '');
+            if (namedArchives[archiveName]) {
+                return allNotes.filter(note => namedArchives[archiveName].has(note.id));
+            }
+            return [];
+        }
+        
+        // Get estimated count
+        const estimatedCount = await filterEngine.getEstimatedCount(filters);
+        console.log('Estimated count:', estimatedCount);
+        
+        if (estimatedCount > 0) {
+            updateStatus(`Loading ${estimatedCount} estimated notes for ${tag}...`);
+            
+            // Load filtered notes
+            const results = await filterEngine.loadFilteredNotes(filters);
+            
+            console.log('Smart filtering results:', results.length);
+            updateStatus(`Loaded ${results.length} notes for ${tag}`);
+            return results;
+        }
+        
+        console.log('No estimated results, falling back to memory');
+        const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
+        console.log('Memory fallback found:', memoryResults.length, 'results');
+        return memoryResults;
+        
+    } catch (error) {
+        console.error('Smart tag filter error:', error);
+        // Fallback to memory search
+        const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
+        console.log('Error fallback found:', memoryResults.length, 'results');
+        return memoryResults;
+    }
+}
+
+async function clearChunkStorage(pubkey) {
+    try {
+        const chunkStorage = new ChunkedNoteStorage(pubkey);
+        const ready = await chunkStorage.init();
+        
+        if (ready && chunkStorage.db) {
+            await chunkStorage.db.chunks.clear();
+            await chunkStorage.db.indices.clear();
+            return true;
+        }
+        
+        return false;
+    } catch (error) {
+        console.error('Error clearing chunk storage:', error);
+        return false;
+    }
+}
+
+// Add this function to debug chunk storage
+async function debugChunkStorage() {
+    if (!currentPubkey) {
+        console.log('No current pubkey');
+        return;
+    }
+    
+    const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+    const ready = await chunkStorage.init();
+    
+    if (!ready) {
+        console.log('Chunk storage not ready');
+        return;
+    }
+    
+    console.log('=== CHUNK STORAGE DEBUG ===');
+    
+    // Get all chunks
+    const chunks = await chunkStorage.db.chunks.toArray();
+    console.log('Total chunks:', chunks.length);
+    
+    // Check hashtag index
+    const hashtagIndex = await chunkStorage.db.indices.get('hashtags');
+    console.log('Hashtag index:', hashtagIndex);
+    
+    if (hashtagIndex) {
+        const hashtags = Object.keys(hashtagIndex.data);
+        console.log('Hashtags in index:', hashtags.slice(0, 10), '(showing first 10)');
+        
+        // Check a specific hashtag
+        const firstHashtag = hashtags[0];
+        if (firstHashtag) {
+            console.log(`Chunks for ${firstHashtag}:`, hashtagIndex.data[firstHashtag]);
+        }
+    }
+    
+    // Check sample chunk
+    if (chunks.length > 0) {
+        console.log('Sample chunk metadata:', chunks[0].metadata);
+    }
+}
+
+// Make it globally available for testing
+window.debugChunkStorage = debugChunkStorage;
+
 async function fetchFreshAndStore(pubkey, silent = false) {
     if (!silent) updateStatus('Fetching fresh data from relays...');
     
@@ -3197,22 +4044,31 @@ async function fetchFreshAndStore(pubkey, silent = false) {
             await db.notes.clear();
             await db.settings.clear();
             
+            // IMPORTANT: Ensure all classification fields are explicitly stored
+            const notesToStore = freshNotes.map(note => ({
+                ...note,
+                isReply: Boolean(note.isReply),
+                isRepost: Boolean(note.isRepost),
+                isQuote: Boolean(note.isQuote),
+                kind: note.kind || 1
+            }));
+            
             // Store in chunks to avoid memory issues
             const chunkSize = 1000;
-            for (let i = 0; i < freshNotes.length; i += chunkSize) {
-                const chunk = freshNotes.slice(i, i + chunkSize);
+            for (let i = 0; i < notesToStore.length; i += chunkSize) {
+                const chunk = notesToStore.slice(i, i + chunkSize);
                 await db.notes.bulkAdd(chunk);
                 
-                if (!silent && freshNotes.length > chunkSize) {
-                    updateStatus(`Stored ${Math.min(i + chunkSize, freshNotes.length)}/${freshNotes.length} notes...`);
+                if (!silent && notesToStore.length > chunkSize) {
+                    updateStatus(`Stored ${Math.min(i + chunkSize, notesToStore.length)}/${notesToStore.length} notes...`);
                 }
             }
             
             await db.settings.put({ key: 'last_sync_time', value: Date.now() });
-            await db.settings.put({ key: 'total_notes_stored', value: freshNotes.length });
+            await db.settings.put({ key: 'total_notes_stored', value: notesToStore.length });
             
             if (!silent) {
-                updateStatus(`Successfully stored ${freshNotes.length} notes in IndexedDB`);
+                updateStatus(`Successfully stored ${notesToStore.length} notes in IndexedDB`);
             }
         } catch (storeError) {
             console.error('Failed to store fresh data:', storeError);
@@ -3298,13 +4154,95 @@ async function loadNotes(silent = false, isRefresh = false) {
     }
             
     try {
+        let notes;
+        let isLargeAccount = false;
+        let accountInfo = null; // Declare once at the top
 
-        const notes = await loadNotesHybrid(currentPubkey, silent);
+        if (!silent) {
+            // FIRST: Check if we have stored chunks (prioritize over account size detection)
+            updateProgress(5, 'Checking for stored data...');
+            
+            const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+            const chunkReady = await chunkStorage.init();
+            
+            if (chunkReady) {
+                const chunkStats = await chunkStorage.getStats();
+                
+                if (chunkStats && chunkStats.totalNotes > 0) {
+                    // We have stored data - load it all immediately
+                    updateProgress(15, `Loading all ${chunkStats.totalNotes} notes from storage...`);
+                    updateStatus(`Found stored data: ${chunkStats.totalChunks} chunks, ${chunkStats.totalNotes} notes`);
+                    
+                    notes = await loadNotesHybrid(currentPubkey, silent);
+                    
+                    showToast(`Loaded ${notes.length} notes from storage instantly!`, 'success');
+                    updateStatus(`Loaded ${notes.length} notes from ${chunkStats.totalChunks} stored chunks`);
+                    
+                } else {
+                    // No stored data - do account size detection and progressive loading
+                    updateProgress(10, 'No stored data found, checking account size...');
+                    accountInfo = await estimateAccountSize(currentPubkey); // Set accountInfo here
+                    
+                    console.log('Account info:', accountInfo);
+                    updateProgress(15, `Account: ${accountInfo.size} (${accountInfo.recentCount} recent notes)`);
+                    
+                    if (accountInfo.size === 'large') {
+                        isLargeAccount = true;
+                        updateProgress(20, 'Large account - loading recent notes first...');
+                        updateStatus('Large account detected! Loading recent notes for faster startup...');
+                        
+                        notes = await loadRecentNotesOnly(currentPubkey, 30);
+                        showToast(`Loaded ${notes.length} recent notes instantly! Older notes loading in background.`, 'success');
+                        
+                    } else if (accountInfo.size === 'medium') {
+                        updateProgress(20, 'Medium account - loading recent notes first...');
+                        updateStatus('Medium account detected! Loading recent notes first...');
+                        
+                        notes = await loadRecentNotesOnly(currentPubkey, 60);
+                        showToast(`Loaded ${notes.length} recent notes. Full history loading in background.`, 'success');
+                        
+                    } else {
+                        updateProgress(20, 'Small account detected - loading all notes...');
+                        updateStatus('Small account detected - loading all notes...');
+                        
+                        notes = await loadNotesHybrid(currentPubkey, silent);
+                    }
+                }
+            } else {
+                // Chunked storage failed - fallback to original progressive loading
+                updateProgress(10, 'Storage unavailable, checking account size...');
+                accountInfo = await estimateAccountSize(currentPubkey); // Set accountInfo here too
+                
+                console.log('Account info:', accountInfo);
+                updateProgress(15, `Account: ${accountInfo.size} (${accountInfo.recentCount} recent notes)`);
+                
+                if (accountInfo.size === 'large') {
+                    isLargeAccount = true;
+                    updateProgress(20, 'Large account - loading recent notes first...');
+                    
+                    notes = await loadRecentNotesOnly(currentPubkey, 30);
+                    showToast(`Loaded ${notes.length} recent notes instantly! Older notes loading in background.`, 'success');
+                    
+                } else if (accountInfo.size === 'medium') {
+                    updateProgress(20, 'Medium account - loading recent notes first...');
+                    
+                    notes = await loadRecentNotesOnly(currentPubkey, 60);
+                    showToast(`Loaded ${notes.length} recent notes. Full history loading in background.`, 'success');
+                    
+                } else {
+                    updateProgress(20, 'Small account detected - loading all notes...');
+                    notes = await loadNotesHybrid(currentPubkey, silent);
+                }
+            }
+        } else {
+            // Silent loads (refreshes) always use hybrid approach
+            notes = await loadNotesHybrid(currentPubkey, silent);
+        }
 
-// Clear old localStorage cache since we're using IndexedDB now
-if (useIndexedDB) {
-    clearLegacyCache(currentPubkey);
-}
+        // Clear old localStorage cache since we're using IndexedDB now
+        if (useIndexedDB) {
+            clearLegacyCache(currentPubkey);
+        }
         
         updateStatus(`Sorting ${notes.length} notes by date...`);
         await new Promise(resolve => setTimeout(resolve, 10)); // Brief pause
@@ -3333,7 +4271,13 @@ if (useIndexedDB) {
         
         renderNotes();
         
-        // FIXED: Calculate what was actually new
+        // Schedule background loading AFTER UI is ready (only for fresh loads without stored data)
+        // Fixed: Check if accountInfo exists before accessing its properties
+        if ((isLargeAccount || (accountInfo && accountInfo.size === 'medium')) && !silent) {
+            scheduleBackgroundLoading(currentPubkey, { estimatedTotal: notes.length * 5 });
+        }
+        
+        // Calculate what was actually new
         const newNotesCount = allNotes.length - previousNotesCount;
         updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
         
@@ -3343,19 +4287,18 @@ if (useIndexedDB) {
             } else {
                 showToast(`Refresh complete - no new notes found (${allNotes.length} total)`, 'success');
             }
-        } else {
         }
         
     } catch (error) {
         console.error('Error loading notes:', error);
         showError('Failed to load notes: ' + error.message);
     } finally {
-    if (!silent) {
-        showLoading(false);
-        trackLoadTime();
+        if (!silent) {
+            showLoading(false);
+            trackLoadTime();
+        }
     }
 }
-}// <-- closes async function loadNotes
       
 async function fetchBatchFromRelay(relayUrl, pubkey, until, limit, retryCount = 0) {
     const maxRetries = 3;
@@ -3375,16 +4318,22 @@ async function fetchBatchFromRelay(relayUrl, pubkey, until, limit, retryCount = 
 
 function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
     return new Promise((resolve, reject) => {
+        // Check if loading was cancelled before starting
+        if (isLoadingCancelled) {
+            resolve([]);
+            return;
+        }
+        
         const ws = new WebSocket(relayUrl);
+        activeWebSockets.add(ws); // Track this WebSocket
+        
         const events = [];
         let timeoutId;
         let isResolved = false;
-        let connectionStartTime = Date.now();
-        let eventCount = 0;
-        let noticeCount = 0;
         
         const cleanup = (reason = 'unknown') => {
             if (timeoutId) clearTimeout(timeoutId);
+            activeWebSockets.delete(ws); // Remove from tracking
             if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
                 ws.close(1000, 'Batch complete');
             }
@@ -3393,9 +4342,7 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         const resolveOnce = (result) => {
             if (!isResolved) {
                 isResolved = true;
-                const duration = Date.now() - connectionStartTime;
-                console.log(`[${relayUrl}] COMPLETED: ${result.length} events in ${duration}ms (${eventCount} total received, ${noticeCount} notices)`);
-                cleanup(`resolved with ${result.length} events in ${duration}ms`);
+                cleanup();
                 resolve(result);
             }
         };
@@ -3403,15 +4350,20 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         const rejectOnce = (error) => {
             if (!isResolved) {
                 isResolved = true;
-                console.error(`[${relayUrl}] FAILED: ${error.message} after ${Date.now() - connectionStartTime}ms`);
-                cleanup('error: ' + error.message);
+                cleanup();
                 reject(error);
             }
         };
         
         ws.onopen = function() {
+            // Check cancellation after connection opens
+            if (isLoadingCancelled) {
+                resolveOnce([]);
+                return;
+            }
+            
             const filter = {
-                kinds: [1],
+                kinds: [1, 6],
                 authors: [pubkey],
                 limit: limit
             };
@@ -3421,13 +4373,342 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             }
             
             const subscription = ['REQ', 'batch-' + Date.now(), filter];
-            console.log(`[${relayUrl}] CONNECTED: Requesting ${limit} notes${until ? ` until ${new Date(until * 1000).toISOString()}` : ''}`);
             ws.send(JSON.stringify(subscription));
             
             timeoutId = setTimeout(() => {
-                console.log(`[${relayUrl}] TIMEOUT: ${events.length} events collected before timeout`);
                 resolveOnce(events);
-            }, 90000); // 90 second timeout for image-heavy accounts
+            }, 90000);
+        };
+        
+        ws.onmessage = function(event) {
+            // Check cancellation on each message
+            if (isLoadingCancelled) {
+                resolveOnce(events);
+                return;
+            }
+            
+            try {
+                const message = JSON.parse(event.data);
+                const [type, subId, eventData] = message;
+                
+                if (type === 'EVENT') {
+                    const note = processNote(eventData);
+                    if (note) {
+                        events.push(note);
+                    }
+                } else if (type === 'EOSE') {
+                    resolveOnce(events);
+                }
+            } catch (error) {
+                console.error('Error parsing message:', error);
+            }
+        };
+        
+        ws.onerror = function() {
+            rejectOnce(new Error('Connection failed'));
+        };
+        
+        ws.onclose = function() {
+            if (!isResolved) {
+                resolveOnce(events);
+            }
+        };
+    });
+}
+
+// Account size detection for progressive loading
+async function estimateAccountSize(pubkey) {
+    try {
+        // Quick check: try to get recent note count from one fast relay
+        const testRelays = ['wss://relay.snort.social', 'wss://relay.damus.io'];
+        let bestCount = 0;
+        
+        for (const relay of testRelays) {
+            try {
+                const recentCount = await getRecentNoteCount(relay, pubkey, 7); // Last 7 days only for speed
+                bestCount = Math.max(bestCount, recentCount);
+                console.log(`${relay}: ${recentCount} notes in last 7 days`);
+                
+                // If we find evidence of high activity, classify immediately
+                if (recentCount > 50) { // 50+ notes in 7 days = very active user
+                    return { size: 'large', recentCount, estimatedTotal: recentCount * 100 };
+                }
+            } catch (error) {
+                console.log(`${relay} failed for size check:`, error.message);
+                continue;
+            }
+        }
+        
+        // Classification based on 7-day activity:
+        if (bestCount > 20) {
+            return { size: 'medium', recentCount: bestCount, estimatedTotal: bestCount * 50 };
+        } else {
+            return { size: 'small', recentCount: bestCount, estimatedTotal: bestCount * 20 };
+        }
+        
+    } catch (error) {
+        console.error('Account size estimation failed:', error);
+        return { size: 'small', recentCount: 0, estimatedTotal: 0 }; // Default to small to use normal loading
+    }
+}
+
+async function getRecentNoteCount(relayUrl, pubkey, daysBack) {
+    return new Promise((resolve, reject) => {
+        const ws = new WebSocket(relayUrl);
+        let count = 0;
+        const timeoutId = setTimeout(() => {
+            ws.close();
+            resolve(count);
+        }, 10000); // 10 second timeout
+        
+        ws.onopen = function() {
+            const since = Math.floor(Date.now() / 1000) - (daysBack * 24 * 60 * 60);
+            const filter = {
+    kinds: [1, 6], // Add kind 6
+    authors: [pubkey],
+    since: since,
+    limit: 1000
+};
+            
+            ws.send(JSON.stringify(['REQ', 'size-check', filter]));
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                const message = JSON.parse(event.data);
+                const [type] = message;
+                
+                if (type === 'EVENT') {
+                    count++;
+                } else if (type === 'EOSE') {
+                    clearTimeout(timeoutId);
+                    ws.close();
+                    resolve(count);
+                }
+            } catch (error) {
+                // Ignore parse errors
+            }
+        };
+        
+        ws.onerror = function() {
+            clearTimeout(timeoutId);
+            reject(new Error('Connection failed'));
+        };
+    });
+}
+
+// Load only recent notes for large accounts
+// Enhanced recent loading with chunked storage awareness
+async function loadRecentNotesOnly(pubkey, daysBack = 30) {
+    try {
+        // Try to load from chunks first
+        const chunkStorage = new ChunkedNoteStorage(pubkey);
+        const chunkStorageReady = await chunkStorage.init();
+        
+        if (chunkStorageReady) {
+            const stats = await chunkStorage.getStats();
+            
+            if (stats && stats.totalNotes > 0) {
+                // Calculate date range for recent notes
+                const sinceTimestamp = Math.floor(Date.now() / 1000) - (daysBack * 24 * 60 * 60);
+                const nowTimestamp = Math.floor(Date.now() / 1000);
+                
+                // Get relevant chunks for this date range
+                const relevantChunks = await chunkStorage.getChunksForDateRange(sinceTimestamp, nowTimestamp);
+                
+                if (relevantChunks.length > 0) {
+                    updateStatus(`Loading recent notes from ${relevantChunks.length} chunks...`);
+                    
+                    const recentNotes = await chunkStorage.loadChunks(relevantChunks);
+                    
+                    // Filter to exact date range
+                    const filteredNotes = recentNotes.filter(note => 
+                        note.created_at >= sinceTimestamp
+                    );
+                    
+                    if (filteredNotes.length > 0) {
+                        updateStatus(`Loaded ${filteredNotes.length} recent notes from chunks`);
+                        return filteredNotes;
+                    }
+                }
+            }
+        }
+        
+        // Fallback to relay loading
+        updateStatus(`No chunk data available, loading recent notes from relays...`);
+        return await loadRecentNotesFromRelays(pubkey, daysBack);
+        
+    } catch (error) {
+        console.error('Chunked recent loading failed:', error);
+        return await loadRecentNotesFromRelays(pubkey, daysBack);
+    }
+}
+
+// Separate function for relay-based recent loading
+async function loadRecentNotesFromRelays(pubkey, daysBack) {
+    const allEvents = [];
+    const since = Math.floor(Date.now() / 1000) - (daysBack * 24 * 60 * 60);
+    
+    updateStatus(`Loading recent notes from relays (last ${daysBack} days)...`);
+    
+    const relayPromises = RELAYS.slice(0, 5).map(async (relay, index) => {
+        const relayName = relay.replace('wss://', '');
+        
+        try {
+            updateStatus(`${relayName}: Loading recent notes...`);
+            
+            const recentNotes = await fetchRecentNotesFromRelay(relay, pubkey, since);
+            
+            updateStatus(`✅ ${relayName}: ${recentNotes.length} recent notes`);
+            return { relay, events: recentNotes, success: true };
+            
+        } catch (error) {
+            updateStatus(`❌ ${relayName}: ${error.message}`);
+            return { relay, events: [], success: false };
+        }
+    });
+    
+    const results = await Promise.allSettled(relayPromises);
+    
+    // Collect events
+    results.forEach((result) => {
+        if (result.status === 'fulfilled' && result.value.success) {
+            allEvents.push(...result.value.events);
+        }
+    });
+    
+    // Quick deduplication
+    const uniqueEvents = [];
+    const seenIds = new Set();
+    
+    allEvents.forEach(event => {
+        if (event.id && !seenIds.has(event.id)) {
+            seenIds.add(event.id);
+            uniqueEvents.push(event);
+        }
+    });
+    
+    updateStatus(`✅ Loaded ${uniqueEvents.length} recent notes from relays`);
+    return uniqueEvents;
+}
+
+// Enhanced background loading with chunked storage
+async function scheduleBackgroundLoading(pubkey, accountInfo) {
+    backgroundLoadingTimeout = setTimeout(async () => {
+        // Check if cancelled before starting
+        if (isLoadingCancelled) return;
+        
+        try {
+            console.log('Starting background loading...');
+            showBackgroundLoadingIndicator();
+            
+            const fullNotes = await fetchNotesFromRelays(pubkey);
+            
+            // Check cancellation after fetch
+            if (isLoadingCancelled) {
+                hideBackgroundLoadingIndicator();
+                return;
+            }
+            // Initialize chunked storage
+            const chunkStorage = new ChunkedNoteStorage(pubkey);
+            const chunkStorageReady = await chunkStorage.init();
+            
+            if (chunkStorageReady) {
+                // Store all notes in chunked format
+                await chunkStorage.storeNotesInChunks(fullNotes);
+                
+                const stats = await chunkStorage.getStats();
+                updateStatus(`Updated chunk storage: ${stats.totalChunks} chunks, ${stats.totalNotes} notes`);
+            }
+            
+            // Find notes we don't already have in memory
+            const existingIds = new Set(allNotes.map(note => note.id));
+            const newNotes = fullNotes.filter(note => !existingIds.has(note.id));
+            
+            console.log(`Background loading found ${newNotes.length} additional notes`);
+            
+            if (newNotes.length > 0) {
+                // Add to global array
+                allNotes.push(...newNotes);
+                allNotes.sort((a, b) => b.created_at - a.created_at);
+                
+                // Update UI if user is on default view
+                updateTagFilters();
+                
+                if (!currentTag && selectedTags.size === 0 && activeQuickFilters.size === 0) {
+                    applyFilters();
+                    renderNotes();
+                }
+                
+                hideBackgroundLoadingIndicator();
+                showToast(`Background loading complete: ${newNotes.length} additional notes found and stored in chunks!`, 'success');
+                updateStatus(`✅ Background loading: +${newNotes.length} older notes (${allNotes.length} total, stored in chunks)`);
+            } else {
+                hideBackgroundLoadingIndicator();
+                updateStatus('✅ Background loading complete: chunk storage updated, no additional notes in memory');
+            }
+            
+        } catch (error) {
+            console.error('Background loading failed:', error);
+            hideBackgroundLoadingIndicator();
+        }
+    }, 2000);
+}
+
+function showBackgroundLoadingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.id = 'bg-loading-indicator';
+    indicator.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-size: 13px;
+        color: var(--text-color);
+        animation: slideIn 0.3s ease;
+    `;
+    indicator.innerHTML = `
+        <div style="margin-bottom: 4px; font-weight: 500;">Loading older notes...</div>
+        <div style="width: 200px; height: 4px; background: var(--background-color); border-radius: 2px; overflow: hidden;">
+            <div style="height: 100%; background: var(--primary-color); width: 0%; animation: progressAnim 3s ease-in-out infinite;"></div>
+        </div>
+    `;
+    
+    document.body.appendChild(indicator);
+}
+
+function hideBackgroundLoadingIndicator() {
+    const indicator = document.getElementById('bg-loading-indicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+async function fetchRecentNotesFromRelay(relayUrl, pubkey, since) {
+    return new Promise((resolve, reject) => {
+        const ws = new WebSocket(relayUrl);
+        const events = [];
+        let timeoutId;
+        
+        ws.onopen = function() {
+            const filter = {
+    kinds: [1, 6], // Add kind 6
+    authors: [pubkey],
+    since: since,
+    limit: 2000
+};
+            
+            ws.send(JSON.stringify(['REQ', 'recent-' + Date.now(), filter]));
+            
+            timeoutId = setTimeout(() => {
+                ws.close();
+                resolve(events);
+            }, 15000); // 15 second timeout
         };
         
         ws.onmessage = function(event) {
@@ -3436,105 +4717,153 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
                 const [type, subId, eventData] = message;
                 
                 if (type === 'EVENT') {
-                    eventCount++;
                     const note = processNote(eventData);
                     if (note) {
                         events.push(note);
-                        // Log progress every 200 notes for image-heavy accounts
-                        if (events.length % 200 === 0) {
-                            console.log(`[${relayUrl}] PROGRESS: ${events.length} valid notes processed (${eventCount} total events received)`);
-                        }
-                    } else {
-                        // Log when notes are rejected by processNote
-                        if (eventCount % 100 === 0) {
-                            console.log(`[${relayUrl}] FILTERING: ${eventCount - events.length} events filtered out of ${eventCount} total`);
-                        }
                     }
                 } else if (type === 'EOSE') {
-                    console.log(`[${relayUrl}] EOSE: End of stream, ${events.length} notes collected`);
-                    resolveOnce(events);
-                } else if (type === 'NOTICE') {
-                    noticeCount++;
-                    if (message[1] && message[1].toLowerCase().includes('error')) {
-                        console.warn(`[${relayUrl}] ERROR NOTICE:`, message[1]);
-                    } else {
-                        console.log(`[${relayUrl}] NOTICE:`, message[1]);
-                    }
-                } else if (type === 'CLOSED') {
-                    console.log(`[${relayUrl}] CLOSED: Subscription closed by relay`);
-                    resolveOnce(events);
-                } else {
-                    console.log(`[${relayUrl}] UNKNOWN MESSAGE TYPE:`, type);
+                    clearTimeout(timeoutId);
+                    ws.close();
+                    resolve(events);
                 }
             } catch (error) {
-                console.error(`[${relayUrl}] MESSAGE PARSE ERROR:`, error, 'Raw message:', event.data);
+                console.error('Error parsing message:', error);
             }
         };
         
-        ws.onerror = function(error) {
-            console.error(`[${relayUrl}] WEBSOCKET ERROR:`, error);
-            rejectOnce(new Error('Connection failed'));
+        ws.onerror = function() {
+            clearTimeout(timeoutId);
+            reject(new Error('Connection failed'));
         };
         
-        ws.onclose = function(event) {
-            const reason = event.reason || 'No reason provided';
-            const code = event.code;
-            console.log(`[${relayUrl}] CONNECTION CLOSED: Code ${code}, Reason: ${reason}, Clean: ${event.wasClean}`);
-            if (!isResolved) {
-                resolveOnce(events);
-            }
+        ws.onclose = function() {
+            clearTimeout(timeoutId);
+            resolve(events);
         };
     });
 }
 
         function processNote(event) {
-    // Remove all console.log calls - they're killing performance
-    if (!event || !event.content || !event.id) {
+    if (!event || !event.id) {
         return null;
     }
     
-    const hashtags = extractHashtags(event.content);
+    let content = event.content || '';
+    let isRepost = false;
+    let isQuote = false;
+    let isReply = false;
     
-    // Check if this is a reply by looking for 'e' or 'p' tags in the event
-    const isReply = event.tags && event.tags.some(tag => 
-        (tag[0] === 'e') || // 'e' tags reference other events (replies)
-        (tag[0] === 'p' && tag[1] !== event.pubkey) || // 'p' tags reference other users
-        event.content.startsWith('@') || // Content starts with mention
-        event.content.includes('nostr:') // Contains nostr references
-    );    
+    if (event.kind === 6) {
+        // Kind 6 is ONLY a repost - set flag and exit early
+        isRepost = true;
+        
+        if (!content.trim()) {
+            content = "Boosted a note";
+        } else {
+            try {
+                const embeddedEvent = JSON.parse(content);
+                if (embeddedEvent.content) {
+                    content = `Reposted: "${embeddedEvent.content.substring(0, 200)}${embeddedEvent.content.length > 200 ? '...' : ''}"`;
+                }
+            } catch (e) {
+                content = `Reposted: ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}`;
+            }
+        }
+        
+        // IMPORTANT: Return early for reposts to prevent further processing
+        const hashtags = extractHashtags(content);
+        return {
+            id: event.id,
+            pubkey: event.pubkey,
+            created_at: event.created_at,
+            content: content,
+            hashtags: hashtags,
+            isReply: false,    // Explicitly false
+            isRepost: true,    // Only this is true
+            isQuote: false,    // Explicitly false
+            kind: event.kind,
+            tags: event.tags || []
+        };
+        
+    } else if (event.kind === 1) {
+        // Only process kind 1 events for replies/quotes
+        const eTags = event.tags?.filter(tag => tag[0] === 'e') || [];
+        const pTags = event.tags?.filter(tag => tag[0] === 'p' && tag[1] !== event.pubkey) || [];
+        
+        // Check for note references (potential quotes)
+        const hasNostrEntity = /nostr:(note1[a-z0-9]{58}|nevent1[a-z0-9]+)/i.test(content);
+        const hasNoteRef = /\b(note1[a-z0-9]{58}|nevent1[a-z0-9]+)\b/i.test(content);
+        
+        if (hasNostrEntity || hasNoteRef) {
+            // Has note references - determine if quote or reply
+            const hasSubstantialContent = content.trim().length > 50;
+            const startsWithMention = content.trim().startsWith('@');
+            const hasReplyContext = startsWithMention || content.toLowerCase().includes('replying');
+            
+            if (hasReplyContext) {
+                isReply = true;
+            } else if (hasSubstantialContent) {
+                isQuote = true;
+            } else {
+                isReply = true; // Default to reply for short content
+            }
+        } else if (eTags.length > 0 || pTags.length > 0 || content.trim().startsWith('@')) {
+            // Has tags or mentions but no note references - reply
+            isReply = true;
+        }
+        // Otherwise it's an original note (all flags remain false)
+    }
+    
+    const hashtags = extractHashtags(content);
     
     return {
         id: event.id,
         pubkey: event.pubkey,
         created_at: event.created_at,
-        content: event.content,
+        content: content,
         hashtags: hashtags,
         isReply: isReply,
+        isRepost: isRepost,
+        isQuote: isQuote,
+        kind: event.kind,
         tags: event.tags || []
     };
 }
 
-function setupLazyLoading() {
-    // Simple lazy loading for images
-    const images = document.querySelectorAll('img[loading="lazy"]');
-    
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                    }
-                    observer.unobserve(img);
-                }
-            });
-        });
-        
-        images.forEach(img => imageObserver.observe(img));
+// Add this temporary debug function to check classifications
+function debugNoteClassifications() {
+    if (!allNotes.length) {
+        console.log('No notes loaded');
+        return;
     }
+    
+    const sample = allNotes.slice(0, 20);
+    console.log('=== NOTE CLASSIFICATION DEBUG ===');
+    
+    sample.forEach(note => {
+        const flags = [];
+        if (note.isReply) flags.push('REPLY');
+        if (note.isRepost) flags.push('REPOST');
+        if (note.isQuote) flags.push('QUOTE');
+        if (flags.length === 0) flags.push('ORIGINAL');
+        
+        console.log(`${note.id.substring(0, 8)}: [${flags.join(', ')}] "${note.content.substring(0, 50)}..."`);
+    });
+    
+    const totals = {
+        original: allNotes.filter(n => !n.isReply && !n.isRepost && !n.isQuote).length,
+        replies: allNotes.filter(n => n.isReply).length,
+        reposts: allNotes.filter(n => n.isRepost).length,
+        quotes: allNotes.filter(n => n.isQuote).length,
+        multipleFlags: allNotes.filter(n => [n.isReply, n.isRepost, n.isQuote].filter(Boolean).length > 1).length
+    };
+    
+    console.log('TOTALS:', totals);
+    console.log('Notes with multiple flags (should be 0):', totals.multipleFlags);
 }
+
+// Make it globally available
+window.debugNoteClassifications = debugNoteClassifications;
 
 // ADD these functions after your clearIndexedDB functions (around line 2500):
 
@@ -3799,136 +5128,142 @@ function trackLoadTime() {
         }
 
         function updateTagFilters() {
-            const tagCounts = {};
-            
-          // Process hashtags - removed performance-killing logs
-allNotes.forEach(note => {
-    if (note.hashtags && Array.isArray(note.hashtags)) {
-        note.hashtags.forEach(tag => {
-            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-        });
-    }
-});
-            
-            const archivedCount = allNotes.filter(note => archivedNotes.has(note.id)).length;
-            const originalNotesCount = allNotes.filter(note => !note.isReply).length;
-            const repliesCount = allNotes.filter(note => note.isReply).length;
-            
-            const container = document.getElementById('tag-filters');
-            if (!container) {
-                console.error('tag-filters container not found!');
-                return;
-            }
-            
-            container.innerHTML = `
-  <button class="tag-filter active" data-tag="">All Notes (${allNotes.length})</button>
-  <button class="tag-filter" data-tag="__original"><span class="emoji">📝</span> Original Notes (${originalNotesCount})</button>
-  <button class="tag-filter" data-tag="__replies"><span class="emoji">💬</span> Replies (${repliesCount})</button>
-`;
-            
-
-// Group hashtags alphabetically
-const hashtagGroups = {};
-Object.keys(tagCounts).sort((a, b) => a.localeCompare(b)).forEach(tag => {
-    const firstLetter = tag.charAt(1).toUpperCase(); // Skip the # symbol
-    if (!hashtagGroups[firstLetter]) {
-        hashtagGroups[firstLetter] = [];
-    }
-    hashtagGroups[firstLetter].push(tag);
-});
-
-// Add grouped hashtags with collapsible sections
-Object.keys(hashtagGroups).sort().forEach(letter => {
-    const groupCount = hashtagGroups[letter].length;
+    const tagCounts = {};
     
-    // Add clickable letter header
-    const letterHeader = document.createElement('button');
-    letterHeader.className = 'hashtag-group-header';
-    letterHeader.style.cssText = `
-        width: 100%;
-        text-align: left;
-        background: var(--background-color);
-        border: 1px solid var(--border-color);
-        padding: 8px 12px;
-        margin: 8px 0 0 0;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        color: var(--text-color);
-        font-size: 13px;
-        transition: background-color 0.2s ease;
-    `;
-    letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
-    letterHeader.onclick = () => toggleHashtagGroup(letter);
-    container.appendChild(letterHeader);
-    
-    // Add container for hashtags (initially hidden)
-const hashtagContainer = document.createElement('div');
-hashtagContainer.id = `hashtag-group-${letter}`;
-hashtagContainer.style.cssText = `
-    display: none;
-    margin: 0 0 8px 0;
-    padding: 4px 0;
-    border-left: 2px solid var(--border-color);
-    padding-left: 8px;
-`;
-    
-    hashtagGroups[letter].forEach(tag => {
-    const button = document.createElement('button');
-    button.className = 'tag-filter';
-    button.dataset.tag = tag;
-    button.textContent = `${tag} (${tagCounts[tag]})`;
-    button.addEventListener('click', () => toggleTag(tag));
-    hashtagContainer.appendChild(button);
-});
-    
-    container.appendChild(hashtagContainer);
-    
-});
-            
-            // Add click handlers
-            const allNotesBtn = container.querySelector('[data-tag=""]');
-            const originalBtn = container.querySelector('[data-tag="__original"]');
-            const repliesBtn = container.querySelector('[data-tag="__replies"]');
-            
-           if (allNotesBtn) allNotesBtn.addEventListener('click', () => toggleTag(''));
-if (originalBtn) originalBtn.addEventListener('click', () => toggleTag('__original'));
-if (repliesBtn)  repliesBtn.addEventListener('click', () => toggleTag('__replies'));
-
-            setActiveTagButtons();
-        
-            // --- one-time drag-select listeners for tag filters ---
-(function initTagDragOnce() {
-  const tagFiltersEl = document.getElementById('tag-filters');
-  if (!tagFiltersEl || tagFiltersEl.__dragInit) return;
-
-  // Start drag only with LEFT button and only on real hashtags (e.g., "#coffee")
-  tagFiltersEl.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return;                         // left click only
-    const btn = e.target.closest('.tag-filter');
-    if (!btn) return;
-    const tag = btn.dataset.tag;
-    if (!tag || !tag.startsWith('#')) return;           // ignore All/Original/Replies
-    startHashtagSelection(tag, e);                      // decides add/remove mode
-  });
-
-  // Continue while holding the button, over real hashtags only
-  tagFiltersEl.addEventListener('mouseover', (e) => {
-    if (!isSelecting) return;                           // set by startHashtagSelection
-    const btn = e.target.closest('.tag-filter');
-    if (!btn) return;
-    const tag = btn.dataset.tag;
-    if (!tag || !tag.startsWith('#')) return;
-    continueHashtagSelection(tag, e);
-  });
-
-  // End drag anywhere
-  document.addEventListener('mouseup', endHashtagSelection);
-
-  tagFiltersEl.__dragInit = true;                       // guard against rebinding
-})();
+    // Process hashtags - removed performance-killing logs
+    allNotes.forEach(note => {
+        if (note.hashtags && Array.isArray(note.hashtags)) {
+            note.hashtags.forEach(tag => {
+                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+            });
         }
+    });
+    
+    const archivedCount = allNotes.filter(note => archivedNotes.has(note.id)).length;
+    const originalNotesCount = allNotes.filter(note => !note.isReply && !note.isRepost && !note.isQuote).length;
+    const repliesCount = allNotes.filter(note => note.isReply).length;
+    const repostsCount = allNotes.filter(note => note.isRepost).length;
+    const quotesCount = allNotes.filter(note => note.isQuote).length;
+    
+    const container = document.getElementById('tag-filters');
+
+    if (!container) {
+        console.error('tag-filters container not found!');
+        return;
+    }
+
+    container.innerHTML = `
+    <button class="tag-filter active" data-tag="">All Notes (${allNotes.length})</button>
+    <button class="tag-filter" data-tag="__original"><span class="emoji">📄</span> Original Notes (${originalNotesCount})</button>
+    <button class="tag-filter" data-tag="__replies"><span class="emoji">💬</span> Replies (${repliesCount})</button>
+    <button class="tag-filter" data-tag="__reposts"><span class="emoji">🔄</span> Reposts (${repostsCount})</button>
+    <button class="tag-filter" data-tag="__quotes"><span class="emoji">💭</span> Quotes (${quotesCount})</button>
+`;
+
+    // Group hashtags alphabetically
+    const hashtagGroups = {};
+    Object.keys(tagCounts).sort((a, b) => a.localeCompare(b)).forEach(tag => {
+        const firstLetter = tag.charAt(1).toUpperCase(); // Skip the # symbol
+        if (!hashtagGroups[firstLetter]) {
+            hashtagGroups[firstLetter] = [];
+        }
+        hashtagGroups[firstLetter].push(tag);
+    });
+
+    // Add grouped hashtags with collapsible sections
+    Object.keys(hashtagGroups).sort().forEach(letter => {
+        const groupCount = hashtagGroups[letter].length;
         
+        // Add clickable letter header
+        const letterHeader = document.createElement('button');
+        letterHeader.className = 'hashtag-group-header';
+        letterHeader.style.cssText = `
+            width: 100%;
+            text-align: left;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            margin: 8px 0 0 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 13px;
+            transition: background-color 0.2s ease;
+        `;
+        letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
+        letterHeader.onclick = () => toggleHashtagGroup(letter);
+        container.appendChild(letterHeader);
+        
+        // Add container for hashtags (initially hidden)
+        const hashtagContainer = document.createElement('div');
+        hashtagContainer.id = `hashtag-group-${letter}`;
+        hashtagContainer.style.cssText = `
+            display: none;
+            margin: 0 0 8px 0;
+            padding: 4px 0;
+            border-left: 2px solid var(--border-color);
+            padding-left: 8px;
+        `;
+        
+        hashtagGroups[letter].forEach(tag => {
+            const button = document.createElement('button');
+            button.className = 'tag-filter';
+            button.dataset.tag = tag;
+            button.textContent = `${tag} (${tagCounts[tag]})`;
+            button.addEventListener('click', () => toggleTag(tag));
+            hashtagContainer.appendChild(button);
+        });
+        
+        container.appendChild(hashtagContainer);
+    });
+    
+    // Add click handlers
+    const allNotesBtn = container.querySelector('[data-tag=""]');
+    const originalBtn = container.querySelector('[data-tag="__original"]');
+    const repliesBtn = container.querySelector('[data-tag="__replies"]');
+    const repostsBtn = container.querySelector('[data-tag="__reposts"]');
+    const quotesBtn = container.querySelector('[data-tag="__quotes"]');
+
+    if (allNotesBtn) allNotesBtn.addEventListener('click', () => toggleTag(''));
+    if (originalBtn) originalBtn.addEventListener('click', () => toggleTag('__original'));
+    if (repliesBtn) repliesBtn.addEventListener('click', () => toggleTag('__replies'));
+    if (repostsBtn) repostsBtn.addEventListener('click', () => toggleTag('__reposts'));
+    if (quotesBtn) quotesBtn.addEventListener('click', () => toggleTag('__quotes'));
+
+    setActiveTagButtons();
+
+    // --- one-time drag-select listeners for tag filters ---
+    (function initTagDragOnce() {
+        const tagFiltersEl = document.getElementById('tag-filters');
+        if (!tagFiltersEl || tagFiltersEl.__dragInit) return;
+
+        // Start drag only with LEFT button and only on real hashtags (e.g., "#coffee")
+        tagFiltersEl.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;                         // left click only
+            const btn = e.target.closest('.tag-filter');
+            if (!btn) return;
+            const tag = btn.dataset.tag;
+            if (!tag || !tag.startsWith('#')) return;           // ignore All/Original/Replies
+            startHashtagSelection(tag, e);                      // decides add/remove mode
+        });
+
+        // Continue while holding the button, over real hashtags only
+        tagFiltersEl.addEventListener('mouseover', (e) => {
+            if (!isSelecting) return;                           // set by startHashtagSelection
+            const btn = e.target.closest('.tag-filter');
+            if (!btn) return;
+            const tag = btn.dataset.tag;
+            if (!tag || !tag.startsWith('#')) return;
+            continueHashtagSelection(tag, e);
+        });
+
+        // End drag anywhere
+        document.addEventListener('mouseup', endHashtagSelection);
+
+        tagFiltersEl.__dragInit = true;                       // guard against rebinding
+    })();
+}
 
         function filterByTag(tag) {
             currentTag = tag;
@@ -3968,18 +5303,24 @@ function setActiveTagButtons() {
     btn.classList.remove('active');
     
     // "All Notes" is active only when nothing is selected AND we're not in archive view
-    if (t === '' && selectedTags.size === 0 && !currentTag.startsWith('__archive_') && activeQuickFilters.size === 0) {
+    if (t === '' && selectedTags.size === 0 && !currentTag.startsWith('__archive_')) {
       btn.classList.add('active');
     } 
-    // Hashtag buttons are active when they're in selectedTags
+    // Hashtag buttons are active when they're in selectedTags (regardless of archive view)
     else if (t !== '' && selectedTags.has(t)) {
       btn.classList.add('active');
     }
-    // Special buttons - fix these lines
+    // Special buttons (Original Notes, Replies) are active when selected
     else if (t === '__original' && selectedTags.has('__original')) {
       btn.classList.add('active');
     }
     else if (t === '__replies' && selectedTags.has('__replies')) {
+      btn.classList.add('active');
+    }
+    else if (t === '__reposts' && selectedTags.has('__reposts')) {
+      btn.classList.add('active');
+    }
+    else if (t === '__quotes' && selectedTags.has('__quotes')) {
       btn.classList.add('active');
     }
   });
@@ -4054,7 +5395,7 @@ function toggleTag(tag) {
         return;
     } 
     
-    // For hashtag selection, work WITH quick filters, not against them
+    // For hashtag/content type selection, work WITH quick filters, not against them
     if (selectedTags.has(tag)) {
         selectedTags.delete(tag);
         
@@ -4082,12 +5423,35 @@ function toggleTag(tag) {
     } else {
         selectedTags.add(tag);
         
-        // Check if both original and replies are selected
+        // Check if all content types are selected - that equals "All Notes"
         const hasOriginal = selectedTags.has('__original');
         const hasReplies = selectedTags.has('__replies');
+        const hasReposts = selectedTags.has('__reposts');
+        const hasQuotes = selectedTags.has('__quotes');
         
-        if (hasOriginal && hasReplies && selectedTags.size === 2) {
-            // If both are selected, clear them but keep quick filters
+        // If all 4 content types are selected, clear them but keep quick filters
+        if (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4) {
+            selectedTags.clear();
+            currentTag = '';
+            
+            if (activeQuickFilters.size > 0) {
+                // Quick filters are active, use advanced search
+                applyAllFilters();
+            } else {
+                // No filters active, go to "All Notes"
+                document.querySelectorAll('.tag-filter').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.tag === '') {
+                        btn.classList.add('active');
+                    }
+                });
+                window.inAdvancedSearchMode = false;
+                filteredNotes = allNotes.slice();
+                resetPagination();
+                renderNotes();
+            }
+        } else if (hasOriginal && hasReplies && selectedTags.size === 2 && !hasReposts && !hasQuotes) {
+            // If only original and replies are selected, clear them but keep quick filters
             selectedTags.clear();
             currentTag = '';
             
@@ -4116,17 +5480,17 @@ function toggleTag(tag) {
     setActiveTagButtons();
 }
 
-// Check if a single tag matches a note
 function noteMatchesTag(note, tag) {
-  if (tag === '__original') return !note.isReply;
-  if (tag === '__replies') return note.isReply;
-  if (tag === '__archived') return archivedNotes.has(note.id);
-  if (tag.startsWith('__archive_')) {
-    const name = tag.replace('__archive_', '');
-    return namedArchives[name] && namedArchives[name].has(note.id);
-  }
-  // regular hashtag
-  return note.hashtags && note.hashtags.includes(tag);
+    if (tag === '__original') return !note.isReply && !note.isRepost && !note.isQuote;
+    if (tag === '__replies') return note.isReply;
+    if (tag === '__reposts') return note.isRepost;
+    if (tag === '__quotes') return note.isQuote;
+    if (tag === '__archived') return archivedNotes.has(note.id);
+    if (tag.startsWith('__archive_')) {
+        const name = tag.replace('__archive_', '');
+        return namedArchives[name] && namedArchives[name].has(note.id);
+    }
+    return note.hashtags && note.hashtags.includes(tag);
 }
 
         function handleSearch() {
@@ -4163,9 +5527,13 @@ function noteMatchesTag(note, tag) {
         if (currentTag === '__archived') {
             filteredNotes = filteredNotes.filter(note => archivedNotes.has(note.id));
         } else if (currentTag === '__original') {
-            filteredNotes = filteredNotes.filter(note => !note.isReply);
+            filteredNotes = filteredNotes.filter(note => !note.isReply && !note.isRepost && !note.isQuote);
         } else if (currentTag === '__replies') {
             filteredNotes = filteredNotes.filter(note => note.isReply);
+        } else if (currentTag === '__reposts') {
+            filteredNotes = filteredNotes.filter(note => note.isRepost);
+        } else if (currentTag === '__quotes') {
+            filteredNotes = filteredNotes.filter(note => note.isQuote);
         } else if (currentTag && currentTag.startsWith('__archive_')) {
             const archiveName = currentTag.replace('__archive_', '');
             if (namedArchives[archiveName]) {
@@ -4174,6 +5542,7 @@ function noteMatchesTag(note, tag) {
         } else if (currentTag) {
             filteredNotes = filteredNotes.filter(note => note.hashtags.includes(currentTag));
         }
+        // If no specific tag, show ALL notes (don't filter)
     }
 
     // Text search still applies
@@ -4209,177 +5578,191 @@ function noteMatchesTag(note, tag) {
     const notesToRender = filteredNotes.slice(0, totalToShow);
             
     // Update title and count
-if (selectedTags.size > 0) {
-    // Check if both original and replies are selected - that's equivalent to "All Notes"
-    const hasOriginal = selectedTags.has('__original');
-    const hasReplies = selectedTags.has('__replies');
-    
-    if (hasOriginal && hasReplies && selectedTags.size === 2) {
-        // If only original and replies are selected, show "All Notes"
+    if (selectedTags.size > 0) {
+        // Check if all content types are selected - that's equivalent to "All Notes"
+        const hasOriginal = selectedTags.has('__original');
+        const hasReplies = selectedTags.has('__replies');
+        const hasReposts = selectedTags.has('__reposts');
+        const hasQuotes = selectedTags.has('__quotes');
+        
+        if ((hasOriginal && hasReplies && selectedTags.size === 2) ||
+            (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4)) {
+            // If only original and replies are selected, OR all 4 types are selected, show "All Notes"
+            title.textContent = 'All Notes';
+        } else {
+            // Multi-tag selection takes priority
+            const tagNames = Array.from(selectedTags).map(tag => {
+                if (tag === '__original') return 'Original Notes';
+                if (tag === '__replies') return 'Replies';
+                if (tag === '__reposts') return 'Reposts';
+                if (tag === '__quotes') return 'Quotes';
+                if (tag === '__archived') return 'Archived';
+                return tag;
+            });
+            title.textContent = tagNames.join(' + ');
+        }
+    } else if (currentTag === '__archived') {
+        title.textContent = 'All Archived Notes';
+    } else if (currentTag === '__original') {
+        title.textContent = 'Original Notes';
+    } else if (currentTag === '__replies') {
+        title.textContent = 'Replies';
+    } else if (currentTag === '__reposts') {
+        title.textContent = 'Reposts';
+    } else if (currentTag === '__quotes') {
+        title.textContent = 'Quotes';
+    } else if (currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        // Check if neon-green theme is active
+        const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+        title.textContent = isNeonGreen ? `Archive: ${archiveName}` : `📂 Archive: ${archiveName}`;
+        title.style.color = 'var(--text-muted)';
+    } else if (currentTag) {
+        title.textContent = `Notes tagged ${currentTag}`;
+        title.style.color = '';     // Reset color
+        title.style.fontWeight = ''; // Reset weight
+    } else {
         title.textContent = 'All Notes';
+        title.style.color = '';     // Reset color
+        title.style.fontWeight = ''; // Reset weight
+    }
+    count.textContent = `${filteredNotes.length} notes`;
+
+    if (filteredNotes.length === 0) {
+        container.innerHTML = '';
+        loadMoreContainer.classList.add('hidden');
+        if (emptyState) emptyState.classList.remove('hidden');
+        updateSelectionUI();
+        return;
+    }
+
+    // Update export button text to show what will be exported
+    const exportJsonBtn = document.getElementById('export-json');
+    const exportMdBtn = document.getElementById('export-md');
+    // Define isNeonGreen here so it can be used below
+    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+
+    if (currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        if (exportJsonBtn) exportJsonBtn.textContent = `Export "${archiveName}" JSON`;
+        if (exportMdBtn) exportMdBtn.textContent = `Export "${archiveName}" Markdown`;
     } else {
-        // Multi-tag selection takes priority
-        const tagNames = Array.from(selectedTags).map(tag => {
-            if (tag === '__original') return 'Original Notes';
-            if (tag === '__replies') return 'Replies';
-            if (tag === '__archived') return 'Archived';
-            return tag;
-        });
-        title.textContent = tagNames.join(' + ');
+        if (exportJsonBtn) exportJsonBtn.textContent = 'Export JSON';
+        if (exportMdBtn) exportMdBtn.textContent = 'Export Markdown';
     }
-} else if (currentTag === '__archived') {
-    title.textContent = 'All Archived Notes';
-} else if (currentTag === '__original') {
-    title.textContent = 'Original Notes';
-} else if (currentTag === '__replies') {
-    title.textContent = 'Replies';
-} else if (currentTag.startsWith('__archive_')) {
-    const archiveName = currentTag.replace('__archive_', '');
-   // Check if neon-green theme is active
-const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-title.textContent = isNeonGreen ? `Archive: ${archiveName}` : `📂 Archive: ${archiveName}`;
-    title.style.color = 'var(--text-muted)';
-} else if (currentTag) {
-    title.textContent = `Notes tagged ${currentTag}`;
-    title.style.color = '';     // Reset color
-    title.style.fontWeight = ''; // Reset weight
-} else {
-    title.textContent = 'All Notes';
-    title.style.color = '';     // Reset color
-    title.style.fontWeight = ''; // Reset weight
-}
-            count.textContent = `${filteredNotes.length} notes`;
 
-if (filteredNotes.length === 0) {
-    container.innerHTML = '';
-    loadMoreContainer.classList.add('hidden');
-    if (emptyState) emptyState.classList.remove('hidden');
-    updateSelectionUI();
-    return;
-}
+    if (emptyState) emptyState.classList.add('hidden');
 
-// Update export button text to show what will be exported
-const exportJsonBtn = document.getElementById('export-json');
-const exportMdBtn = document.getElementById('export-md');
-// Define isNeonGreen here so it can be used below
-const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    // Only show load more button if we're not currently loading AND there are more notes to show
+    // Show load more button logic
+    const hasMoreNotes = totalToShow < filteredNotes.length;
 
-if (currentTag.startsWith('__archive_')) {
-  const archiveName = currentTag.replace('__archive_', '');
-  if (exportJsonBtn) exportJsonBtn.textContent = `Export "${archiveName}" JSON`;
-  if (exportMdBtn)   exportMdBtn.textContent   = `Export "${archiveName}" Markdown`;
-} else {
-  if (exportJsonBtn) exportJsonBtn.textContent = 'Export JSON';
-  if (exportMdBtn)   exportMdBtn.textContent   = 'Export Markdown';
-}
-
-if (emptyState) emptyState.classList.add('hidden');
-
-// Only show load more button if we're not currently loading AND there are more notes to show
-// Show load more button logic
-const hasMoreNotes = totalToShow < filteredNotes.length;
-
-if (hasMoreNotes && filteredNotes.length > 0) {
-    loadMoreContainer.classList.remove('hidden');
-    paginationInfo.textContent = `Showing ${totalToShow} of ${filteredNotes.length} notes`;
-} else {
-    loadMoreContainer.classList.add('hidden');
-    if (filteredNotes.length > 0) {
-        paginationInfo.textContent = `Showing all ${filteredNotes.length} notes`;
+    if (hasMoreNotes && filteredNotes.length > 0) {
+        loadMoreContainer.classList.remove('hidden');
+        paginationInfo.textContent = `Showing ${totalToShow} of ${filteredNotes.length} notes`;
+    } else {
+        loadMoreContainer.classList.add('hidden');
+        if (filteredNotes.length > 0) {
+            paginationInfo.textContent = `Showing all ${filteredNotes.length} notes`;
+        }
     }
-}
             
-            
-            // Render notes in chunks to prevent blocking
-            const renderInChunks = async () => {
-                const chunkSize = 50; // Smaller chunks for rendering
-                let html = '';
+    // Render notes in chunks to prevent blocking
+    const renderInChunks = async () => {
+        const chunkSize = 50; // Smaller chunks for rendering
+        let html = '';
+        
+        for (let i = 0; i < notesToRender.length; i += chunkSize) {
+            const chunk = notesToRender.slice(i, i + chunkSize);
                 
-               for (let i = 0; i < notesToRender.length; i += chunkSize) {
-                  const chunk = notesToRender.slice(i, i + chunkSize);
-                    
-                    chunk.forEach(note => {
-    const date = new Date(note.created_at * 1000).toLocaleString();
-    const isArchived = archivedNotes.has(note.id);
-    const isReply = note.isReply;
-    const isSelected = selectedNotes.has(note.id);
-    
-    const hashtagsHtml = note.hashtags && note.hashtags.length > 0 ? 
-note.hashtags.map(tag => {
-    const isSelected = selectedTags.has(tag);
-    return `<span class="hashtag" 
-           onmousedown="startHashtagSelection('${tag}', event)" 
-           onmouseenter="continueHashtagSelection('${tag}', event)"
-           ontouchstart="startHashtagSelection('${tag}', event)"
-           data-tag="${tag}"
-           ${isSelected ? 'data-selected="true"' : ''}>${tag}</span>`;
-}).join(' ') : '';
-    
-    // Different styling for replies
-    const cardClass = `note-card ${isArchived ? 'archived' : ''} ${isReply ? 'reply-card' : ''}`;
-    const replyIndicator = isReply ? '<span class="emoji">💬</span> ' : '<span class="emoji">📄</span> ';
-    
-    // IMPROVED: Check if we're in a specific archive view
-    const isInSpecificArchive = currentTag.startsWith('__archive_');
-    const currentArchiveName = isInSpecificArchive ? currentTag.replace('__archive_', '') : '';
-    const isNoteInCurrentArchive = isInSpecificArchive && namedArchives[currentArchiveName] && namedArchives[currentArchiveName].has(note.id);
-    
-    // Create the appropriate archive button
-    let archiveButtonHtml = '';
-    if (isInSpecificArchive && isNoteInCurrentArchive) {
-        // We're viewing a specific archive and this note is in it - show "Remove from [archive]"
-        archiveButtonHtml = `
-            <button class="btn btn-small" style="background: #e74c3c; color: white;" 
-                    onclick="removeFromSpecificArchive('${note.id}', '${currentArchiveName}')">
-                <span class="emoji">🗑️</span> Remove
-            </button>`;
-    } else {
-        // Normal archive/unarchive button
-        archiveButtonHtml = `
-            <button class="btn btn-small btn-archive ${isArchived ? 'archived' : ''}" 
-                    onclick="toggleArchiveNote('${note.id}')">
-                ${isArchived ? '✓ Archived' : '<span class="emoji">📂</span> Archive'}
-            </button>`;
-    }
-    
-    html += `
-        <div class="${cardClass}">
-            <div class="note-header">
-                <div style="display: flex; align-items: center;">
-                    <input type="checkbox" class="note-checkbox" ${isSelected ? 'checked' : ''} 
-                           onchange="toggleNoteSelection('${note.id}')">
-                    <span>${replyIndicator}${date}</span>
-                </div>
-                <div class="note-actions">
-                    ${archiveButtonHtml}
-                    <button class="btn btn-small" style="background: #95a5a6;" 
-                            onclick="showNoteInfo('${note.id}')">
-                        <span class="emoji">ℹ️</span> Info
-                    </button>
-                </div>
-            </div>
-            <div class="note-content">${processYouTubeLinks(processImageLinks(escapeHtml(note.content)))}</div>
-            ${hashtagsHtml ? `<div class="hashtags">${hashtagsHtml}</div>` : ''}
-        </div>
-    `;
-});
-
-                    
-                    // Update progress and yield control
-                    if (i % 100 === 0) {
-                        await new Promise(resolve => setTimeout(resolve, 1));
-                    }
+            chunk.forEach(note => {
+                const date = new Date(note.created_at * 1000).toLocaleString();
+                const isArchived = archivedNotes.has(note.id);
+                const isSelected = selectedNotes.has(note.id);
+                
+                const hashtagsHtml = note.hashtags && note.hashtags.length > 0 ? 
+                    note.hashtags.map(tag => {
+                        const isSelected = selectedTags.has(tag);
+                        return `<span class="hashtag" 
+                               onmousedown="startHashtagSelection('${tag}', event)" 
+                               onmouseenter="continueHashtagSelection('${tag}', event)"
+                               ontouchstart="startHashtagSelection('${tag}', event)"
+                               data-tag="${tag}"
+                               ${isSelected ? 'data-selected="true"' : ''}>${tag}</span>`;
+                    }).join(' ') : '';
+                
+                // Different styling for different note types
+                const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
+                
+                // Set appropriate indicator based on note type
+let noteIndicator = '<span class="emoji">📄</span> '; // Default for original notes
+if (note.isRepost) {
+    noteIndicator = '<span class="emoji">🔄</span> ';
+} else if (note.isQuote) {
+    noteIndicator = '<span class="emoji">💭</span> ';
+} else if (note.isReply) {
+    noteIndicator = '<span class="emoji">💬</span> ';
+}
+                
+                // IMPROVED: Check if we're in a specific archive view
+                const isInSpecificArchive = currentTag.startsWith('__archive_');
+                const currentArchiveName = isInSpecificArchive ? currentTag.replace('__archive_', '') : '';
+                const isNoteInCurrentArchive = isInSpecificArchive && namedArchives[currentArchiveName] && namedArchives[currentArchiveName].has(note.id);
+                
+                // Create the appropriate archive button
+                let archiveButtonHtml = '';
+                if (isInSpecificArchive && isNoteInCurrentArchive) {
+                    // We're viewing a specific archive and this note is in it - show "Remove from [archive]"
+                    archiveButtonHtml = `
+                        <button class="btn btn-small" style="background: #e74c3c; color: white;" 
+                                onclick="removeFromSpecificArchive('${note.id}', '${currentArchiveName}')">
+                            <span class="emoji">🗑️</span> Remove
+                        </button>`;
+                } else {
+                    // Normal archive/unarchive button
+                    archiveButtonHtml = `
+                        <button class="btn btn-small btn-archive ${isArchived ? 'archived' : ''}" 
+                                onclick="toggleArchiveNote('${note.id}')">
+                            ${isArchived ? '✓ Archived' : '<span class="emoji">📂</span> Archive'}
+                        </button>`;
                 }
                 
-                container.innerHTML = html;
-                setupLazyLoading();
-                updateSelectionUI();
-                setupHashtagDragSelection();
+                html += `
+                    <div class="${cardClass}">
+                        <div class="note-header">
+                            <div style="display: flex; align-items: center;">
+                                <input type="checkbox" class="note-checkbox" ${isSelected ? 'checked' : ''} 
+                                       onchange="toggleNoteSelection('${note.id}')">
+                                <span>${noteIndicator}${date}</span>
+                            </div>
+                            <div class="note-actions">
+                                ${archiveButtonHtml}
+                                <button class="btn btn-small" style="background: #95a5a6;" 
+                                        onclick="showNoteInfo('${note.id}')">
+                                    <span class="emoji">ℹ️</span> Info
+                                </button>
+                            </div>
+                        </div>
+                        <div class="note-content">${makeLinksClickable(processYouTubeLinks(processImageLinks(escapeHtml(note.content))))}</div>
+                        ${hashtagsHtml ? `<div class="hashtags">${hashtagsHtml}</div>` : ''}
+                    </div>
+                `;
+            });
                 
-            };
-            
-            renderInChunks();
+            // Update progress and yield control
+            if (i % 100 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 1));
+            }
         }
+        
+        container.innerHTML = html;
+        setupLazyLoading();
+        updateSelectionUI();
+        setupHashtagDragSelection();
+    };
+    
+    renderInChunks();
+}
 
 
         function refreshNotes() {
@@ -4388,8 +5771,8 @@ note.hashtags.map(tag => {
         return;
     }
     
-    // Use incremental sync instead of full reload
-    loadNotesIncremental(true); // true = is refresh
+    // Call the main loadNotes function with refresh parameters
+    loadNotes(false, true); // false = not silent, true = is refresh
 }
 
 async function loadNotesIncremental(isRefresh = false) {
@@ -4432,6 +5815,28 @@ async function loadNotesIncremental(isRefresh = false) {
     }
 }
 
+function setupLazyLoading() {
+    // Simple lazy loading for images
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    }
+}
+
         function exportAsJSON() {
             const dataToExport = filteredNotes;
             
@@ -4461,13 +5866,15 @@ if (currentTag.startsWith('__archive_')) {
                 filter_type: filterType,
                 total_notes: dataToExport.length,
                 notes: dataToExport.map(note => ({
-                    id: note.id,
-                    date: new Date(note.created_at * 1000).toISOString(),
-                    content: note.content,
-                    hashtags: note.hashtags,
-                  archived: Object.values(namedArchives).some(archive => archive.has(note.id)),
-                    isReply: note.isReply
-                }))
+    id: note.id,
+    date: new Date(note.created_at * 1000).toISOString(),
+    content: note.content,
+    hashtags: note.hashtags,
+    archived: Object.values(namedArchives).some(archive => archive.has(note.id)),
+    isReply: note.isReply,
+    isRepost: note.isRepost,
+    isQuote: note.isQuote
+}))
             };
             
             downloadFile(
@@ -4494,7 +5901,7 @@ if (currentTag.startsWith('__archive_')) {
                 const date = new Date(note.created_at * 1000).toLocaleString();
                 const isArchived = archivedNotes.has(note.id);
                 const isReply = note.isReply;
-                const noteType = isReply ? '💬' : '📝';
+                const noteType = note.isRepost ? '🔄' : note.isQuote ? '💭' : note.isReply ? '💬' : '📝';
                 markdown += `## ${noteType} ${date}${isArchived ? ' 🗂️' : ''}\n\n`;
                 markdown += `${note.content}\n\n`;
                 if (note.hashtags.length > 0) {
@@ -4571,8 +5978,34 @@ function closeModal(event) {
 async function clearAllCache() {
     if (confirm('This will clear ALL data including cached notes, archives, and IndexedDB. This action cannot be undone. Continue?')) {
         try {
+            // Cancel any ongoing operations FIRST
+            isLoadingCancelled = true;
+            
+            // Cancel background loading
+            if (backgroundLoadingTimeout) {
+                clearTimeout(backgroundLoadingTimeout);
+                backgroundLoadingTimeout = null;
+            }
+            
+            // Close all active WebSocket connections
+            activeWebSockets.forEach(ws => {
+                if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+                    ws.close(1000, 'Cache cleared by user');
+                }
+            });
+            activeWebSockets.clear();
+            
+            // Hide any loading indicators immediately
+            hideBackgroundLoadingIndicator();
+            showLoading(false);
+            
             // Enhanced IndexedDB clearing - clear everything first
             await clearIndexedDBCompletely();
+            
+            // Clear chunked storage for current user
+            if (currentPubkey) {
+                await clearChunkStorage(currentPubkey);
+            }
             
             // Only clear data for the current user, not all users
             if (currentPubkey) {
@@ -4601,15 +6034,6 @@ async function clearAllCache() {
             currentArchive = 'default';
             selectedNotes = new Set();
             selectedTags = new Set();
-            
-            // Reset memory management variables (if you've added them)
-            if (typeof totalNotesCount !== 'undefined') {
-                totalNotesCount = 0;
-                loadedNotesCount = 0;
-                currentChunk = 0;
-                hasMoreNotes = true;
-                isLoadingChunk = false;
-            }
             
             // Clear quick filters
             activeQuickFilters.clear();
@@ -4647,9 +6071,15 @@ async function clearAllCache() {
             
             showToast('All data cleared successfully! Please reconnect.', 'success');
             
+            // Reset cancellation flag after everything is done
+            isLoadingCancelled = false;
+            
         } catch (error) {
             console.error('Error clearing data:', error);
             showToast('Error clearing some data: ' + error.message, 'error');
+            
+            // Reset cancellation flag even on error
+            isLoadingCancelled = false;
         }
     }
 }
@@ -4669,37 +6099,42 @@ async function clearIndexedDBCompletely() {
             await db.close();
         }
         
-        // Clear the specific database for current user
+        // Clear the specific databases for current user
         if (currentPubkey) {
-            const dbName = `nostr-notes-${currentPubkey}`;
+            const databases = [
+                `nostr-notes-${currentPubkey}`,
+                `nostr-chunks-${currentPubkey}`
+            ];
             
-            // Delete the database entirely
-            if (window.indexedDB && window.indexedDB.deleteDatabase) {
-                await new Promise((resolve, reject) => {
-                    const deleteReq = window.indexedDB.deleteDatabase(dbName);
-                    
-                    deleteReq.onsuccess = () => {
-                        console.log(`IndexedDB ${dbName} deleted successfully`);
-                        resolve();
-                    };
-                    
-                    deleteReq.onerror = (event) => {
-                        console.error(`Error deleting IndexedDB ${dbName}:`, event.target.error);
-                        resolve(); // Don't reject - continue with cleanup
-                    };
-                    
-                    deleteReq.onblocked = () => {
-                        console.warn(`IndexedDB ${dbName} deletion blocked`);
-                        // Force resolve after delay
-                        setTimeout(resolve, 2000);
-                    };
-                    
-                    // Timeout safety
-                    setTimeout(() => {
-                        console.warn('IndexedDB deletion timeout');
-                        resolve();
-                    }, 5000);
-                });
+            for (const dbName of databases) {
+                // Delete the database entirely
+                if (window.indexedDB && window.indexedDB.deleteDatabase) {
+                    await new Promise((resolve, reject) => {
+                        const deleteReq = window.indexedDB.deleteDatabase(dbName);
+                        
+                        deleteReq.onsuccess = () => {
+                            console.log(`IndexedDB ${dbName} deleted successfully`);
+                            resolve();
+                        };
+                        
+                        deleteReq.onerror = (event) => {
+                            console.error(`Error deleting IndexedDB ${dbName}:`, event.target.error);
+                            resolve(); // Don't reject - continue with cleanup
+                        };
+                        
+                        deleteReq.onblocked = () => {
+                            console.warn(`IndexedDB ${dbName} deletion blocked`);
+                            // Force resolve after delay
+                            setTimeout(resolve, 2000);
+                        };
+                        
+                        // Timeout safety
+                        setTimeout(() => {
+                            console.warn('IndexedDB deletion timeout');
+                            resolve();
+                        }, 5000);
+                    });
+                }
             }
         }
         
@@ -4751,14 +6186,24 @@ async function clearIndexedDBOnly() {
             }
         }
 
-       function updateStatus(text, clearPrevious = false) {
+       // REPLACE the existing updateStatus function with this enhanced version:
+function updateStatus(text, clearPrevious = false) {
     const statusInfo = document.getElementById('status-info');
     if (statusInfo) {
         if (clearPrevious) {
             statusInfo.innerHTML = text + '<br>';
         } else {
+            // Limit status history to prevent UI overflow
+            const lines = statusInfo.innerHTML.split('<br>');
+            if (lines.length > 10) {
+                lines.splice(0, lines.length - 8); // Keep last 8 lines
+                statusInfo.innerHTML = lines.join('<br>');
+            }
             statusInfo.innerHTML += text + '<br>';
         }
+        
+        // Auto-scroll to bottom
+        statusInfo.scrollTop = statusInfo.scrollHeight;
     }
 }
 
@@ -5165,7 +6610,8 @@ function extractVideoId(url) {
 }
 
 function processYouTubeLinks(content) {
-    const youtubeRegex = /(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[^\s]+)/g;
+    // More flexible regex that can find YouTube URLs even after "Reposted: " prefix
+    const youtubeRegex = /(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[^\s"<>]+)/g;
     
     return content.replace(youtubeRegex, (url) => {
         const videoId = extractVideoId(url);
@@ -5193,7 +6639,8 @@ function processYouTubeLinks(content) {
 }
 
 function processImageLinks(content) {
-    const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)(?:\?[^\s]*)?)/gi;
+    // More flexible regex for images
+    const imageRegex = /(https?:\/\/[^\s"<>]+\.(jpg|jpeg|png|gif|webp)(?:\?[^\s"<>]*)?)/gi;
     
     return content.replace(imageRegex, (url) => {
         return `<div class="image-preview" onclick="loadImage(this, '${url}')" style="
@@ -5260,72 +6707,66 @@ function closeYouTube(element, url, videoId) {
   element.setAttribute('onclick', `loadYouTubeThumbnail(this, '${url}', '${videoId}')`);
 }
 
+function makeLinksClickable(content) {
+    // More flexible regex for video URLs
+    const videoRegex = /(https?:\/\/[^\s"<>]+\.(mp4|mov|avi|webm)(?:\?[^\s"<>]*)?)/gi;
+    return content.replace(videoRegex, (url) => {
+        return `<a href="${url}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">${url}</a>`;
+    });
+}
+
+
+// Enhanced advanced search using smart filter engine
 async function performAdvancedSearch(query, filters = {}) {
-    if (!db || !useIndexedDB) {
-        // Fallback to in-memory search
-        return performInMemorySearch(query, filters);
-    }
-    
     try {
-        let results = db.notes.orderBy('created_at').reverse();
+        // Initialize smart filter engine
+        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+        const ready = await chunkStorage.init();
         
-        // Date range filtering
-        if (filters.dateFrom) {
-            const fromTimestamp = Math.floor(filters.dateFrom.getTime() / 1000);
-            results = results.filter(note => note.created_at >= fromTimestamp);
+        if (!ready) {
+            return performInMemorySearch(query, filters);
         }
         
-        if (filters.dateTo) {
-            const toTimestamp = Math.floor(filters.dateTo.getTime() / 1000);
-            results = results.filter(note => note.created_at <= toTimestamp);
-        }
+        const filterEngine = new SmartFilterEngine(chunkStorage);
         
-        // Content type filtering
-        if (filters.contentType === 'original') {
-            results = results.filter(note => !note.isReply);
-        } else if (filters.contentType === 'replies') {
-            results = results.filter(note => note.isReply);
-        }
+        // Build comprehensive filter object
+        const smartFilters = {
+            searchText: query,
+            hashtags: [],
+            dateFrom: filters.dateFrom,
+            dateTo: filters.dateTo,
+            contentType: filters.contentType,
+            hasImages: filters.hasImages,
+            hasYouTube: filters.hasYouTube,
+            minLength: filters.minLength,
+            maxLength: filters.maxLength
+        };
         
-        // Length filtering
-        if (filters.minLength) {
-            results = results.filter(note => note.content.length >= filters.minLength);
-        }
-        
-        if (filters.maxLength) {
-            results = results.filter(note => note.content.length <= filters.maxLength);
-        }
-        
-        // Media filtering
-        if (filters.hasImages) {
-            results = results.filter(note => {
-                const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
-                return imageRegex.test(note.content);
+        // Add selected hashtags to filter
+        if (selectedTags.size > 0) {
+            selectedTags.forEach(tag => {
+                if (tag.startsWith('#')) {
+                    smartFilters.hashtags.push(tag);
+                } else if (tag === '__original') {
+                    smartFilters.contentType = 'original';
+                } else if (tag === '__replies') {
+                    smartFilters.contentType = 'replies';
+                }
             });
         }
         
-        if (filters.hasYouTube) {
-            results = results.filter(note => {
-                const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
-                return youtubeRegex.test(note.content);
-            });
-        }
+        // Get estimated count first
+        const estimatedCount = await filterEngine.getEstimatedCount(smartFilters);
+        updateStatus(`Estimated ${estimatedCount} matching notes across chunks`);
         
-        const allResults = await results.toArray();
+        // Load filtered notes
+        const results = await filterEngine.loadFilteredNotes(smartFilters, 50000); // Load up to 50k results
         
-        // Text search (full-text)
-        if (query && query.trim()) {
-            const searchTerms = query.toLowerCase().split(/\s+/);
-            return allResults.filter(note => {
-                const searchText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
-                return searchTerms.every(term => searchText.includes(term));
-            });
-        }
-        
-        return allResults;
+        updateStatus(`Found ${results.length} notes matching filters`);
+        return results;
         
     } catch (error) {
-        console.error('Advanced search error:', error);
+        console.error('Smart search error:', error);
         return performInMemorySearch(query, filters);
     }
 }
@@ -5344,11 +6785,15 @@ function performInMemorySearch(query, filters) {
         results = results.filter(note => note.created_at <= toTimestamp);
     }
     
-    // Rest of your existing filter logic...
+    // Apply content type filters
     if (filters.contentType === 'original') {
-        results = results.filter(note => !note.isReply);
+        results = results.filter(note => !note.isReply && !note.isRepost && !note.isQuote);
     } else if (filters.contentType === 'replies') {
         results = results.filter(note => note.isReply);
+    } else if (filters.contentType === 'reposts') {
+        results = results.filter(note => note.isRepost);
+    } else if (filters.contentType === 'quotes') {
+        results = results.filter(note => note.isQuote);
     }
     
     if (filters.minLength) {
@@ -5521,7 +6966,7 @@ function clearAllFilters() {
     selectedTags.clear();
     currentTag = '';
     currentArchive = 'default';
-    window.inAdvancedSearchMode = false; // Clear advanced search mode
+    window.inAdvancedSearchMode = false;
     
     // Clear all UI states
     document.querySelectorAll('.archive-item').forEach(item => {
@@ -5535,12 +6980,12 @@ function clearAllFilters() {
         }
     });
     
-    // FORCE reset to all notes (bypass all filtering)
+    // CRITICAL: Force reset to exact original count
     filteredNotes = allNotes.slice();
     resetPagination();
     renderNotes();
     
-    // Reset title and count
+    // Reset title and count to exact original values
     document.getElementById('notes-title').textContent = 'All Notes';
     document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
 }
@@ -5629,33 +7074,37 @@ async function performSearchWithFilters(query, filters) {
     if (activeQuickFilters.has('youtube')) activeFilters.push('Videos');
     if (activeQuickFilters.has('long')) activeFilters.push('Long');
     
-    // Add search terms from text search
-    if (query && query.trim()) {
-        const searchTerms = query.trim().split(/\s+/);
-        searchTerms.forEach(term => {
-            if (term.startsWith('#')) {
-                activeFilters.push(term);
-            } else {
-                activeFilters.push(`"${term}"`);
-            }
-        });
-    }
-    
     // Add selected hashtags from multi-selection
     selectedTags.forEach(tag => {
         if (tag === '__original') {
             activeFilters.push('Original Notes');
         } else if (tag === '__replies') {
             activeFilters.push('Replies');
+        } else if (tag === '__reposts') {
+            activeFilters.push('Reposts');
+        } else if (tag === '__quotes') {
+            activeFilters.push('Quotes');
         } else if (tag === '__archived') {
             activeFilters.push('Archived');
         } else if (tag.startsWith('#')) {
-            // Only add if it's not already in the list from search terms
-            if (!activeFilters.includes(tag)) {
-                activeFilters.push(tag);
-            }
+            activeFilters.push(tag);
         }
     });
+    
+    // Add search terms from text search
+    if (query && query.trim()) {
+        const searchTerms = query.trim().split(/\s+/);
+        searchTerms.forEach(term => {
+            if (term.startsWith('#')) {
+                // Only add if it's not already in the list from selectedTags
+                if (!activeFilters.includes(term)) {
+                    activeFilters.push(term);
+                }
+            } else {
+                activeFilters.push(`"${term}"`);
+            }
+        });
+    }
     
     // Manual date filters (only show if no quick date filters)
     if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.has('month') && !activeQuickFilters.has('year')) {
@@ -5677,6 +7126,24 @@ async function performSearchWithFilters(query, filters) {
     // Store that we're in advanced search mode
     window.inAdvancedSearchMode = true;
 }
+
+function debugRepostContent(noteId) {
+    const note = allNotes.find(n => n.id.startsWith(noteId));
+    if (!note) {
+        console.log('Note not found');
+        return;
+    }
+    
+    console.log('=== REPOST DEBUG ===');
+    console.log('isRepost:', note.isRepost);
+    console.log('Original content:', note.content);
+    console.log('After escapeHtml:', escapeHtml(note.content));
+    console.log('After processImageLinks:', processImageLinks(escapeHtml(note.content)));
+    console.log('After processYouTubeLinks:', processYouTubeLinks(processImageLinks(escapeHtml(note.content))));
+    console.log('Final result:', makeLinksClickable(processYouTubeLinks(processImageLinks(escapeHtml(note.content)))));
+}
+
+window.debugRepostContent = debugRepostContent;
 
 
 
@@ -5729,22 +7196,23 @@ window.startHashtagSelection = startHashtagSelection;
 window.continueHashtagSelection = continueHashtagSelection;
 window.endHashtagSelection = endHashtagSelection;
 
-          // Theme functionality - add this at the very end of your JavaScript
-setTimeout(function() {
+// Theme functionality - immediate execution when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
     const themeSelector = document.getElementById('theme-selector');
+    if (!themeSelector) return; // Exit if element doesn't exist yet
+    
     // Load saved theme on startup
-const savedTheme = localStorage.getItem('nostr-theme') || 'default';
-if (savedTheme !== 'default') {
+    const savedTheme = localStorage.getItem('nostr-theme') || 'default';
+    
+    // IMPORTANT: Always set the data-theme attribute, even for default
     document.body.setAttribute('data-theme', savedTheme);
     themeSelector.value = savedTheme;
-}
-    if (themeSelector) {
-       themeSelector.addEventListener('change', function(e) {
-    document.body.setAttribute('data-theme', e.target.value);
-    localStorage.setItem('nostr-theme', e.target.value);
+    
+    themeSelector.addEventListener('change', function(e) {
+        document.body.setAttribute('data-theme', e.target.value);
+        localStorage.setItem('nostr-theme', e.target.value);
+    });
 });
-    }
-}, 1000);
 
 // One-time cleanup of old global archives - remove after running once
 if (!localStorage.getItem('archives-cleanup-done')) {
