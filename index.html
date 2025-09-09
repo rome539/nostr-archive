@@ -5771,46 +5771,145 @@ if (note.isRepost) {
         return;
     }
     
-    // Call the main loadNotes function with refresh parameters
-    loadNotes(false, true); // false = not silent, true = is refresh
+    showToast('Refreshing notes...', 'success', 2000);
+    
+    // Use incremental refresh instead of full fetch
+    loadNotesIncremental(true); // true = isRefresh
 }
 
 async function loadNotesIncremental(isRefresh = false) {
     const previousNotesCount = allNotes.length;
     
     try {
-        if (!isRefresh) {
+        if (isRefresh) {
+            updateStatus('Checking for new notes...');
+        } else {
             showLoading(true);
             updateStatus('Loading notes...', true);
         }
         
-        const notes = await incrementalSync(currentPubkey, false);
+        // Get the timestamp of our newest note
+        const newestNote = allNotes.length > 0 ? allNotes[0] : null;
+        const sinceTimestamp = newestNote ? newestNote.created_at : 0;
         
-        allNotes = notes.sort((a, b) => b.created_at - a.created_at);
+        updateStatus(`Looking for notes newer than ${newestNote ? new Date(sinceTimestamp * 1000).toLocaleString() : 'beginning'}...`);
         
-        updateArchiveList();
-        updateTargetArchiveDropdown();
-        updateTagFilters();
-        applyFilters();
-        renderNotes();
+        // Fetch only newer notes
+        const newNotes = await fetchNotesFromRelaysSince(currentPubkey, sinceTimestamp);
         
-        const newNotesCount = allNotes.length - previousNotesCount;
-        
-        if (isRefresh) {
-            if (newNotesCount > 0) {
-                showToast(`Found ${newNotesCount} new notes!`, 'success');
-            } else {
-                showToast('No new notes found', 'success');
+        if (newNotes.length > 0) {
+            // Add new notes to the beginning of our array
+            allNotes.unshift(...newNotes);
+            allNotes.sort((a, b) => b.created_at - a.created_at);
+            
+            // Update chunked storage with new notes
+            const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+            const chunkReady = await chunkStorage.init();
+            
+            if (chunkReady) {
+                await chunkStorage.storeNotesInChunks(allNotes);
+                updateStatus(`Updated chunked storage with ${newNotes.length} new notes`);
             }
+            
+            updateArchiveList();
+            updateTargetArchiveDropdown();
+            updateTagFilters();
+            applyFilters();
+            renderNotes();
+            
+            showToast(`Found ${newNotes.length} new notes!`, 'success');
+        } else {
+            showToast('No new notes found', 'success');
         }
         
-        updateStatus(`✅ Loaded ${allNotes.length} notes (${newNotesCount} new)`);
+        updateStatus(`✅ Refresh complete: ${newNotes.length} new notes (${allNotes.length} total)`);
         
     } catch (error) {
-        showError('Refresh failed: ' + error.message);
+        console.error('Refresh failed:', error);
+        showToast('Refresh failed: ' + error.message, 'error');
     } finally {
         if (!isRefresh) {
             showLoading(false);
+        }
+    }
+}
+
+async function loadNotesForced(isRefresh = false) {
+    const previousNotesCount = allNotes.length;
+    
+    if (!isRefresh) {
+        showLoading(true);
+        updateProgress(0, 'Connecting to relays.');
+        updateStatus('Starting fresh load...', true);
+    } else {
+        updateStatus('Refreshing notes from relays...');
+    }
+    
+    try {
+        let notes;
+        
+        if (isRefresh) {
+            // Force fresh fetch from relays for refresh
+            updateProgress(20, 'Fetching fresh notes from relays...');
+            notes = await fetchNotesFromRelays(currentPubkey);
+            
+            // Store in chunked format after successful refresh
+            const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+            const chunkReady = await chunkStorage.init();
+            
+            if (chunkReady && notes.length > 0) {
+                await chunkStorage.storeNotesInChunks(notes);
+                updateStatus(`Stored ${notes.length} notes in chunks after refresh`);
+            }
+        } else {
+            // Original loading logic for non-refresh loads
+            notes = await loadNotesHybrid(currentPubkey, false);
+        }
+
+        updateStatus(`Sorting ${notes.length} notes by date...`);
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        allNotes = notes.sort((a, b) => b.created_at - a.created_at);
+        
+        updateStatus('Updating archives list...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        updateArchiveList();
+        updateTargetArchiveDropdown();
+        
+        updateStatus('Updating tag filters...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        updateTagFilters();
+        
+        updateStatus('Applying filters...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        applyFilters();
+        
+        updateStatus('Rendering notes...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        renderNotes();
+        
+        const newNotesCount = allNotes.length - previousNotesCount;
+        updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
+        
+        if (isRefresh) {
+            if (newNotesCount > 0) {
+                showToast(`Refresh complete - ${newNotesCount} new notes loaded (${allNotes.length} total)`, 'success');
+            } else {
+                showToast(`Refresh complete - no new notes found (${allNotes.length} total)`, 'success');
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading notes:', error);
+        showError('Failed to load notes: ' + error.message);
+    } finally {
+        if (!isRefresh) {
+            showLoading(false);
+            trackLoadTime();
         }
     }
 }
