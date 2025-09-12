@@ -1820,6 +1820,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 <div class="quick-filters" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px;">
     <button class="btn btn-tiny quick-filter-btn" data-filter="week" onclick="toggleQuickFilter('week')">This Week</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month')">This Month</button>
+    <button class="btn btn-tiny quick-filter-btn" data-filter="6months" onclick="toggleQuickFilter('6months')">6 Months</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year')">This Year</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images')">Images</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube')">Videos</button>
@@ -5358,15 +5359,18 @@ function applyDateFilters() {
 window.toggleHashtagGroup = toggleHashtagGroup;
         // === Multi-tag selection helpers ===
 function toggleTag(tag) {
-    // Clear archive active states when selecting any tag (but NOT quick filters)
-    currentArchive = 'default';
-    document.querySelectorAll('.archive-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Clear date filters when selecting any tag (but NOT quick filters)
-    document.getElementById('date-from').value = '';
-    document.getElementById('date-to').value = '';
+    // Only clear archive state for special tags, not hashtags
+    if (!tag.startsWith('#')) {
+        // Clear archive active states when selecting any tag (but NOT quick filters)
+        currentArchive = 'default';
+        document.querySelectorAll('.archive-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Clear date filters when selecting non-hashtag tags
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+    }
     
     if (!tag) {
         // "All Notes" clears ALL selections including quick filters
@@ -5397,13 +5401,19 @@ function toggleTag(tag) {
     
     // For hashtag/content type selection, work WITH quick filters, not against them
     if (selectedTags.has(tag)) {
-        selectedTags.delete(tag);
-        
-        // If no tags selected after removal, check if we have quick filters
-        if (selectedTags.size === 0 && activeQuickFilters.size > 0) {
-            // We still have quick filters active, so use advanced search
-            applyAllFilters();
-        } else if (selectedTags.size === 0 && activeQuickFilters.size === 0) {
+    selectedTags.delete(tag);
+    
+    // If no tags selected after removal, check if we have quick filters
+    if (selectedTags.size === 0 && activeQuickFilters.size > 0) {
+        // We still have quick filters active, so use advanced search
+        applyAllFilters();
+    } else if (selectedTags.size === 0 && activeQuickFilters.size === 0) {
+        // If we're in an archive, stay in the archive but show all notes from that archive
+        if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+            // Stay in archive, just remove hashtag filter
+            applyFilters();
+            renderNotes();
+        } else {
             // Nothing active, go to "All Notes"
             currentTag = '';
             document.querySelectorAll('.tag-filter').forEach(btn => {
@@ -5416,10 +5426,16 @@ function toggleTag(tag) {
             filteredNotes = allNotes.slice();
             resetPagination();
             renderNotes();
-        } else {
-            // Other tags still selected, continue with advanced search
-            applyAllFilters();
         }
+    } else {
+        // Other tags still selected, continue with appropriate filtering
+        if (activeQuickFilters.size > 0) {
+            applyAllFilters();
+        } else {
+            applyFilters();
+            renderNotes();
+        }
+    }
     } else {
         selectedTags.add(tag);
         
@@ -5472,8 +5488,13 @@ function toggleTag(tag) {
                 renderNotes();
             }
         } else {
-            // Normal tag selection - use advanced search to combine with quick filters
-            applyAllFilters();
+            // Normal tag selection - use appropriate filter system
+            if (activeQuickFilters.size > 0) {
+                applyAllFilters();
+            } else {
+                applyFilters();
+                renderNotes();
+            }
         }
     }
     
@@ -5517,14 +5538,30 @@ function noteMatchesTag(note, tag) {
     filteredNotes = allNotes.slice();
 
     // If multiple tags are selected, keep notes that match ANY selected tag
-    if (selectedTags.size > 0) {
-        const tags = Array.from(selectedTags);
+    // If multiple tags are selected, keep notes that match ANY selected tag
+if (selectedTags.size > 0) {
+    const tags = Array.from(selectedTags);
+    
+    // If we're in an archive context, first filter by archive, then by hashtags
+    if (currentTag && currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        if (namedArchives[archiveName]) {
+            // First filter to only notes in this archive
+            filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
+            // Then filter by selected hashtags within that archive
+            filteredNotes = filteredNotes.filter(note =>
+                tags.some(tag => noteMatchesTag(note, tag))
+            );
+        }
+    } else {
+        // Normal hashtag filtering (not in archive context)
         filteredNotes = filteredNotes.filter(note =>
             tags.some(tag => noteMatchesTag(note, tag))
         );
-    } else {
-        // Fall back to old single-select behavior (currentTag)
-        if (currentTag === '__archived') {
+    }
+} else {
+    // Fall back to old single-select behavior (currentTag)
+    if (currentTag === '__archived') {
             filteredNotes = filteredNotes.filter(note => archivedNotes.has(note.id));
         } else if (currentTag === '__original') {
             filteredNotes = filteredNotes.filter(note => !note.isReply && !note.isRepost && !note.isQuote);
@@ -5579,6 +5616,20 @@ function noteMatchesTag(note, tag) {
             
     // Update title and count
     if (selectedTags.size > 0) {
+    // Check if we're in an archive context
+    if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        const tagNames = Array.from(selectedTags).map(tag => {
+            if (tag === '__original') return 'Original Notes';
+            if (tag === '__replies') return 'Replies';
+            if (tag === '__reposts') return 'Reposts';
+            if (tag === '__quotes') return 'Quotes';
+            if (tag === '__archived') return 'Archived';
+            return tag;
+        });
+        // Show archive context with selected tags
+        title.textContent = `Archive: ${archiveName} (${tagNames.join(' + ')})`;
+    } else {
         // Check if all content types are selected - that's equivalent to "All Notes"
         const hasOriginal = selectedTags.has('__original');
         const hasReplies = selectedTags.has('__replies');
@@ -5601,6 +5652,7 @@ function noteMatchesTag(note, tag) {
             });
             title.textContent = tagNames.join(' + ');
         }
+    }
     } else if (currentTag === '__archived') {
         title.textContent = 'All Archived Notes';
     } else if (currentTag === '__original') {
@@ -6934,11 +6986,24 @@ function toggleQuickFilter(type) {
     
     const button = document.querySelector(`[data-filter="${type}"]`);
     
+    // Define which filters are date-based (mutually exclusive)
+    const dateFilters = ['week', 'month', '6months', 'year'];
+    
     if (activeQuickFilters.has(type)) {
         // Remove filter
         activeQuickFilters.delete(type);
         button.classList.remove('active');
     } else {
+        // If this is a date filter, clear other date filters first
+        if (dateFilters.includes(type)) {
+            dateFilters.forEach(dateFilter => {
+                if (dateFilter !== type && activeQuickFilters.has(dateFilter)) {
+                    activeQuickFilters.delete(dateFilter);
+                    document.querySelector(`[data-filter="${dateFilter}"]`).classList.remove('active');
+                }
+            });
+        }
+        
         // Add filter
         activeQuickFilters.add(type);
         button.classList.add('active');
@@ -6987,26 +7052,33 @@ async function applyAllFilters() {
         const now = new Date();
         
         switch(filterType) {
-            case 'week':
-                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                if (!earliestDate || weekAgo < earliestDate) {
-                    earliestDate = weekAgo;
-                }
-                break;
-                
-            case 'month':
-                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                if (!earliestDate || monthAgo < earliestDate) {
-                    earliestDate = monthAgo;
-                }
-                break;
-                
-            case 'year':
-                const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-                if (!earliestDate || yearAgo < earliestDate) {
-                    earliestDate = yearAgo;
-                }
-                break;
+    case 'week':
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        if (!earliestDate || weekAgo < earliestDate) {
+            earliestDate = weekAgo;
+        }
+        break;
+        
+    case 'month':
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        if (!earliestDate || monthAgo < earliestDate) {
+            earliestDate = monthAgo;
+        }
+        break;
+        
+    case '6months':
+        const sixMonthsAgo = new Date(now.getTime() - 182 * 24 * 60 * 60 * 1000);
+        if (!earliestDate || sixMonthsAgo < earliestDate) {
+            earliestDate = sixMonthsAgo;
+        }
+        break;
+        
+    case 'year':
+        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        if (!earliestDate || yearAgo < earliestDate) {
+            earliestDate = yearAgo;
+        }
+        break;
                 
             case 'images':
                 filters.hasImages = true;
@@ -7165,13 +7237,15 @@ async function performSearchWithFilters(query, filters) {
     // Build comprehensive filter description
     const activeFilters = [];
     
+
     // Add quick filters
-    if (activeQuickFilters.has('week')) activeFilters.push('This Week');
-    if (activeQuickFilters.has('month')) activeFilters.push('This Month');
-    if (activeQuickFilters.has('year')) activeFilters.push('This Year');
-    if (activeQuickFilters.has('images')) activeFilters.push('Images');
-    if (activeQuickFilters.has('youtube')) activeFilters.push('Videos');
-    if (activeQuickFilters.has('long')) activeFilters.push('Long');
+if (activeQuickFilters.has('week')) activeFilters.push('This Week');
+if (activeQuickFilters.has('month')) activeFilters.push('This Month');
+if (activeQuickFilters.has('6months')) activeFilters.push('6 Months');
+if (activeQuickFilters.has('year')) activeFilters.push('This Year');
+if (activeQuickFilters.has('images')) activeFilters.push('Images');
+if (activeQuickFilters.has('youtube')) activeFilters.push('Videos');
+if (activeQuickFilters.has('long')) activeFilters.push('Long');
     
     // Add selected hashtags from multi-selection
     selectedTags.forEach(tag => {
@@ -7206,9 +7280,9 @@ async function performSearchWithFilters(query, filters) {
     }
     
     // Manual date filters (only show if no quick date filters)
-    if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.has('month') && !activeQuickFilters.has('year')) {
-        activeFilters.push('Date Filtered');
-    }
+if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.has('month') && !activeQuickFilters.has('6months') && !activeQuickFilters.has('year')) {
+    activeFilters.push('Date Filtered');
+}
     
     // Update UI
     const title = document.getElementById('notes-title');
