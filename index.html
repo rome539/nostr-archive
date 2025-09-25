@@ -7318,6 +7318,73 @@ function debugRepostContent(noteId) {
 
 window.debugRepostContent = debugRepostContent;
 
+// Add this diagnostic function
+async function diagnoseLoadingIssue() {
+    console.log('=== LOADING DIAGNOSTICS ===');
+    
+    const results = {
+        environment: {
+            protocol: window.location.protocol,
+            hostname: window.location.hostname,
+            isHosted: window.location.protocol === 'https:' && window.location.hostname !== 'localhost'
+        },
+        relayTests: {},
+        storage: {},
+        currentState: {
+            allNotesCount: allNotes.length,
+            filteredNotesCount: filteredNotes.length,
+            currentPubkey: currentPubkey ? currentPubkey.substring(0, 16) + '...' : 'none'
+        }
+    };
+    
+    // Test storage
+    if ('storage' in navigator && 'estimate' in navigator.storage) {
+        const estimate = await navigator.storage.estimate();
+        results.storage = {
+            used: `${((estimate.usage || 0) / 1024 / 1024).toFixed(1)}MB`,
+            quota: `${((estimate.quota || 0) / 1024 / 1024).toFixed(1)}MB`,
+            indexedDB: useIndexedDB ? 'enabled' : 'disabled'
+        };
+    }
+    
+    // Test first 3 relays quickly
+    const testRelays = RELAYS.slice(0, 3);
+    for (const relay of testRelays) {
+        try {
+            const startTime = Date.now();
+            const ws = new WebSocket(relay);
+            
+            const testResult = await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    ws.close();
+                    resolve({ success: false, error: 'timeout' });
+                }, 5000);
+                
+                ws.onopen = () => {
+                    clearTimeout(timeout);
+                    ws.close();
+                    resolve({ success: true, duration: Date.now() - startTime });
+                };
+                
+                ws.onerror = () => {
+                    clearTimeout(timeout);
+                    resolve({ success: false, error: 'connection failed' });
+                };
+            });
+            
+            results.relayTests[relay] = testResult;
+        } catch (error) {
+            results.relayTests[relay] = { success: false, error: error.message };
+        }
+    }
+    
+    console.log(JSON.stringify(results, null, 2));
+    return results;
+}
+
+// Make it globally available
+window.diagnoseLoadingIssue = diagnoseLoadingIssue;
+
 
 
 // Make functions globally available
