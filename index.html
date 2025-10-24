@@ -1141,6 +1141,84 @@ kbd {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 20%, transparent);
 }
 
+/* Remove blue highlight/focus state for npub button on ALL themes */
+.npub-copy-btn {
+    display: inline;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 4px;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.npub-copy-btn:hover {
+    background: var(--primary-hover);
+    transform: scale(1.05);
+}
+
+.npub-copy-btn:active {
+    transform: scale(0.95);
+    outline: none !important;
+}
+
+/* Theme-specific npub button styles */
+[data-theme="nostr-purple"] .npub-copy-btn {
+    background: var(--purple-color);
+    color: white;
+    border: 1px solid var(--purple-color);
+}
+
+[data-theme="nostr-purple"] .npub-copy-btn:hover {
+    background: color-mix(in srgb, var(--purple-color) 80%, #fff);
+}
+
+[data-theme="dark-nostr"] .npub-copy-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+[data-theme="dark-nostr"] .npub-copy-btn:hover {
+    background: var(--primary-hover);
+}
+
+[data-theme="bitcoin-gold"] .npub-copy-btn {
+    background: var(--primary-color);
+    color: var(--card-background);
+}
+
+[data-theme="bitcoin-gold"] .npub-copy-btn:hover {
+    background: var(--primary-hover);
+}
+
+[data-theme="neon-green"] .npub-copy-btn {
+    background: #003300 !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+    font-weight: 600;
+    text-shadow: 0 0 3px var(--accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+}
+
+[data-theme="neon-green"] .npub-copy-btn:hover {
+    background: #006600 !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+}
+
+/* Prevent button from staying in stuck state */
+.npub-copy-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+
 /* Dark themes search input fixes */
 [data-theme="dark-nostr"] #search-input,
 [data-theme="bitcoin-gold"] #search-input,
@@ -2052,7 +2130,11 @@ function normalizeNpub(input) {
     'wss://nostr.wine',
     'wss://nostr.land',
     'wss://nos.lol',
-    'wss://relay.nostr.band'
+    'wss://relay.nostr.band',
+     'wss://purplepag.es',   
+    'wss://nostr.mom',
+    'wss://relayable.org',          
+    'wss://relay.orangepill.dev'    
 ];
 
         // Initialize the app
@@ -2640,9 +2722,7 @@ function closeArchiveModal(event) {
         }
 
        async function connectWithPubkey() {
-    // Move these to the very start
-
-     // TEMPORARY: Force fresh fetch
+    // Force fresh fetch
     useIndexedDB = true;
     
     const connectBtn = document.getElementById('connect-btn');
@@ -2653,7 +2733,6 @@ function closeArchiveModal(event) {
     // Check if NostrTools is available
     if (!window.NostrTools) {
         showError('NostrTools library not loaded. Please refresh the page.');
-        // Reset button on error
         connectBtn.classList.remove('loading');
         connectBtn.disabled = false;
         connectBtn.textContent = 'Load My Notes';
@@ -2665,93 +2744,185 @@ function closeArchiveModal(event) {
 
     if (!npub) {
         showError('Please enter your npub');
-      connectBtn.classList.remove('loading');
-    connectBtn.disabled = false;
-    connectBtn.textContent = 'Load My Notes';
-    return;
-}
+        connectBtn.classList.remove('loading');
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Load My Notes';
+        return;
+    }
+    
     if (!npub.startsWith('npub1')) {
         showError('Invalid npub (must start with "npub1")');
-      connectBtn.classList.remove('loading');
-    connectBtn.disabled = false;
-    connectBtn.textContent = 'Load My Notes';
-    return;
-}
+        connectBtn.classList.remove('loading');
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Load My Notes';
+        return;
+    }
 
     if (!/^npub1[02-9ac-hj-np-z]+$/.test(npub)) {
         showError('Invalid npub format');
-       connectBtn.classList.remove('loading');
-    connectBtn.disabled = false;
-    connectBtn.textContent = 'Load My Notes';
-    return;
-}
+        connectBtn.classList.remove('loading');
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Load My Notes';
+        return;
+    }
 
     const hexPubkey = npubToHex(npub);
     if (!hexPubkey || hexPubkey.length !== 64) {
         showError('Invalid npub format - could not convert to hex');
-       connectBtn.classList.remove('loading');
-    connectBtn.disabled = false;
-    connectBtn.textContent = 'Load My Notes';
-    return;
-}
+        connectBtn.classList.remove('loading');
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Load My Notes';
+        return;
+    }
 
     currentPubkey = hexPubkey.toLowerCase();
 
-// Clear any previous data when switching users
-allNotes = [];
-filteredNotes = [];
-selectedTags.clear();
-currentTag = '';
+    // Clear any previous data when switching users
+    allNotes = [];
+    filteredNotes = [];
+    selectedTags.clear();
+    currentTag = '';
 
-// Clear all filters when switching users
-activeQuickFilters.clear();
-document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-});
+    // Clear all filters when switching users
+    activeQuickFilters.clear();
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
 
-// Clear date filters
-document.getElementById('date-from').value = '';
-document.getElementById('date-to').value = '';
+    // Clear date filters
+    document.getElementById('date-from').value = '';
+    document.getElementById('date-to').value = '';
 
-// Clear search
-document.getElementById('search-input').value = '';
-searchQuery = '';
+    // Clear search
+    document.getElementById('search-input').value = '';
+    searchQuery = '';
 
-// Clear hashtag active states
-document.querySelectorAll('.tag-filter').forEach(btn => {
-    btn.classList.remove('active');
-});
+    // Clear hashtag active states
+    document.querySelectorAll('.tag-filter').forEach(btn => {
+        btn.classList.remove('active');
+    });
 
-// Reset archive states
-currentArchive = 'default';
-document.querySelectorAll('.archive-item').forEach(item => {
-    item.classList.remove('active');
-});
+    // Reset archive states
+    currentArchive = 'default';
+    document.querySelectorAll('.archive-item').forEach(item => {
+        item.classList.remove('active');
+    });
 
     document.getElementById('tag-filters').innerHTML = '<button class="tag-filter active" data-tag="">Loading...</button>';
 
     // Load archives for this specific user
-loadArchivedNotes();
-updateArchiveList();
+    loadArchivedNotes();
+    updateArchiveList();
 
     // Save the npub for next time
-localStorage.setItem('nostr-saved-npub', npub);
+    localStorage.setItem('nostr-saved-npub', npub);
 
-document.getElementById('connection-screen').classList.add('hidden');
-document.getElementById('main-app').classList.remove('hidden');
+    document.getElementById('connection-screen').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
 
     document.getElementById('pubkey-display').textContent = 
-   npub.substring(0, 12) + '...' + npub.substring(npub.length - 8);
+        npub.substring(0, 12) + '...' + npub.substring(npub.length - 8);
     
     updateArchiveList();
     updateTargetArchiveDropdown();
     
-    await loadNotes(false, false); // false = not silent, false = not refresh (initial load)
-
-   // Reset button after success
-connectBtn.classList.remove('loading');
-connectBtn.disabled = false;
-connectBtn.textContent = 'Load My Notes';
+    // SIMPLIFIED LOADING LOGIC - No size detection
+    let notes;
+    let loadedFromChunkCache = false;
+    let cachedChunkStats = null;
+    
+    try {
+        showLoading(true);
+        updateProgress(0, 'Connecting to relays...');
+        updateStatus('Starting fresh load...', true);
+        
+        // Check if we have stored chunks first
+        updateProgress(5, 'Checking for stored data...');
+        
+        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+        const chunkReady = await chunkStorage.init();
+        
+        if (chunkReady) {
+            const chunkStats = await chunkStorage.getStats();
+            
+            if (chunkStats && chunkStats.totalNotes > 0) {
+                // Load from stored chunks
+                loadedFromChunkCache = true;
+                cachedChunkStats = chunkStats;
+                updateProgress(15, `Loading all ${chunkStats.totalNotes} notes from storage...`);
+                updateStatus(`Found stored data: ${chunkStats.totalChunks} chunks, ${chunkStats.totalNotes} notes`);
+                
+                notes = await loadNotesHybrid(currentPubkey, false);
+                showToast(`Loaded ${notes.length} notes from storage instantly!`, 'success');
+                updateStatus(`Loaded ${notes.length} notes from ${chunkStats.totalChunks} stored chunks`);
+            } else {
+                // No stored data - use progressive loading (QUICK FIX)
+                updateProgress(15, 'Loading recent notes...');
+                updateStatus('Loading recent notes first for faster startup...');
+                
+                notes = await loadRecentNotesOnly(currentPubkey, 90); // 90 days
+                showToast(`Loaded ${notes.length} recent notes. Full history loading in background.`, 'success');
+                updateStatus(`Loaded ${notes.length} recent notes - background loading full history...`);
+            }
+        } else {
+            // Storage unavailable - use progressive loading
+            updateProgress(15, 'Loading recent notes...');
+            updateStatus('Loading recent notes first...');
+            
+            notes = await loadRecentNotesOnly(currentPubkey, 90);
+            showToast(`Loaded ${notes.length} recent notes. Full history loading in background.`, 'success');
+        }
+        
+        updateStatus(`Sorting ${notes.length} notes by date...`);
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        allNotes = notes.sort((a, b) => b.created_at - a.created_at);
+        
+        updateStatus('Updating archives list...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        updateArchiveList();
+        updateTargetArchiveDropdown();
+        
+        updateStatus('Updating tag filters...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        updateTagFilters();
+        
+        updateStatus('Applying filters...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        applyFilters();
+        
+        updateStatus('Rendering notes...');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        
+        renderNotes();
+        
+        // Always schedule background loading to get complete history
+        if (!loadedFromChunkCache) {
+            const estimatedTotal = notes.length * 5;
+            scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
+        } else {
+            // Refresh cached chunks in background
+            const estimatedTotal = (cachedChunkStats && cachedChunkStats.totalNotes) || notes.length;
+            scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
+        }
+        
+        updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
+        
+    } catch (error) {
+        console.error('Error loading notes:', error);
+        showError('Failed to load notes: ' + error.message);
+    } finally {
+        showLoading(false);
+        trackLoadTime();
+        
+        // Reset button after completion
+        connectBtn.classList.remove('loading');
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Load My Notes';
+    }
 }
     
 
@@ -2883,12 +3054,11 @@ function clearLegacyCache(pubkey) {
 }
 
 async function fetchNotesFromRelays(pubkey) {
-    const allEvents = [];
+    const uniqueEventsMap = new Map(); // Deduplicate as we go
     const completedRelays = [];
     
     console.log('=== STARTING RELAY FETCH ===');
     
-    // Better progress feedback with relay status tracking
     const relayStatuses = new Map();
     const relayPromises = RELAYS.map(async (relay, index) => {
         const relayName = relay.replace('wss://', '');
@@ -2915,9 +3085,18 @@ async function fetchNotesFromRelays(pubkey) {
             
             const events = await Promise.race([fetchPromise, timeoutPromise]);
             
+            // DEDUPLICATE IMMEDIATELY per relay
+            let newCount = 0;
+            events.forEach(event => {
+                if (event?.id && !uniqueEventsMap.has(event.id)) {
+                    uniqueEventsMap.set(event.id, event);
+                    newCount++;
+                }
+            });
+            
             relayStatuses.set(relay, 'completed');
             const completedCount = Array.from(relayStatuses.values()).filter(s => s === 'completed').length;
-            updateStatus(`<span class="emoji">✅</span> ${relayName}: ${events.length} notes (${completedCount}/${RELAYS.length} relays completed)`);
+            updateStatus(`<span class="emoji">✅</span> ${relayName}: ${newCount} new notes (${uniqueEventsMap.size} total unique) (${completedCount}/${RELAYS.length} relays done)`);
             
             completedRelays.push(relay);
             return { relay, events, success: true };
@@ -2931,27 +3110,13 @@ async function fetchNotesFromRelays(pubkey) {
     });
     
     // Wait for ALL relays to finish
-    const results = await Promise.allSettled(relayPromises);
+    await Promise.allSettled(relayPromises);
     
-    // Collect all events with logging
-    results.forEach((result, index) => {
-        if (result.status === 'fulfilled' && result.value.success) {
-            console.log(`Adding ${result.value.events.length} events from ${result.value.relay}`);
-            allEvents.push(...result.value.events);
-        }
-    });
-    
-    console.log(`=== TOTAL EVENTS COLLECTED: ${allEvents.length} ===`);
-    updateProgress(80, `Deduplicating ${allEvents.length} notes...`);
+    const uniqueEvents = Array.from(uniqueEventsMap.values());
+console.log(`=== DEDUPLICATION COMPLETE: ${uniqueEvents.length} unique notes ===`);
+updateStatus(`✅ Found ${uniqueEvents.length} unique notes across all relays`);
 
-    // MEMORY-SAFE DEDUPLICATION for image-heavy accounts
-    console.log('Starting memory-safe deduplication...');
-    const uniqueEvents = await memoryEfficientDeduplication(allEvents);
-    
-    console.log(`=== DEDUPLICATION COMPLETE: ${uniqueEvents.length} unique notes ===`);
-    updateStatus(`✅ Deduplication complete: ${uniqueEvents.length} unique notes (removed ${allEvents.length - uniqueEvents.length} duplicates)`);
-
-    return uniqueEvents;
+return uniqueEvents;
 }
 
 // NEW: Memory-efficient deduplication for image-heavy accounts
@@ -3003,9 +3168,10 @@ async function memoryEfficientDeduplication(allEvents) {
     }
     
     const uniqueEvents = Array.from(uniqueEventsMap.values());
-    console.log(`Deduplication complete: ${uniqueEvents.length} unique events (${duplicatesFound} duplicates removed)`);
-    
-    return uniqueEvents;
+console.log(`=== DEDUPLICATION COMPLETE: ${uniqueEvents.length} unique notes ===`);
+updateStatus(`✅ Found ${uniqueEvents.length} unique notes across all relays`);
+
+return uniqueEvents;
 }
 
 async function fetchNotesFromRelaysSince(pubkey, sinceTimestamp) {
@@ -3123,26 +3289,43 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
         try {
             
             const batchEvents = await fetchBatchFromRelay(relayUrl, pubkey, until, batchSize);
-            
-            allEvents.push(...batchEvents);
-            
-            const oldestEvent = batchEvents[batchEvents.length - 1];
-            until = oldestEvent.created_at - 1;
-            
-            
-            batchNumber++;
-            
-            // Only stop if we get no events or encounter errors
+
+// ADD THIS DEBUGGING LINE
+console.log(`[${relayUrl}] Batch ${batchNumber}: ${batchEvents.length} events (total: ${allEvents.length})`);
+
+// Check if we got events BEFORE trying to access them
 if (batchEvents.length === 0) {
+    console.warn(`[${relayUrl}] Batch ${batchNumber} returned 0 events - stopping`);
     break;
 }
 
-// Rate limiting - longer delay for aggressive fetching
-await new Promise(resolve => setTimeout(resolve, 150)); // Increased to 100ms
+allEvents.push(...batchEvents);
 
-// Safety check - if we've been fetching for too long, break
-if (batchNumber > 100) { // Allow up to 100 batches (200k notes max)
-    console.log(`Reached safety limit of ${batchNumber} batches for ${relayUrl}`);
+// Safety check: ensure we have a valid event before accessing its timestamp
+const oldestEvent = batchEvents[batchEvents.length - 1];
+if (!oldestEvent || !oldestEvent.created_at) {
+    console.warn(`[${relayUrl}] Invalid event structure in batch ${batchNumber} - stopping`);
+    break;
+}
+
+until = oldestEvent.created_at - 1;
+batchNumber++;
+
+// Rate limiting
+await new Promise(resolve => setTimeout(resolve, 250));
+
+// Safety check - prevent infinite loops
+if (batchNumber > 200) {
+    console.warn(`[${relayUrl}] Safety limit: 200 batches reached (${allEvents.length} notes)`);
+    break;
+}
+
+// Rate limiting - longer delay for hosted environments
+await new Promise(resolve => setTimeout(resolve, 250)); // Increased to 250ms for stability
+
+// Safety check - prevent infinite loops
+if (batchNumber > 200) { // Increased from 100 to 200 for large accounts
+    console.warn(`[${relayUrl}] Safety limit: 200 batches reached (${allEvents.length} notes)`);
     break;
 }
             
@@ -4144,6 +4327,8 @@ async function incrementalSync(pubkey, silent = true) {
 
 async function loadNotes(silent = false, isRefresh = false) {
     const previousNotesCount = allNotes.length; // Track what we had before
+    let loadedFromChunkCache = false;
+    let cachedChunkStats = null;
     
     if (!silent) {
         showLoading(true);
@@ -4171,6 +4356,8 @@ async function loadNotes(silent = false, isRefresh = false) {
                 
                 if (chunkStats && chunkStats.totalNotes > 0) {
                     // We have stored data - load it all immediately
+                    loadedFromChunkCache = true;
+                    cachedChunkStats = chunkStats;
                     updateProgress(15, `Loading all ${chunkStats.totalNotes} notes from storage...`);
                     updateStatus(`Found stored data: ${chunkStats.totalChunks} chunks, ${chunkStats.totalNotes} notes`);
                     
@@ -4274,8 +4461,12 @@ async function loadNotes(silent = false, isRefresh = false) {
         
         // Schedule background loading AFTER UI is ready (only for fresh loads without stored data)
         // Fixed: Check if accountInfo exists before accessing its properties
-        if ((isLargeAccount || (accountInfo && accountInfo.size === 'medium')) && !silent) {
+        if (!silent && (isLargeAccount || (accountInfo && accountInfo.size === 'medium'))) {
             scheduleBackgroundLoading(currentPubkey, { estimatedTotal: notes.length * 5 });
+        } else if (!silent && loadedFromChunkCache) {
+            // Always refresh cached chunks in the background to make sure we don't miss notes
+            const estimatedTotal = (cachedChunkStats && cachedChunkStats.totalNotes) || notes.length;
+            scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
         }
         
         // Calculate what was actually new
@@ -4304,16 +4495,24 @@ async function loadNotes(silent = false, isRefresh = false) {
 async function fetchBatchFromRelay(relayUrl, pubkey, until, limit, retryCount = 0) {
     const maxRetries = 3;
     
+    console.log(`[${relayUrl}] Fetching batch: until=${until}, limit=${limit}, retry=${retryCount}`);
+    
     try {
-        return await fetchBatchFromRelayCore(relayUrl, pubkey, until, limit);
+        const result = await fetchBatchFromRelayCore(relayUrl, pubkey, until, limit);
+        console.log(`[${relayUrl}] Batch returned ${result.length} events`);
+        return result;
     } catch (error) {
+        console.error(`[${relayUrl}] Batch attempt ${retryCount + 1} failed:`, error.message);
+        
         if (retryCount < maxRetries) {
-            const backoffDelay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-            console.log(`Retry ${retryCount + 1}/${maxRetries} for ${relayUrl} after ${backoffDelay}ms`);
+            const backoffDelay = Math.pow(2, retryCount) * 1000;
+            console.log(`[${relayUrl}] Retrying after ${backoffDelay}ms`);
             await new Promise(resolve => setTimeout(resolve, backoffDelay));
             return fetchBatchFromRelay(relayUrl, pubkey, until, limit, retryCount + 1);
         }
-        throw error;
+        
+        console.warn(`[${relayUrl}] All retries exhausted, returning empty batch`);
+        return [];
     }
 }
 
@@ -4377,8 +4576,9 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             ws.send(JSON.stringify(subscription));
             
             timeoutId = setTimeout(() => {
-                resolveOnce(events);
-            }, 90000);
+    console.warn(`[${relayUrl}] Timeout after 45s, returning ${events.length} events`);
+    resolveOnce(events);
+}, 90000); // Changed from 90000 to 45000
         };
         
         ws.onmessage = function(event) {
@@ -4420,19 +4620,19 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
 // Account size detection for progressive loading
 async function estimateAccountSize(pubkey) {
     try {
-        // Quick check: try to get recent note count from one fast relay
-        const testRelays = ['wss://relay.snort.social', 'wss://relay.damus.io'];
-        let bestCount = 0;
+        // Try to get a COUNT from relays instead of recent notes
+        const testRelays = ['wss://relay.snort.social', 'wss://relay.damus.io', 'wss://relay.primal.net'];
+        let bestEstimate = 0;
         
         for (const relay of testRelays) {
             try {
-                const recentCount = await getRecentNoteCount(relay, pubkey, 7); // Last 7 days only for speed
-                bestCount = Math.max(bestCount, recentCount);
-                console.log(`${relay}: ${recentCount} notes in last 7 days`);
+                // Get a small sample to estimate total size
+                const sampleSize = await getTotalNoteEstimate(relay, pubkey);
+                bestEstimate = Math.max(bestEstimate, sampleSize);
+                console.log(`${relay}: estimated ${sampleSize} total notes`);
                 
-                // If we find evidence of high activity, classify immediately
-                if (recentCount > 50) { // 50+ notes in 7 days = very active user
-                    return { size: 'large', recentCount, estimatedTotal: recentCount * 100 };
+                if (sampleSize > 5000) {
+                    return { size: 'large', estimatedTotal: sampleSize };
                 }
             } catch (error) {
                 console.log(`${relay} failed for size check:`, error.message);
@@ -4440,17 +4640,73 @@ async function estimateAccountSize(pubkey) {
             }
         }
         
-        // Classification based on 7-day activity:
-        if (bestCount > 20) {
-            return { size: 'medium', recentCount: bestCount, estimatedTotal: bestCount * 50 };
+        // Classification based on total estimate
+        if (bestEstimate > 2000) {
+            return { size: 'large', estimatedTotal: bestEstimate };
+        } else if (bestEstimate > 500) {
+            return { size: 'medium', estimatedTotal: bestEstimate };
         } else {
-            return { size: 'small', recentCount: bestCount, estimatedTotal: bestCount * 20 };
+            return { size: 'small', estimatedTotal: bestEstimate };
         }
         
     } catch (error) {
         console.error('Account size estimation failed:', error);
-        return { size: 'small', recentCount: 0, estimatedTotal: 0 }; // Default to small to use normal loading
+        // Default to medium to use progressive loading
+        return { size: 'medium', estimatedTotal: 1000 };
     }
+}
+
+async function getTotalNoteEstimate(relayUrl, pubkey) {
+    return new Promise((resolve, reject) => {
+        const ws = new WebSocket(relayUrl);
+        let count = 0;
+        let hasReceivedAnyEvent = false;
+        
+        const timeoutId = setTimeout(() => {
+            ws.close();
+            // If we got some events, extrapolate
+            if (hasReceivedAnyEvent && count > 0) {
+                resolve(count * 3); // Rough estimate
+            } else {
+                resolve(0);
+            }
+        }, 15000); // 15 second timeout
+        
+        ws.onopen = function() {
+            // Request first 1000 notes to estimate
+            const filter = {
+                kinds: [1, 6],
+                authors: [pubkey],
+                limit: 1000
+            };
+            
+            ws.send(JSON.stringify(['REQ', 'size-check', filter]));
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                const message = JSON.parse(event.data);
+                const [type] = message;
+                
+                if (type === 'EVENT') {
+                    count++;
+                    hasReceivedAnyEvent = true;
+                } else if (type === 'EOSE') {
+                    clearTimeout(timeoutId);
+                    ws.close();
+                    // If we got exactly 1000, there are probably more
+                    resolve(count >= 1000 ? count * 5 : count);
+                }
+            } catch (error) {
+                // Ignore parse errors
+            }
+        };
+        
+        ws.onerror = function() {
+            clearTimeout(timeoutId);
+            reject(new Error('Connection failed'));
+        };
+    });
 }
 
 async function getRecentNoteCount(relayUrl, pubkey, daysBack) {
@@ -4595,11 +4851,25 @@ async function loadRecentNotesFromRelays(pubkey, daysBack) {
 
 // Enhanced background loading with chunked storage
 async function scheduleBackgroundLoading(pubkey, accountInfo) {
+    // Prevent overlapping background loads
+    if (isBackgroundLoading) {
+        return;
+    }
+
+    if (backgroundLoadingTimeout) {
+        clearTimeout(backgroundLoadingTimeout);
+        backgroundLoadingTimeout = null;
+    }
+
     backgroundLoadingTimeout = setTimeout(async () => {
         // Check if cancelled before starting
-        if (isLoadingCancelled) return;
+        if (isLoadingCancelled) {
+            backgroundLoadingTimeout = null;
+            return;
+        }
         
         try {
+            isBackgroundLoading = true;
             console.log('Starting background loading...');
             showBackgroundLoadingIndicator();
             
@@ -4608,6 +4878,8 @@ async function scheduleBackgroundLoading(pubkey, accountInfo) {
             // Check cancellation after fetch
             if (isLoadingCancelled) {
                 hideBackgroundLoadingIndicator();
+                isBackgroundLoading = false;
+                backgroundLoadingTimeout = null;
                 return;
             }
             // Initialize chunked storage
@@ -4652,6 +4924,9 @@ async function scheduleBackgroundLoading(pubkey, accountInfo) {
         } catch (error) {
             console.error('Background loading failed:', error);
             hideBackgroundLoadingIndicator();
+        } finally {
+            isBackgroundLoading = false;
+            backgroundLoadingTimeout = null;
         }
     }, 2000);
 }
@@ -4829,6 +5104,35 @@ async function fetchRecentNotesFromRelay(relayUrl, pubkey, since) {
         kind: event.kind,
         tags: event.tags || []
     };
+}
+
+function getReplyTargetNpub(note) {
+    if (!note.tags || !Array.isArray(note.tags)) return null;
+    
+    // Find p-tags (mentions of other users)
+    const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
+    
+    if (pTags.length === 0) return null;
+    
+    // Get the first p-tag (usually the person being replied to)
+    const targetPubkey = pTags[0][1];
+    
+    try {
+        // Convert hex pubkey to npub using NostrTools
+        if (window.NostrTools && window.NostrTools.nip19) {
+            return window.NostrTools.nip19.npubEncode(targetPubkey);
+        }
+    } catch (error) {
+        console.error('Error converting pubkey to npub:', error);
+    }
+    
+    return null;
+}
+
+// Add this function to create a shortened display version of npub
+function shortenNpub(npub) {
+    if (!npub || npub.length < 16) return npub;
+    return npub.substring(0, 12) + '...' + npub.substring(npub.length - 8);
 }
 
 // Add this temporary debug function to check classifications
@@ -5538,30 +5842,29 @@ function noteMatchesTag(note, tag) {
     filteredNotes = allNotes.slice();
 
     // If multiple tags are selected, keep notes that match ANY selected tag
-    // If multiple tags are selected, keep notes that match ANY selected tag
-if (selectedTags.size > 0) {
-    const tags = Array.from(selectedTags);
-    
-    // If we're in an archive context, first filter by archive, then by hashtags
-    if (currentTag && currentTag.startsWith('__archive_')) {
-        const archiveName = currentTag.replace('__archive_', '');
-        if (namedArchives[archiveName]) {
-            // First filter to only notes in this archive
-            filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
-            // Then filter by selected hashtags within that archive
+    if (selectedTags.size > 0) {
+        const tags = Array.from(selectedTags);
+        
+        // If we're in an archive context, first filter by archive, then by hashtags
+        if (currentTag && currentTag.startsWith('__archive_')) {
+            const archiveName = currentTag.replace('__archive_', '');
+            if (namedArchives[archiveName]) {
+                // First filter to only notes in this archive
+                filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
+                // Then filter by selected hashtags within that archive
+                filteredNotes = filteredNotes.filter(note =>
+                    tags.some(tag => noteMatchesTag(note, tag))
+                );
+            }
+        } else {
+            // Normal hashtag filtering (not in archive context)
             filteredNotes = filteredNotes.filter(note =>
                 tags.some(tag => noteMatchesTag(note, tag))
             );
         }
     } else {
-        // Normal hashtag filtering (not in archive context)
-        filteredNotes = filteredNotes.filter(note =>
-            tags.some(tag => noteMatchesTag(note, tag))
-        );
-    }
-} else {
-    // Fall back to old single-select behavior (currentTag)
-    if (currentTag === '__archived') {
+        // Fall back to old single-select behavior (currentTag)
+        if (currentTag === '__archived') {
             filteredNotes = filteredNotes.filter(note => archivedNotes.has(note.id));
         } else if (currentTag === '__original') {
             filteredNotes = filteredNotes.filter(note => !note.isReply && !note.isRepost && !note.isQuote);
@@ -5582,13 +5885,37 @@ if (selectedTags.size > 0) {
         // If no specific tag, show ALL notes (don't filter)
     }
 
-    // Text search still applies
+    // Enhanced text search - NOW INCLUDES NPUB SEARCHING
     if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        filteredNotes = filteredNotes.filter(note =>
-            note.content.toLowerCase().includes(q) ||
-            (note.hashtags && note.hashtags.some(tag => tag.includes(q)))
-        );
+        filteredNotes = filteredNotes.filter(note => {
+            // Search in content
+            if (note.content.toLowerCase().includes(q)) return true;
+            
+            // Search in hashtags
+            if (note.hashtags && note.hashtags.some(tag => tag.includes(q))) return true;
+            
+            // NEW: Search in reply target npub
+            if (note.isReply) {
+                const replyTargetNpub = getReplyTargetNpub(note);
+                if (replyTargetNpub && replyTargetNpub.toLowerCase().includes(q)) {
+                    return true;
+                }
+                
+                // Also search in the hex pubkey if searching by npub prefix
+                if (note.tags && Array.isArray(note.tags)) {
+                    const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
+                    if (pTags.length > 0) {
+                        const targetPubkey = pTags[0][1];
+                        if (targetPubkey.toLowerCase().includes(q)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            
+            return false;
+        });
     }
 
     // Reset pagination when filters change
@@ -5744,16 +6071,23 @@ if (selectedTags.size > 0) {
                     }).join(' ') : '';
                 
                 // Different styling for different note types
-                const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
-                
-                // Set appropriate indicator based on note type
+const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
+
+// Set appropriate indicator based on note type
 let noteIndicator = '<span class="emoji">📄</span> '; // Default for original notes
 if (note.isRepost) {
     noteIndicator = '<span class="emoji">🔄</span> ';
 } else if (note.isQuote) {
     noteIndicator = '<span class="emoji">💭</span> ';
 } else if (note.isReply) {
-    noteIndicator = '<span class="emoji">💬</span> ';
+    // Get the npub they're replying to
+    const replyTargetNpub = getReplyTargetNpub(note);
+    if (replyTargetNpub) {
+        const shortNpub = shortenNpub(replyTargetNpub);
+        noteIndicator = `<span class="emoji">💬</span> Replying to <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" title="Click to copy full npub">${shortNpub}</button> `;
+    } else {
+        noteIndicator = '<span class="emoji">💬</span> ';
+    }
 }
                 
                 // IMPROVED: Check if we're in a specific archive view
@@ -6438,21 +6772,35 @@ function showToast(message, type = 'success', duration = 3000) {
         }
 
         function copyToClipboard(text) {
+    // Prevent rapid double-clicks
+    const button = event.target;
+    if (button.disabled) return;
+    
+    // Disable button temporarily
+    button.disabled = true;
+    
     navigator.clipboard.writeText(text).then(function() {
-        // Show a brief success message
-        const button = event.target;
+        // Store original state
         const originalText = button.textContent;
+        const originalBg = button.style.background;
+        
+        // Show success state
         button.textContent = 'Copied!';
         button.style.background = '#27ae60';
         
+        // Reset after 1 second (reduced from 1.5s for snappier feel)
         setTimeout(() => {
             button.textContent = originalText;
-            button.style.background = '#3498db';
-        }, 1500);
+            button.style.background = originalBg;
+            button.disabled = false; // Re-enable button
+            
+            // Force remove any stuck focus/active states
+            button.blur();
+        }, 1000);
     }).catch(function(err) {
-        // Fallback for older browsers
         console.error('Could not copy text: ', err);
-       showToast('Copy failed. Please select and copy manually.');
+        showToast('Copy failed. Please select and copy manually.', 'error');
+        button.disabled = false; // Re-enable on error
     });
 }
 
@@ -6966,12 +7314,40 @@ function performInMemorySearch(query, filters) {
     }
     
     if (query && query.trim()) {
-        const searchTerms = query.toLowerCase().split(/\s+/);
-        results = results.filter(note => {
-            const searchText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
-            return searchTerms.every(term => searchText.includes(term));
-        });
-    }
+    const searchTerms = query.toLowerCase().split(/\s+/);
+    results = results.filter(note => {
+        const searchText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
+        
+        // Check content and hashtags
+        const matchesContent = searchTerms.every(term => searchText.includes(term));
+        if (matchesContent) return true;
+        
+        // NEW: Also check reply target npub
+        if (note.isReply) {
+            const replyTargetNpub = getReplyTargetNpub(note);
+            if (replyTargetNpub) {
+                const matchesNpub = searchTerms.every(term => 
+                    replyTargetNpub.toLowerCase().includes(term)
+                );
+                if (matchesNpub) return true;
+            }
+            
+            // Also check hex pubkey
+            if (note.tags && Array.isArray(note.tags)) {
+                const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
+                if (pTags.length > 0) {
+                    const targetPubkey = pTags[0][1];
+                    const matchesHex = searchTerms.every(term => 
+                        targetPubkey.toLowerCase().includes(term)
+                    );
+                    if (matchesHex) return true;
+                }
+            }
+        }
+        
+        return false;
+    });
+}
     
     return results;
 }
