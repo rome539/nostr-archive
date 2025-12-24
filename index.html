@@ -89,24 +89,24 @@
   --border-color: rgba(247, 147, 26, 0.5); /* semi-transparent Bitcoin orange */
 }
 
-/* neon-green Neon Green Theme */
+/* neon-green Neon Green Theme - Toned Down Version */
 [data-theme="neon-green"] {
-  --primary-color: #00ff00;
-  --primary-hover: #33ff33;
-  --secondary-color: #00ff00;
-  --secondary-hover: #33ff33;
-  --success-color: #00ff00;
+  --primary-color: #00cc00;        /* Slightly darker green */
+  --primary-hover: #00ff00;        /* Bright on hover */
+  --secondary-color: #00cc00;
+  --secondary-hover: #00ff00;
+  --success-color: #00cc00;
   --danger-color: #ff3333;
-  --purple-color: #00ff00;
+  --purple-color: #00cc00;
   --background-color: #000000;
   --card-background: #0a0a0a;
-  --text-color: #00ff00;
-  --text-muted: #00ff00;
-  --border-color: #00aa00;
+  --text-color: #00cc00;           /* Slightly darker text */
+  --text-muted: #009900;           /* More muted */
+  --border-color: #008800;         /* Darker borders */
 
-  /* NEW soft tokens for toned surfaces */
-  --accent: #00ff00;
-  --accent-border: #00aa00;
+  /* Soft tokens for toned surfaces */
+  --accent: #00cc00;               /* Base green is now darker */
+  --accent-border: #008800;
   --accent-weak: color-mix(in srgb, var(--accent) 18%, #000);
   --accent-weak-2: color-mix(in srgb, var(--accent) 10%, #000);
 }
@@ -1022,7 +1022,7 @@ kbd {
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
-    text-shadow: 0 0 4px var(--accent) !important;
+    text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
     box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
@@ -1168,6 +1168,73 @@ kbd {
     outline: none !important;
 }
 
+/* Checkbox styling for all themes */
+.note-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--card-background);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+.note-checkbox:hover {
+    border-color: var(--primary-color);
+}
+
+.note-checkbox:checked {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.note-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Hide scrollbar but keep scrolling functionality */
+.thread-scroll {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+.thread-scroll::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+}
+
+/* Neon Green theme checkboxes */
+[data-theme="neon-green"] .note-checkbox {
+    border-color: var(--accent-border);
+    background: var(--accent-weak-2);
+}
+
+[data-theme="neon-green"] .note-checkbox:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 6px rgba(0, 255, 0, 0.3);
+}
+
+[data-theme="neon-green"] .note-checkbox:checked {
+    background: var(--accent-weak);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+}
+
+[data-theme="neon-green"] .note-checkbox:checked::after {
+    color: var(--accent);
+    text-shadow: 0 0 4px var(--accent);
+}
+
 /* Theme-specific npub button styles */
 [data-theme="nostr-purple"] .npub-copy-btn {
     background: var(--purple-color);
@@ -1198,18 +1265,16 @@ kbd {
 }
 
 [data-theme="neon-green"] .npub-copy-btn {
-    background: #003300 !important;
+    background: var(--accent-weak-2) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
     font-weight: 600;
     text-shadow: 0 0 3px var(--accent) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
 [data-theme="neon-green"] .npub-copy-btn:hover {
-    background: #006600 !important;
+    background: var(--accent-weak) !important;
     border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
 }
 
 /* Prevent button from staying in stuck state */
@@ -1390,7 +1455,7 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   background: var(--accent-weak);
   color: var(--accent);
   border: 1px solid var(--accent-border);
-  text-shadow: 0 0 4px var(--accent);
+  text-shadow: 0 0 2px var(--accent);
 }
 [data-theme="neon-green"] .btn:hover {
   background: color-mix(in srgb, var(--accent) 28%, #000);
@@ -1432,6 +1497,21 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   text-shadow: none;
 }
 
+/* Neon green Deep Scan button */
+[data-theme="neon-green"] #deep-scan-btn {
+    background: var(--accent-weak) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+    text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+}
+
+[data-theme="neon-green"] #deep-scan-btn:hover {
+    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+}
+
 /* neon-green: utility buttons (refresh, disconnect, clear cache, info, etc.) */
 [data-theme="neon-green"] #refresh-btn,
 [data-theme="neon-green"] #disconnect-btn,
@@ -1440,7 +1520,7 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   background: var(--accent-weak) !important;
   color: var(--accent) !important;
   border: 1px solid var(--accent-border) !important;
-  text-shadow: 0 0 4px var(--accent) !important;
+  text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
@@ -1466,7 +1546,7 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   background: var(--accent-weak) !important;
   color: var(--accent) !important;
   border: 1px solid var(--accent-border) !important;
-  text-shadow: 0 0 4px var(--accent) !important;
+text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
@@ -1533,7 +1613,7 @@ border-color: var(--accent) !important;
   background: var(--accent-weak) !important;
   color: var(--accent) !important;
   border: 1px solid var(--accent-border) !important;
-  text-shadow: 0 0 4px var(--accent) !important;
+  text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
@@ -1558,7 +1638,7 @@ border-color: var(--accent) !important;
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
-    text-shadow: 0 0 4px var(--accent) !important;
+    text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
     box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
@@ -1618,7 +1698,7 @@ border-color: var(--accent) !important;
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
-    text-shadow: 0 0 4px var(--accent) !important;
+    text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
     box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
 }
 
@@ -1903,6 +1983,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     <button class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images')">Images</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube')">Videos</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long')">Long</button>
+    <button class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links')">Links</button>
 </div>
     
     <!-- Date range filters -->
@@ -1932,7 +2013,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
             </div>
             <div style="margin-top: 15px;">
                 <input type="text" id="new-archive-name" class="keyword-input" placeholder="New archive name..." maxlength="30">
-               <button id="create-archive-btn" class="btn" style="font-size: 14px; padding: 8px;"><span class="emoji">🗂</span> Create Archive</button>
+               <button id="create-archive-btn" class="btn" style="font-size: 14px; padding: 8px;"><span class="emoji"></span> Create Archive</button>
               </div>
         </div>
 
@@ -1953,18 +2034,25 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         <input type="file" id="import-file" accept=".json,.md,.txt" style="display: none;">
         <div class="import-archive-block">
   <button id="import-btn" class="btn" style="font-size: 14px; padding: 8px; background: #27ae60;">
-    <span class="emoji">📁</span> Import Archive
+    <span class="emoji"></span> Import Archive
   </button>
   <small class="import-hint">Supports JSON exports from this app</small>
 </div>
     </div>
     
-    <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;"><span class="emoji">🗑️</span> Clear Cache</button>
+    <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;"><span class="emoji"></span> Clear Cache</button>
 </div>
 
 <button id="storage-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
     Storage Info
 </button>
+
+        <div class="sidebar-section">
+            <h4>About</h4>
+            <button id="app-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
+                App Info
+            </button>
+        </div>
 
         <div class="sidebar-section">
     <h4>Keyboard Shortcuts</h4>
@@ -1975,13 +2063,6 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         <div><kbd>Del</kbd> Remove selected</div>
     </div>
 </div>
-
-        <div class="sidebar-section">
-            <h4>About</h4>
-            <button id="app-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
-                App Info
-            </button>
-        </div>
         
         
     <div class="sidebar-section">
@@ -1998,14 +2079,19 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 
 
     <div class="main-content">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
     <div>
         <h3 id="notes-title">All Notes</h3>
         <small id="notes-count" style="color: var(--text-muted);">0 notes</small>
     </div>
-   <button id="refresh-btn" style="background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-    <span class="emoji">🔄</span> Refresh
+    <div style="display: flex; gap: 8px;">
+        <button id="deep-scan-btn" class="btn btn-small">
+    <span class="emoji"></span> Deep Scan
 </button>
+<button id="refresh-btn" class="btn btn-small">
+    <span class="emoji"></span> Refresh
+</button>
+    </div>
 </div>
 
 
@@ -2022,8 +2108,8 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                            <select id="bulk-archive-dropdown" style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color);">
                                 <option value="">Select archive...</option>
                             </select>
-                           <button id="bulk-add-to-archive" class="btn btn-small" style="background: #27ae60;"><span class="emoji">📂</span> Add to Archive</button>
-                           <button id="bulk-remove-from-archive" class="btn btn-small" style="background: #e74c3c;"><span class="emoji">🗑️</span> Remove from Archive</button>
+                           <button id="bulk-add-to-archive" class="btn btn-small" style="background: #27ae60;"><span class="emoji"></span> Add to Archive</button>
+                           <button id="bulk-remove-from-archive" class="btn btn-small" style="background: #e74c3c;"><span class="emoji"></span> Remove from Archive</button>
                         </div>
                     </div>
                   <!-- Loader: ALL loader UI goes inside #loading -->
@@ -2073,6 +2159,8 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         let selectedTags = new Set(); // NEW: multi-select tags
         let notesPerPage = 100;
         let currentPage = 1;
+        let hashtagElementCache = null;
+        let noteMatchCache = null;
 
         // Progressive loading state
 let isBackgroundLoading = false;
@@ -2122,19 +2210,13 @@ function normalizeNpub(input) {
 
         // Enhanced relay list with better reliability
     const RELAYS = [
-    'wss://relay.snort.social',
-    'wss://relay.nostrplebs.com',
     'wss://relay.damus.io',
     'wss://relay.primal.net',
-    'wss://offchain.pub',
     'wss://nostr.wine',
-    'wss://nostr.land',
     'wss://nos.lol',
     'wss://relay.nostr.band',
-     'wss://purplepag.es',   
-    'wss://nostr.mom',
-    'wss://relayable.org',          
-    'wss://relay.orangepill.dev'    
+    'wss://fiatjaf.com',
+
 ];
 
         // Initialize the app
@@ -2185,6 +2267,7 @@ document.getElementById('search-input').addEventListener('input', function(e) {
     searchTimeout = setTimeout(() => handleSearch(e), 300);
 });
             document.getElementById('refresh-btn').addEventListener('click', refreshNotes);
+            document.getElementById('deep-scan-btn').addEventListener('click', performDeepScan);
             document.getElementById('export-json').addEventListener('click', exportAsJSON);
             document.getElementById('export-md').addEventListener('click', exportAsMarkdown);
             document.getElementById('create-archive-btn').addEventListener('click', createNewArchive);
@@ -2722,6 +2805,31 @@ function closeArchiveModal(event) {
         }
 
        async function connectWithPubkey() {
+    // CRITICAL FIX: Cancel any existing operations first
+    isLoadingCancelled = true;
+    
+    // Close all active WebSocket connections
+    activeWebSockets.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+            ws.close(1000, 'New connection started');
+        }
+    });
+    activeWebSockets.clear();
+    
+    // Cancel any background loading
+    if (backgroundLoadingTimeout) {
+        clearTimeout(backgroundLoadingTimeout);
+        backgroundLoadingTimeout = null;
+    }
+    
+    hideBackgroundLoadingIndicator();
+    
+    // Wait a moment for cancellation to propagate
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // NOW reset the flag for the new connection
+    isLoadingCancelled = false;
+    
     // Force fresh fetch
     useIndexedDB = true;
     
@@ -2898,6 +3006,7 @@ function closeArchiveModal(event) {
         await new Promise(resolve => setTimeout(resolve, 10));
         
         renderNotes();
+        await verifyCompletenessQuick(currentPubkey);
         
         // Always schedule background loading to get complete history
         if (!loadedFromChunkCache) {
@@ -2999,7 +3108,7 @@ function disconnect() {
 
     hideError();
 
-// Reset cancellation flag after cleanup
+// Reset cancellation flag immediately after cleanup
     isLoadingCancelled = false;
 }
 
@@ -3023,7 +3132,7 @@ async function initDatabase(pubkey) {
     if (!useIndexedDB) return null;
     
     try {
-        const dbName = `nostr-notes-${pubkey}`;
+        const dbName = 'NostrArchiveDB'; // Single database name
         
         if (db && db.isOpen()) {
             db.close();
@@ -3031,13 +3140,17 @@ async function initDatabase(pubkey) {
         
         db = new Dexie(dbName);
         db.version(1).stores({
-            notes: 'id, pubkey, created_at, content, *hashtags, isReply, isRepost, isQuote, kind', // ADD isRepost, isQuote, kind
-            settings: 'key, value'
+            notes: 'id, pubkey, created_at, content, *hashtags, isReply, isRepost, isQuote, kind',
+            settings: 'key, value',
+            archives: 'name, *noteIds',  // Add if you don't have it
+            chunks: 'chunkKey, archiveName, startTime, endTime, *hashtags, noteCount' // For chunked storage
         });
         
         await db.open();
+        console.log('✅ Database opened:', dbName);
         return db;
     } catch (error) {
+        console.error('❌ Database init failed:', error);
         disableIndexedDB(error);
         return null;
     }
@@ -3054,6 +3167,12 @@ function clearLegacyCache(pubkey) {
 }
 
 async function fetchNotesFromRelays(pubkey) {
+    // SIMPLE FIX: Stop if we're disconnected or pubkey changed
+    if (!currentPubkey || currentPubkey !== pubkey) {
+        console.log('fetchNotesFromRelays: Stopped - user disconnected or switched');
+        return [];
+    }
+    
     const uniqueEventsMap = new Map(); // Deduplicate as we go
     const completedRelays = [];
     
@@ -3112,12 +3231,349 @@ async function fetchNotesFromRelays(pubkey) {
     // Wait for ALL relays to finish
     await Promise.allSettled(relayPromises);
     
-    const uniqueEvents = Array.from(uniqueEventsMap.values());
-console.log(`=== DEDUPLICATION COMPLETE: ${uniqueEvents.length} unique notes ===`);
-updateStatus(`✅ Found ${uniqueEvents.length} unique notes across all relays`);
-
-return uniqueEvents;
+    return Array.from(uniqueEventsMap.values());
 }
+
+// ==================== DEEP SCAN SYSTEM ====================
+
+// SOLUTION 1: Track what we've loaded and verify completeness
+class LoadingTracker {
+    constructor(pubkey) {
+        this.pubkey = pubkey;
+        this.relayStats = new Map();
+        this.totalUnique = 0;
+        this.oldestTimestamp = null;
+        this.newestTimestamp = null;
+    }
+    
+    recordRelayResult(relayUrl, notesCount, oldestNote, newestNote, completed) {
+        this.relayStats.set(relayUrl, {
+            count: notesCount,
+            oldest: oldestNote,
+            newest: newestNote,
+            completed: completed
+        });
+    }
+    
+    getCompletionReport() {
+        const totalRelays = this.relayStats.size;
+        const completedRelays = Array.from(this.relayStats.values())
+            .filter(stat => stat.completed).length;
+        
+        const relayDetails = Array.from(this.relayStats.entries()).map(([url, stat]) => ({
+            relay: url.replace('wss://', ''),
+            notes: stat.count,
+            completed: stat.completed,
+            timespan: stat.oldest && stat.newest ? 
+                `${new Date(stat.oldest * 1000).toLocaleDateString()} - ${new Date(stat.newest * 1000).toLocaleDateString()}` : 
+                'unknown'
+        }));
+        
+        return {
+            totalRelays,
+            completedRelays,
+            totalUnique: this.totalUnique,
+            relayDetails,
+            confidence: (completedRelays / totalRelays) * 100
+        };
+    }
+}
+
+// SOLUTION 2: Enhanced relay fetching with better error handling AND TIMEOUT
+async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback) {
+    const allEvents = [];
+    let until = null;
+    let batchNumber = 1;
+    const batchSize = 1000;
+    let consecutiveEmptyBatches = 0;
+    const MAX_EMPTY_BATCHES = 3;
+    const MAX_RELAY_TIME = 120000; // 2 minutes max per relay
+    
+    const startTime = Date.now();
+    
+    while (true) {
+        // Check if we've exceeded total relay time
+        if (Date.now() - startTime > MAX_RELAY_TIME) {
+            console.warn(`[${relayUrl}] Timeout after ${MAX_RELAY_TIME / 1000}s - stopping with ${allEvents.length} notes`);
+            progressCallback(100, `timeout (${allEvents.length} notes)`);
+            return {
+                events: allEvents,
+                completed: false,
+                batchesProcessed: batchNumber,
+                timedOut: true
+            };
+        }
+        
+        progressCallback(
+            Math.min(95, (batchNumber - 1) * 15), 
+            `batch ${batchNumber} (${allEvents.length} notes)`
+        );
+        
+        try {
+            const batchEvents = await fetchBatchFromRelay(relayUrl, pubkey, until, batchSize);
+            
+            if (batchEvents.length === 0) {
+                consecutiveEmptyBatches++;
+                console.log(`[${relayUrl}] Empty batch ${consecutiveEmptyBatches}/${MAX_EMPTY_BATCHES}`);
+                
+                if (consecutiveEmptyBatches >= MAX_EMPTY_BATCHES) {
+                    console.log(`[${relayUrl}] Reached end (${MAX_EMPTY_BATCHES} empty batches)`);
+                    break;
+                }
+                
+                if (until) {
+                    until = until - (30 * 24 * 60 * 60);
+                } else {
+                    break;
+                }
+                
+                batchNumber++;
+                await new Promise(resolve => setTimeout(resolve, 500));
+                continue;
+            }
+            
+            consecutiveEmptyBatches = 0;
+            allEvents.push(...batchEvents);
+            
+            const oldestEvent = batchEvents[batchEvents.length - 1];
+            if (!oldestEvent || !oldestEvent.created_at) {
+                console.warn(`[${relayUrl}] Invalid event structure - stopping`);
+                break;
+            }
+            
+            until = oldestEvent.created_at - 1;
+            batchNumber++;
+            
+            await new Promise(resolve => setTimeout(resolve, 250));
+            
+            if (batchNumber > 500) {
+                console.warn(`[${relayUrl}] Safety limit: 500 batches (${allEvents.length} notes)`);
+                break;
+            }
+            
+        } catch (error) {
+            console.error(`[${relayUrl}] Batch ${batchNumber} error:`, error);
+            
+            if (batchNumber < 5) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                continue;
+            }
+            break;
+        }
+    }
+    
+    progressCallback(100, `complete (${allEvents.length} notes)`);
+    
+    return {
+        events: allEvents,
+        completed: consecutiveEmptyBatches >= MAX_EMPTY_BATCHES,
+        batchesProcessed: batchNumber,
+        timedOut: false
+    };
+}
+
+// SOLUTION 3: Complete relay scan
+async function fetchNotesFromRelaysComplete(pubkey) {
+    const tracker = new LoadingTracker(pubkey);
+    const uniqueEventsMap = new Map();
+    
+    updateStatus('🚀 Starting complete relay scan...');
+    
+    const primaryRelays = RELAYS.slice(0, 5);
+    updateStatus(`Phase 1: Fetching from ${primaryRelays.length} primary relays in parallel...`);
+    
+    const primaryPromises = primaryRelays.map(async (relay) => {
+        const relayName = relay.replace('wss://', '');
+        try {
+            updateStatus(`📡 ${relayName}: Starting...`);
+            
+            const result = await fetchAllNotesFromRelayEnhanced(relay, pubkey, (progress, status) => {
+                updateStatus(`📡 ${relayName}: ${status}`);
+            });
+            
+            let newCount = 0;
+            result.events.forEach(event => {
+                if (event?.id && !uniqueEventsMap.has(event.id)) {
+                    uniqueEventsMap.set(event.id, event);
+                    newCount++;
+                }
+            });
+            
+            const oldest = result.events.length > 0 ? 
+                result.events[result.events.length - 1].created_at : null;
+            const newest = result.events.length > 0 ? 
+                result.events[0].created_at : null;
+            
+            tracker.recordRelayResult(relay, newCount, oldest, newest, result.completed);
+            
+            updateStatus(`✅ ${relayName}: ${newCount} unique notes (${uniqueEventsMap.size} total)`);
+            return { relay, success: true, newCount };
+            
+        } catch (error) {
+            updateStatus(`❌ ${relayName}: ${error.message}`);
+            tracker.recordRelayResult(relay, 0, null, null, false);
+            return { relay, success: false, newCount: 0 };
+        }
+    });
+    
+    await Promise.all(primaryPromises);
+    
+    const primaryCount = uniqueEventsMap.size;
+    updateStatus(`Phase 1 complete: ${primaryCount} unique notes from primary relays`);
+    
+    const secondaryRelays = RELAYS.slice(5);
+    if (secondaryRelays.length > 0) {
+        updateStatus(`Phase 2: Checking ${secondaryRelays.length} additional relays sequentially...`);
+        
+        for (const relay of secondaryRelays) {
+            const relayName = relay.replace('wss://', '');
+            
+            try {
+                updateStatus(`📡 ${relayName}: Checking for missing notes...`);
+                
+                const result = await fetchAllNotesFromRelayEnhanced(relay, pubkey, (progress, status) => {
+                    updateStatus(`📡 ${relayName}: ${status}`);
+                });
+                
+                let newCount = 0;
+                result.events.forEach(event => {
+                    if (event?.id && !uniqueEventsMap.has(event.id)) {
+                        uniqueEventsMap.set(event.id, event);
+                        newCount++;
+                    }
+                });
+                
+                const oldest = result.events.length > 0 ? 
+                    result.events[result.events.length - 1].created_at : null;
+                const newest = result.events.length > 0 ? 
+                    result.events[0].created_at : null;
+                
+                tracker.recordRelayResult(relay, newCount, oldest, newest, result.completed);
+                
+                if (newCount > 0) {
+                    updateStatus(`✅ ${relayName}: Found ${newCount} missing notes! (${uniqueEventsMap.size} total)`);
+                } else {
+                    updateStatus(`✅ ${relayName}: No new notes (${uniqueEventsMap.size} total)`);
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+            } catch (error) {
+                updateStatus(`❌ ${relayName}: ${error.message}`);
+                tracker.recordRelayResult(relay, 0, null, null, false);
+            }
+        }
+    }
+    
+    tracker.totalUnique = uniqueEventsMap.size;
+    const report = tracker.getCompletionReport();
+    
+    updateStatus('=== LOADING COMPLETE ===');
+    updateStatus(`Total unique notes: ${report.totalUnique}`);
+    updateStatus(`Relays completed: ${report.completedRelays}/${report.totalRelays}`);
+    updateStatus(`Confidence level: ${report.confidence.toFixed(1)}%`);
+    
+    console.table(report.relayDetails);
+    
+    // Warning removed - completion info already shown in status
+    
+    return {
+        events: Array.from(uniqueEventsMap.values()),
+        report: report
+    };
+}
+
+// SOLUTION 4: Deep Scan function
+async function performDeepScan() {
+    if (!currentPubkey) {
+        showToast('No user connected', 'error');
+        return;
+    }
+    
+    if (!confirm('Deep scan will thoroughly search ALL relays for every note. This may take 2-5 minutes for large accounts. Continue?')) {
+        return;
+    }
+    
+    try {
+        showLoading(true);
+        updateStatus('Starting deep scan...', true);
+        
+        const result = await fetchNotesFromRelaysComplete(currentPubkey);
+        
+        updateStatus('Sorting notes...');
+        allNotes = result.events.sort((a, b) => b.created_at - a.created_at);
+        
+        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+        const chunkReady = await chunkStorage.init();
+        
+        if (chunkReady) {
+            await chunkStorage.storeNotesInChunks(allNotes);
+            updateStatus('Stored notes in chunks');
+        }
+        
+        updateTagFilters();
+        applyFilters();
+        renderNotes();
+        
+        // Show completion toast
+        showToast(`Deep scan complete: ${allNotes.length} notes loaded (${result.report.confidence.toFixed(0)}% confidence)`, 'success', 5000);
+        
+        // Hide the warning toast if it's still showing
+        document.querySelectorAll('.toast.warning').forEach(toast => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        });
+        
+    } catch (error) {
+        console.error('Deep scan error:', error);
+        showToast('Deep scan failed: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// SOLUTION 5: Verification function - check if we missed anything
+async function verifyCompletenessQuick(pubkey) {
+    // Quick check: ask relays for a COUNT (if they support it)
+    // Most relays don't support COUNT, so this is a rough estimate
+    
+    try {
+        const samples = await Promise.all(
+            RELAYS.slice(0, 3).map(async (relay) => {
+                try {
+                    const recent = await getRecentNoteCount(relay, pubkey, 30);
+                    return recent;
+                } catch {
+                    return 0;
+                }
+            })
+        );
+        
+        const maxRecent = Math.max(...samples);
+        const ourRecent = allNotes.filter(note => {
+            const daysSince = (Date.now() / 1000 - note.created_at) / (24 * 60 * 60);
+            return daysSince <= 30;
+        }).length;
+        
+        const ratio = ourRecent / maxRecent;
+        
+        if (ratio < 0.9 && maxRecent > 10) {
+            showToast(`⚠️ Possible missing notes: You have ${ourRecent} recent notes, but relays report ~${maxRecent}. Try "Deep Scan".`, 'warning', 8000);
+            return false;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Verification check failed:', error);
+        return true; // Don't block on verification errors
+    }
+}
+
+// ==================== END DEEP SCAN SYSTEM ====================
 
 // NEW: Memory-efficient deduplication for image-heavy accounts
 async function memoryEfficientDeduplication(allEvents) {
@@ -4050,6 +4506,13 @@ class SmartFilterEngine {
                     return false;
                 }
             }
+
+           if (filters.hasLinks) {
+                const linkRegex = /https?:\/\/[^\s<>"]+/gi;
+                if (!linkRegex.test(note.content)) {
+                    return false;
+                }
+            }
             
             // Length filters
             if (filters.minLength && note.content.length < filters.minLength) {
@@ -4524,6 +4987,12 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             return;
         }
         
+        // SIMPLE FIX: Check if this pubkey is still active
+        if (!currentPubkey || currentPubkey !== pubkey) {
+            resolve([]);
+            return;
+        }
+        
         const ws = new WebSocket(relayUrl);
         activeWebSockets.add(ws); // Track this WebSocket
         
@@ -4849,8 +5318,13 @@ async function loadRecentNotesFromRelays(pubkey, daysBack) {
     return uniqueEvents;
 }
 
-// Enhanced background loading with chunked storage
 async function scheduleBackgroundLoading(pubkey, accountInfo) {
+    // SIMPLE FIX: Don't start if pubkey doesn't match
+    if (!currentPubkey || currentPubkey !== pubkey) {
+        console.log('Background loading cancelled - pubkey mismatch');
+        return;
+    }
+    
     // Prevent overlapping background loads
     if (isBackgroundLoading) {
         return;
@@ -4862,6 +5336,13 @@ async function scheduleBackgroundLoading(pubkey, accountInfo) {
     }
 
     backgroundLoadingTimeout = setTimeout(async () => {
+        // CRITICAL: Check again after timeout
+        if (!currentPubkey || currentPubkey !== pubkey) {
+            console.log('Background loading cancelled - user switched');
+            backgroundLoadingTimeout = null;
+            return;
+        }
+        
         // Check if cancelled before starting
         if (isLoadingCancelled) {
             backgroundLoadingTimeout = null;
@@ -4870,10 +5351,19 @@ async function scheduleBackgroundLoading(pubkey, accountInfo) {
         
         try {
             isBackgroundLoading = true;
-            console.log('Starting background loading...');
+            console.log('Starting background loading for:', pubkey.substring(0, 8));
             showBackgroundLoadingIndicator();
             
             const fullNotes = await fetchNotesFromRelays(pubkey);
+            
+            // CRITICAL: Check AGAIN after fetch - user might have switched during fetch
+            if (!currentPubkey || currentPubkey !== pubkey) {
+                console.log('Background loading cancelled - user switched during fetch');
+                hideBackgroundLoadingIndicator();
+                isBackgroundLoading = false;
+                backgroundLoadingTimeout = null;
+                return;
+            }
             
             // Check cancellation after fetch
             if (isLoadingCancelled) {
@@ -4882,16 +5372,25 @@ async function scheduleBackgroundLoading(pubkey, accountInfo) {
                 backgroundLoadingTimeout = null;
                 return;
             }
+            
             // Initialize chunked storage
             const chunkStorage = new ChunkedNoteStorage(pubkey);
             const chunkStorageReady = await chunkStorage.init();
             
             if (chunkStorageReady) {
-                // Store all notes in chunked format
-                await chunkStorage.storeNotesInChunks(fullNotes);
-                
-                const stats = await chunkStorage.getStats();
-                updateStatus(`Updated chunk storage: ${stats.totalChunks} chunks, ${stats.totalNotes} notes`);
+                // Only update chunks if we got MORE notes than currently stored
+const currentStats = await chunkStorage.getStats();
+const currentNoteCount = currentStats ? currentStats.totalNotes : 0;
+
+if (fullNotes.length > currentNoteCount) {
+    // We found more notes - update chunks
+    await chunkStorage.storeNotesInChunks(fullNotes);
+    const newStats = await chunkStorage.getStats();
+    updateStatus(`✅ Updated chunk storage: ${newStats.totalChunks} chunks, ${newStats.totalNotes} notes`);
+} else {
+    // We have same or fewer notes - don't overwrite!
+    updateStatus(`⚠️ Skipped chunk update: already have ${currentNoteCount} notes (background got ${fullNotes.length})`);
+}
             }
             
             // Find notes we don't already have in memory
@@ -4901,21 +5400,27 @@ async function scheduleBackgroundLoading(pubkey, accountInfo) {
             console.log(`Background loading found ${newNotes.length} additional notes`);
             
             if (newNotes.length > 0) {
-                // Add to global array
-                allNotes.push(...newNotes);
-                allNotes.sort((a, b) => b.created_at - a.created_at);
-                
-                // Update UI if user is on default view
-                updateTagFilters();
-                
-                if (!currentTag && selectedTags.size === 0 && activeQuickFilters.size === 0) {
-                    applyFilters();
-                    renderNotes();
+                // FINAL CHECK: Only update if still the same user
+                if (currentPubkey === pubkey) {
+                    // Add to global array
+                    allNotes.push(...newNotes);
+                    allNotes.sort((a, b) => b.created_at - a.created_at);
+                    
+                    // Update UI if user is on default view
+                    updateTagFilters();
+                    
+                    if (!currentTag && selectedTags.size === 0 && activeQuickFilters.size === 0) {
+                        applyFilters();
+                        renderNotes();
+                    }
+                    
+                    hideBackgroundLoadingIndicator();
+                    showToast(`Background loading complete: ${newNotes.length} additional notes found!`, 'success');
+                    updateStatus(`✅ Background loading: +${newNotes.length} older notes (${allNotes.length} total)`);
+                } else {
+                    console.log('Skipping UI update - user switched');
+                    hideBackgroundLoadingIndicator();
                 }
-                
-                hideBackgroundLoadingIndicator();
-                showToast(`Background loading complete: ${newNotes.length} additional notes found and stored in chunks!`, 'success');
-                updateStatus(`✅ Background loading: +${newNotes.length} older notes (${allNotes.length} total, stored in chunks)`);
             } else {
                 hideBackgroundLoadingIndicator();
                 updateStatus('✅ Background loading complete: chunk storage updated, no additional notes in memory');
@@ -5435,13 +5940,11 @@ function trackLoadTime() {
         function updateTagFilters() {
     const tagCounts = {};
     
-    // Process hashtags - removed performance-killing logs
+    // Build hashtag counts efficiently
     allNotes.forEach(note => {
-        if (note.hashtags && Array.isArray(note.hashtags)) {
-            note.hashtags.forEach(tag => {
-                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-            });
-        }
+        note.hashtags?.forEach(tag => {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
     });
     
     const archivedCount = allNotes.filter(note => archivedNotes.has(note.id)).length;
@@ -5632,36 +6135,11 @@ function setActiveTagButtons() {
 }
 
 function applyDateFilters() {
-    // Clear archive selection when manually setting dates
-    const dateFrom = document.getElementById('date-from').value;
-    const dateTo = document.getElementById('date-to').value;
-    
-    if (dateFrom || dateTo) {
-        currentArchive = 'default';
-        currentTag = '';
-        selectedTags.clear();
-        
-        // Clear archive active states
-        document.querySelectorAll('.archive-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        // Clear tag filter active states
-        document.querySelectorAll('.tag-filter').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Set "All Notes" as active
-        document.querySelector('.tag-filter[data-tag=""]').classList.add('active');
-    }
-    
-    applyAllFilters();
+        // Use advanced filtering system
+        applyAllFilters();
 }
 
 
-// Make it globally available
-window.toggleHashtagGroup = toggleHashtagGroup;
-        // === Multi-tag selection helpers ===
 function toggleTag(tag) {
     // Only clear archive state for special tags, not hashtags
     if (!tag.startsWith('#')) {
@@ -5670,22 +6148,22 @@ function toggleTag(tag) {
         document.querySelectorAll('.archive-item').forEach(item => {
             item.classList.remove('active');
         });
-        
-        // Clear date filters when selecting non-hashtag tags
-        document.getElementById('date-from').value = '';
-        document.getElementById('date-to').value = '';
     }
     
     if (!tag) {
-        // "All Notes" clears ALL selections including quick filters
+        // "All Notes" clears ALL selections including quick filters AND dates
         selectedTags.clear();
         currentTag = '';
-        activeQuickFilters.clear(); // Clear quick filters only for "All Notes"
+        activeQuickFilters.clear();
         
         // Clear quick filter buttons
         document.querySelectorAll('.quick-filter-btn').forEach(btn => {
             btn.classList.remove('active');
         });
+        
+        // Clear date filters
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
         
         // Set "All Notes" as active
         document.querySelectorAll('.tag-filter').forEach(btn => {
@@ -5703,43 +6181,46 @@ function toggleTag(tag) {
         return;
     } 
     
-    // For hashtag/content type selection, work WITH quick filters, not against them
-    if (selectedTags.has(tag)) {
-    selectedTags.delete(tag);
+    // Check if we have manual dates set
+    const hasManualDates = document.getElementById('date-from').value || document.getElementById('date-to').value;
     
-    // If no tags selected after removal, check if we have quick filters
-    if (selectedTags.size === 0 && activeQuickFilters.size > 0) {
-        // We still have quick filters active, so use advanced search
-        applyAllFilters();
-    } else if (selectedTags.size === 0 && activeQuickFilters.size === 0) {
-        // If we're in an archive, stay in the archive but show all notes from that archive
-        if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
-            // Stay in archive, just remove hashtag filter
-            applyFilters();
-            renderNotes();
-        } else {
-            // Nothing active, go to "All Notes"
-            currentTag = '';
-            document.querySelectorAll('.tag-filter').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.tag === '') {
-                    btn.classList.add('active');
-                }
-            });
-            window.inAdvancedSearchMode = false;
-            filteredNotes = allNotes.slice();
-            resetPagination();
-            renderNotes();
-        }
-    } else {
-        // Other tags still selected, continue with appropriate filtering
-        if (activeQuickFilters.size > 0) {
+    // For hashtag/content type selection, work WITH quick filters and dates
+    if (selectedTags.has(tag)) {
+        selectedTags.delete(tag);
+        
+        // If no tags selected after removal, check if we have quick filters or dates
+        if (selectedTags.size === 0 && (activeQuickFilters.size > 0 || hasManualDates)) {
+            // We still have quick filters or dates active, so use advanced search
             applyAllFilters();
+        } else if (selectedTags.size === 0 && activeQuickFilters.size === 0 && !hasManualDates) {
+            // If we're in an archive, stay in the archive but show all notes from that archive
+            if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+                // Stay in archive, just remove hashtag filter
+                applyFilters();
+                renderNotes();
+            } else {
+                // Nothing active, go to "All Notes"
+                currentTag = '';
+                document.querySelectorAll('.tag-filter').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.tag === '') {
+                        btn.classList.add('active');
+                    }
+                });
+                window.inAdvancedSearchMode = false;
+                filteredNotes = allNotes.slice();
+                resetPagination();
+                renderNotes();
+            }
         } else {
-            applyFilters();
-            renderNotes();
+            // Other tags still selected, continue with appropriate filtering
+            if (activeQuickFilters.size > 0 || hasManualDates) {
+                applyAllFilters();
+            } else {
+                applyFilters();
+                renderNotes();
+            }
         }
-    }
     } else {
         selectedTags.add(tag);
         
@@ -5749,13 +6230,13 @@ function toggleTag(tag) {
         const hasReposts = selectedTags.has('__reposts');
         const hasQuotes = selectedTags.has('__quotes');
         
-        // If all 4 content types are selected, clear them but keep quick filters
+        // If all 4 content types are selected, clear them but keep quick filters and dates
         if (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4) {
             selectedTags.clear();
             currentTag = '';
             
-            if (activeQuickFilters.size > 0) {
-                // Quick filters are active, use advanced search
+            if (activeQuickFilters.size > 0 || hasManualDates) {
+                // Quick filters or dates are active, use advanced search
                 applyAllFilters();
             } else {
                 // No filters active, go to "All Notes"
@@ -5771,12 +6252,12 @@ function toggleTag(tag) {
                 renderNotes();
             }
         } else if (hasOriginal && hasReplies && selectedTags.size === 2 && !hasReposts && !hasQuotes) {
-            // If only original and replies are selected, clear them but keep quick filters
+            // If only original and replies are selected, clear them but keep quick filters and dates
             selectedTags.clear();
             currentTag = '';
             
-            if (activeQuickFilters.size > 0) {
-                // Quick filters are active, use advanced search
+            if (activeQuickFilters.size > 0 || hasManualDates) {
+                // Quick filters or dates are active, use advanced search
                 applyAllFilters();
             } else {
                 // No filters active, go to "All Notes"
@@ -5793,7 +6274,7 @@ function toggleTag(tag) {
             }
         } else {
             // Normal tag selection - use appropriate filter system
-            if (activeQuickFilters.size > 0) {
+            if (activeQuickFilters.size > 0 || hasManualDates) {
                 applyAllFilters();
             } else {
                 applyFilters();
@@ -5913,7 +6394,7 @@ function noteMatchesTag(note, tag) {
                     }
                 }
             }
-            
+
             return false;
         });
     }
@@ -5925,6 +6406,9 @@ function noteMatchesTag(note, tag) {
 
 
         function renderNotes() {
+    // FIX #9: Clear cache at the start
+    hashtagElementCache = null;
+    
     const container = document.getElementById('notes-container');
     const emptyState = document.getElementById('empty-state');
     const loadMoreContainer = document.getElementById('load-more-container');
@@ -5943,32 +6427,9 @@ function noteMatchesTag(note, tag) {
             
     // Update title and count
     if (selectedTags.size > 0) {
-    // Check if we're in an archive context
-    if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
-        const archiveName = currentTag.replace('__archive_', '');
-        const tagNames = Array.from(selectedTags).map(tag => {
-            if (tag === '__original') return 'Original Notes';
-            if (tag === '__replies') return 'Replies';
-            if (tag === '__reposts') return 'Reposts';
-            if (tag === '__quotes') return 'Quotes';
-            if (tag === '__archived') return 'Archived';
-            return tag;
-        });
-        // Show archive context with selected tags
-        title.textContent = `Archive: ${archiveName} (${tagNames.join(' + ')})`;
-    } else {
-        // Check if all content types are selected - that's equivalent to "All Notes"
-        const hasOriginal = selectedTags.has('__original');
-        const hasReplies = selectedTags.has('__replies');
-        const hasReposts = selectedTags.has('__reposts');
-        const hasQuotes = selectedTags.has('__quotes');
-        
-        if ((hasOriginal && hasReplies && selectedTags.size === 2) ||
-            (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4)) {
-            // If only original and replies are selected, OR all 4 types are selected, show "All Notes"
-            title.textContent = 'All Notes';
-        } else {
-            // Multi-tag selection takes priority
+        // Check if we're in an archive context
+        if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+            const archiveName = currentTag.replace('__archive_', '');
             const tagNames = Array.from(selectedTags).map(tag => {
                 if (tag === '__original') return 'Original Notes';
                 if (tag === '__replies') return 'Replies';
@@ -5977,9 +6438,32 @@ function noteMatchesTag(note, tag) {
                 if (tag === '__archived') return 'Archived';
                 return tag;
             });
-            title.textContent = tagNames.join(' + ');
+            // Show archive context with selected tags
+            title.textContent = `Archive: ${archiveName} (${tagNames.join(' + ')})`;
+        } else {
+            // Check if all content types are selected - that's equivalent to "All Notes"
+            const hasOriginal = selectedTags.has('__original');
+            const hasReplies = selectedTags.has('__replies');
+            const hasReposts = selectedTags.has('__reposts');
+            const hasQuotes = selectedTags.has('__quotes');
+            
+            if ((hasOriginal && hasReplies && selectedTags.size === 2) ||
+                (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4)) {
+                // If only original and replies are selected, OR all 4 types are selected, show "All Notes"
+                title.textContent = 'All Notes';
+            } else {
+                // Multi-tag selection takes priority
+                const tagNames = Array.from(selectedTags).map(tag => {
+                    if (tag === '__original') return 'Original Notes';
+                    if (tag === '__replies') return 'Replies';
+                    if (tag === '__reposts') return 'Reposts';
+                    if (tag === '__quotes') return 'Quotes';
+                    if (tag === '__archived') return 'Archived';
+                    return tag;
+                });
+                title.textContent = tagNames.join(' + ');
+            }
         }
-    }
     } else if (currentTag === '__archived') {
         title.textContent = 'All Archived Notes';
     } else if (currentTag === '__original') {
@@ -5994,7 +6478,7 @@ function noteMatchesTag(note, tag) {
         const archiveName = currentTag.replace('__archive_', '');
         // Check if neon-green theme is active
         const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-        title.textContent = isNeonGreen ? `Archive: ${archiveName}` : `📂 Archive: ${archiveName}`;
+        title.textContent = isNeonGreen ? `Archive: ${archiveName}` : ` Archive: ${archiveName}`;
         title.style.color = 'var(--text-muted)';
     } else if (currentTag) {
         title.textContent = `Notes tagged ${currentTag}`;
@@ -6051,13 +6535,18 @@ function noteMatchesTag(note, tag) {
         const chunkSize = 50; // Smaller chunks for rendering
         let html = '';
         
+        // FIX #8: Pre-calculate sets for faster lookups
+        const archivedSet = archivedNotes;
+        const selectedSet = selectedNotes;
+        
         for (let i = 0; i < notesToRender.length; i += chunkSize) {
             const chunk = notesToRender.slice(i, i + chunkSize);
                 
             chunk.forEach(note => {
                 const date = new Date(note.created_at * 1000).toLocaleString();
-                const isArchived = archivedNotes.has(note.id);
-                const isSelected = selectedNotes.has(note.id);
+                // FIX #8: Use pre-calculated sets
+                const isArchived = archivedSet.has(note.id);
+                const isSelected = selectedSet.has(note.id);
                 
                 const hashtagsHtml = note.hashtags && note.hashtags.length > 0 ? 
                     note.hashtags.map(tag => {
@@ -6071,24 +6560,24 @@ function noteMatchesTag(note, tag) {
                     }).join(' ') : '';
                 
                 // Different styling for different note types
-const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
+                const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
 
-// Set appropriate indicator based on note type
-let noteIndicator = '<span class="emoji">📄</span> '; // Default for original notes
-if (note.isRepost) {
-    noteIndicator = '<span class="emoji">🔄</span> ';
-} else if (note.isQuote) {
-    noteIndicator = '<span class="emoji">💭</span> ';
-} else if (note.isReply) {
-    // Get the npub they're replying to
-    const replyTargetNpub = getReplyTargetNpub(note);
-    if (replyTargetNpub) {
-        const shortNpub = shortenNpub(replyTargetNpub);
-        noteIndicator = `<span class="emoji">💬</span> Replying to <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" title="Click to copy full npub">${shortNpub}</button> `;
-    } else {
-        noteIndicator = '<span class="emoji">💬</span> ';
-    }
-}
+                // Set appropriate indicator based on note type
+                let noteIndicator = '<span class="emoji">📄</span> '; // Default for original notes
+                if (note.isRepost) {
+                    noteIndicator = '<span class="emoji">🔄</span> ';
+                } else if (note.isQuote) {
+                    noteIndicator = '<span class="emoji">💭</span> ';
+                } else if (note.isReply) {
+                    // Get the npub they're replying to
+                    const replyTargetNpub = getReplyTargetNpub(note);
+                    if (replyTargetNpub) {
+                        const shortNpub = shortenNpub(replyTargetNpub);
+                        noteIndicator = `<span class="emoji">💬</span> Replying to <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" title="Click to copy full npub">${shortNpub}</button> `;
+                    } else {
+                        noteIndicator = '<span class="emoji">💬</span> ';
+                    }
+                }
                 
                 // IMPROVED: Check if we're in a specific archive view
                 const isInSpecificArchive = currentTag.startsWith('__archive_');
@@ -6109,7 +6598,7 @@ if (note.isRepost) {
                     archiveButtonHtml = `
                         <button class="btn btn-small btn-archive ${isArchived ? 'archived' : ''}" 
                                 onclick="toggleArchiveNote('${note.id}')">
-                            ${isArchived ? '✓ Archived' : '<span class="emoji">📂</span> Archive'}
+                            ${isArchived ? '✓ Archived' : '<span class="emoji"></span> Archive'}
                         </button>`;
                 }
                 
@@ -6129,7 +6618,7 @@ if (note.isRepost) {
                                 </button>
                             </div>
                         </div>
-                        <div class="note-content">${makeLinksClickable(processYouTubeLinks(processImageLinks(escapeHtml(note.content))))}</div>
+                        <div class="note-content">${processYouTubeLinks(processImageLinks(makeLinksClickable(escapeHtml(note.content))))}</div>
                         ${hashtagsHtml ? `<div class="hashtags">${hashtagsHtml}</div>` : ''}
                     </div>
                 `;
@@ -6412,6 +6901,24 @@ if (currentTag.startsWith('__archive_')) {
     );
     const nevent = createNevent(note);
     
+    // Check if this note is part of a thread
+    const threadNotes = getThreadNotes(noteId);
+    const isThreaded = threadNotes.length > 1;
+    
+    // Check for neon-green theme
+    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    const threadIcon = isNeonGreen ? '' : '🧵 ';
+    
+    // Thread info section (only show if part of thread)
+    const threadSection = isThreaded ? `
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <p><strong>${threadIcon}Thread:</strong> ${threadNotes.length} of your notes in this conversation</p>
+            <button class="btn btn-small" onclick="showThreadView('${noteId}')" style="margin-top: 8px; width: 100%;">
+                View Thread
+            </button>
+        </div>
+    ` : '';
+    
     const modalHtml = `
         <div class="modal" onclick="closeModal(event)">
             <div class="modal-content" onclick="event.stopPropagation()">
@@ -6421,15 +6928,115 @@ if (currentTag.startsWith('__archive_')) {
                 <p><strong>ID:</strong><br><small style="word-break: break-all;">${note.id}</small></p>
                 <p><strong>Author:</strong><br><small style="word-break: break-all;">${note.pubkey}</small></p>
                 <p><strong>Created:</strong> ${date.toLocaleString()}</p>
-                <p><strong>Type:</strong> ${note.isReply ? 'Reply' : 'Original Note'}</p>
+                <p><strong>Type:</strong> ${note.isRepost ? 'Repost (kind 6)' : note.isQuote ? 'Quote (kind 1)' : note.isReply ? 'Reply (kind 1)' : 'Original Note (kind 1)'}</p>
                 <p><strong>Content Length:</strong> ${note.content.length} characters</p>
                 <p><strong>Hashtags:</strong> ${note.hashtags.length > 0 ? note.hashtags.join(', ') : 'None'}</p>
                 <p><strong>Archives:</strong> ${archiveStatus.length > 0 ? archiveStatus.join(', ') : 'Not archived'}</p>
+                ${threadSection}
             </div>
         </div>
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function getThreadNotes(noteId) {
+    const note = allNotes.find(n => n.id === noteId);
+    if (!note) return [];
+    
+    // Find the root of the thread
+    let rootId = noteId;
+    
+    // Check if this note is a reply
+    if (note.tags && Array.isArray(note.tags)) {
+        const eTags = note.tags.filter(tag => tag[0] === 'e');
+        if (eTags.length > 0) {
+            // The root is typically the first 'e' tag, or the one marked as 'root'
+            const rootTag = eTags.find(tag => tag[3] === 'root') || eTags[0];
+            if (rootTag && rootTag[1]) {
+                rootId = rootTag[1];
+            }
+        }
+    }
+    
+    // Find all YOUR notes that reference this root
+    const threadNotes = allNotes.filter(n => {
+        if (n.id === rootId) return true; // Include root if it's yours
+        
+        // Check if this note replies to the root
+        if (n.tags && Array.isArray(n.tags)) {
+            const eTags = n.tags.filter(tag => tag[0] === 'e');
+            return eTags.some(tag => tag[1] === rootId);
+        }
+        
+        return false;
+    });
+    
+    // Sort chronologically (oldest first for conversation flow)
+    return threadNotes.sort((a, b) => a.created_at - b.created_at);
+}
+
+function showThreadView(noteId) {
+    // Close the Info modal first
+    const infoModal = document.querySelector('.modal');
+    if (infoModal) {
+        infoModal.remove();
+    }
+    
+    const threadNotes = getThreadNotes(noteId);
+    
+    if (threadNotes.length === 0) {
+        showToast('No thread notes found', 'error');
+        return;
+    }
+    
+    // Check for neon-green theme
+    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    const threadIcon = isNeonGreen ? '' : '🧵 ';
+    
+    // Build the thread display
+    const threadHtml = threadNotes.map(note => {
+    const date = new Date(note.created_at * 1000);
+    const noteType = isNeonGreen ? '' : (note.isRepost ? '🔄 ' : note.isQuote ? '💭 ' : note.isReply ? '💬 ' : '📝 ');
+    
+    return `
+        <div style="padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                ${noteType}You • ${date.toLocaleString()}
+            </div>
+            <div style="white-space: pre-wrap; line-height: 1.6; padding-left: 0;">
+                ${escapeHtml(note.content)}
+            </div>
+        </div>
+    `;
+}).join('');
+    
+    const modalHtml = `
+        <div class="modal" onclick="closeThreadView(event)">
+            <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 700px;">
+                <button class="modal-close" onclick="closeThreadView()">Close</button>
+                <div style="text-align: center; margin-bottom: 20px;">
+    <h3>${threadIcon}Thread View</h3>
+    <p style="color: var(--text-muted); margin-bottom: 0;">
+        Showing ${threadNotes.length} of your notes in this conversation
+    </p>
+</div>
+                <div class="thread-scroll" style="max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+                    ${threadHtml}
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 13px;">
+                    ${threadNotes.length} ${threadNotes.length === 1 ? 'note' : 'notes'} in this thread
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+function closeThreadView(event) {
+    if (!event || event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+        document.querySelector('.modal')?.remove();
+    }
 }
 
 function closeModal(event) {
@@ -7014,6 +7621,8 @@ function handleSingleTagClick(tag) {
     toggleTag(tag);
 }
 
+let hashtagUpdateTimeout = null;
+
 function continueHashtagSelection(tag, event) {
     if (isSelecting && selectionStarted && selectionMode) {
         event.preventDefault();
@@ -7022,13 +7631,11 @@ function continueHashtagSelection(tag, event) {
         let changed = false;
         
         if (selectionMode === 'add') {
-            // Add tags that aren't already selected
             if (!selectedTags.has(tag)) {
                 selectedTags.add(tag);
                 changed = true;
             }
         } else if (selectionMode === 'remove') {
-            // Remove tags that are currently selected
             if (selectedTags.has(tag)) {
                 selectedTags.delete(tag);
                 changed = true;
@@ -7036,9 +7643,15 @@ function continueHashtagSelection(tag, event) {
         }
         
         if (changed) {
-            updateHashtagVisualsOnly();
-            updateCountOnly();
-            setActiveTagButtons();
+            // Throttle to 60fps
+            if (!hashtagUpdateTimeout) {
+                hashtagUpdateTimeout = setTimeout(() => {
+                    updateHashtagVisualsOnly();
+                    updateCountOnly();
+                    setActiveTagButtons();
+                    hashtagUpdateTimeout = null;
+                }, 16);
+            }
         }
     }
 }
@@ -7061,11 +7674,13 @@ function endHashtagSelection() {
     }
 }
 
-// Helper function to update only hashtag visuals without full re-render
 function updateHashtagVisualsOnly() {
-    document.querySelectorAll('.hashtag').forEach(hashtagElement => {
+    const elements = document.querySelectorAll('.hashtag');
+    elements.forEach(hashtagElement => {
         const tag = hashtagElement.dataset.tag || hashtagElement.textContent;
-        if (selectedTags.has(tag)) {
+        const isSelected = selectedTags.has(tag);
+        
+        if (isSelected) {
             hashtagElement.setAttribute('data-selected', 'true');
             hashtagElement.style.backgroundColor = 'var(--primary-color)';
             hashtagElement.style.color = 'white';
@@ -7207,10 +7822,30 @@ function closeYouTube(element, url, videoId) {
 }
 
 function makeLinksClickable(content) {
-    // More flexible regex for video URLs
-    const videoRegex = /(https?:\/\/[^\s"<>]+\.(mp4|mov|avi|webm)(?:\?[^\s"<>]*)?)/gi;
-    return content.replace(videoRegex, (url) => {
-        return `<a href="${url}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">${url}</a>`;
+    // Match all URLs (http, https)
+    const urlRegex = /(https?:\/\/[^\s<>"]+)/gi;
+    
+    return content.replace(urlRegex, (url) => {
+        // Skip video URLs
+        const videoRegex = /\.(mp4|mov|avi|webm)(\?[^\s"<>]*)?$/i;
+        if (videoRegex.test(url)) {
+            return url;
+        }
+        
+        // Skip image URLs (they're handled by processImageLinks)
+        const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
+        if (imageRegex.test(url)) {
+            return url;
+        }
+        
+        // Skip YouTube URLs (they're handled by processYouTubeLinks)
+        const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+        if (youtubeRegex.test(url)) {
+            return url;
+        }
+        
+        // Make all other URLs clickable
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
     });
 }
 
@@ -7237,6 +7872,7 @@ async function performAdvancedSearch(query, filters = {}) {
             contentType: filters.contentType,
             hasImages: filters.hasImages,
             hasYouTube: filters.hasYouTube,
+            hasLinks: filters.hasLinks,
             minLength: filters.minLength,
             maxLength: filters.maxLength
         };
@@ -7312,6 +7948,12 @@ function performInMemorySearch(query, filters) {
         const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
         results = results.filter(note => youtubeRegex.test(note.content));
     }
+
+     if (filters.hasLinks) {
+        // More flexible regex that catches various link formats
+        const linkRegex = /https?:\/\/[^\s<>"]+/gi;
+        results = results.filter(note => linkRegex.test(note.content));
+    }
     
     if (query && query.trim()) {
     const searchTerms = query.toLowerCase().split(/\s+/);
@@ -7378,6 +8020,10 @@ function toggleQuickFilter(type) {
                     document.querySelector(`[data-filter="${dateFilter}"]`).classList.remove('active');
                 }
             });
+            
+            // IMPORTANT: Also clear manual date inputs when selecting a quick date filter
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
         }
         
         // Add filter
@@ -7388,7 +8034,7 @@ function toggleQuickFilter(type) {
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
     // Clear archive selection when ANY quick filter operation happens
-    // but DON'T clear hashtag selections (selectedTags)
+    // but DON'T clear hashtag selections (selectedTags) OR manual date filters (unless it's a date quick filter)
     currentArchive = 'default';
     currentTag = '';
     
@@ -7467,29 +8113,32 @@ async function applyAllFilters() {
             case 'long':
                 filters.minLength = 500;
                 break;
+
+            case 'links':
+                filters.hasLinks = true;
+                break;
         }
     });
     
     // Set the earliest date if any date filters are active
-    if (earliestDate) {
-        filters.dateFrom = earliestDate;
-    }
-    
-    // Manual date range filters - these OVERRIDE quick filters if set
-    const dateFromValue = document.getElementById('date-from').value;
-    const dateToValue = document.getElementById('date-to').value;
-    
-    if (dateFromValue) {
-        // Create date at start of day
-        const fromDate = new Date(dateFromValue + 'T00:00:00');
-        filters.dateFrom = fromDate;
-    }
-    
-    if (dateToValue) {
-        // Create date at end of day
-        const toDate = new Date(dateToValue + 'T23:59:59');
-        filters.dateTo = toDate;
-    }
+    // Manual date range filters - check these FIRST before quick filters
+const dateFromValue = document.getElementById('date-from').value;
+const dateToValue = document.getElementById('date-to').value;
+
+if (dateFromValue) {
+    // Create date at start of day
+    const fromDate = new Date(dateFromValue + 'T00:00:00');
+    filters.dateFrom = fromDate;
+} else if (earliestDate) {
+    // Only use quick filter dates if no manual date is set
+    filters.dateFrom = earliestDate;
+}
+
+if (dateToValue) {
+    // Create date at end of day
+    const toDate = new Date(dateToValue + 'T23:59:59');
+    filters.dateTo = toDate;
+}
     
     performSearchWithFilters(query, filters);
 }
@@ -7622,6 +8271,7 @@ if (activeQuickFilters.has('year')) activeFilters.push('This Year');
 if (activeQuickFilters.has('images')) activeFilters.push('Images');
 if (activeQuickFilters.has('youtube')) activeFilters.push('Videos');
 if (activeQuickFilters.has('long')) activeFilters.push('Long');
+if (activeQuickFilters.has('links')) activeFilters.push('Links');
     
     // Add selected hashtags from multi-selection
     selectedTags.forEach(tag => {
@@ -7761,18 +8411,17 @@ async function diagnoseLoadingIssue() {
 // Make it globally available
 window.diagnoseLoadingIssue = diagnoseLoadingIssue;
 
-
+window.showThreadView = showThreadView;
+window.closeThreadView = closeThreadView;
 
 // Make functions globally available
 window.toggleQuickFilter = toggleQuickFilter;
 window.applyDateFilters = applyDateFilters;
 window.clearAllFilters = clearAllFilters;
 
-
 // Add global event listeners for hashtag selection
 document.addEventListener('mouseup', endHashtagSelection);
 document.addEventListener('mouseleave', endHashtagSelection);
-
 
 // Make functions globally available for onclick handlers
 // Core functionality
@@ -7836,7 +8485,6 @@ if (!localStorage.getItem('archives-cleanup-done')) {
     localStorage.removeItem('nostr-named-archives');
     localStorage.setItem('archives-cleanup-done', 'true');
 }
-
     </script>
 </body>
 </html>
