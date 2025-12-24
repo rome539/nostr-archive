@@ -1213,6 +1213,29 @@ kbd {
     display: none !important; /* Chrome, Safari, Opera */
 }
 
+/* Make date a subtle copy button */
+.date-copy-btn {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.date-copy-btn:hover {
+    background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+    color: var(--primary-color);
+}
+
+.date-copy-btn:active {
+    transform: scale(0.98);
+}
+
+/* Theme-specific */
+[data-theme="neon-green"] .date-copy-btn:hover {
+    background: var(--accent-weak-2);
+    color: var(--accent);
+}
+
 /* Neon Green theme checkboxes */
 [data-theme="neon-green"] .note-checkbox {
     border-color: var(--accent-border);
@@ -1956,14 +1979,22 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         <!-- Main App -->
         <div id="main-app" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div>
-                    <h2><span class="emoji">📝</span> My Nostr Archive</h2>
-                  <small id="pubkey-display" style="color: var(--text-muted); font-family: monospace;">
-                </div>
-               <button id="disconnect-btn" style="background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-    Disconnect
-</button>
-            </div>
+    <div>
+        <h2><span class="emoji">📝</span> My Nostr Archive</h2>
+        <small id="pubkey-display" style="color: var(--text-muted); font-family: monospace;">
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <button id="deep-scan-btn" class="btn btn-small">
+            <span class="emoji"></span> Deep Scan
+        </button>
+        <button id="refresh-btn" class="btn btn-small">
+            <span class="emoji"></span> Refresh
+        </button>
+        <button id="disconnect-btn" style="background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Disconnect
+        </button>
+    </div>
+</div>
 
             <div class="app-layout">
     <div class="sidebar">
@@ -2079,20 +2110,13 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 
 
     <div class="main-content">
+<!-- Main content card starts here -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
     <div>
         <h3 id="notes-title">All Notes</h3>
         <small id="notes-count" style="color: var(--text-muted);">0 notes</small>
     </div>
-    <div style="display: flex; gap: 8px;">
-        <button id="deep-scan-btn" class="btn btn-small">
-    <span class="emoji"></span> Deep Scan
-</button>
-<button id="refresh-btn" class="btn btn-small">
-    <span class="emoji"></span> Refresh
-</button>
-    </div>
-</div>
+  </div>
 
 
 
@@ -2162,6 +2186,10 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         let hashtagElementCache = null;
         let noteMatchCache = null;
 
+        // Performance optimization
+let filterDebounceTimeout = null;
+let isFiltering = false;
+
         // Progressive loading state
 let isBackgroundLoading = false;
 let backgroundLoadingProgress = 0;
@@ -2214,7 +2242,7 @@ function normalizeNpub(input) {
     'wss://relay.primal.net',
     'wss://nostr.wine',
     'wss://nos.lol',
-    'wss://relay.nostr.band',
+    'wss://nostr.land/',
     'wss://fiatjaf.com',
 
 ];
@@ -2324,19 +2352,28 @@ document.getElementById('search-input').addEventListener('input', function(e) {
     tagFiltersEl.__dragSetup = true; // Prevent duplicate setup
 }
 
-        function loadArchivedNotes() {
-    if (!currentPubkey) return; // Don't load if no user connected
+        async function loadArchivedNotes() {
+    if (!currentPubkey) return;
     
     try {
-        // Load legacy archive for backward compatibility
-        const saved = localStorage.getItem(`nostr-archived-notes-${currentPubkey}`);
-        if (saved) {
-            archivedNotes = new Set(JSON.parse(saved));
-        } else {
-            archivedNotes = new Set();
+        // Try loading from IndexedDB first
+        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+        const ready = await chunkStorage.init();
+        
+        if (ready && chunkStorage.db) {
+            const archivesData = await chunkStorage.db.indices.get('archives');
+            
+            if (archivesData && archivesData.data) {
+                namedArchives = {};
+                Object.keys(archivesData.data).forEach(name => {
+                    namedArchives[name] = new Set(archivesData.data[name]);
+                });
+                console.log(`Loaded ${Object.keys(namedArchives).length} archives from IndexedDB`);
+                return;
+            }
         }
         
-        // Load named archives
+        // Fallback: try localStorage
         const savedArchives = localStorage.getItem(`nostr-named-archives-${currentPubkey}`);
         if (savedArchives) {
             const parsed = JSON.parse(savedArchives);
@@ -2344,15 +2381,32 @@ document.getElementById('search-input').addEventListener('input', function(e) {
             Object.keys(parsed).forEach(name => {
                 namedArchives[name] = new Set(parsed[name]);
             });
+            
+            // Migrate to IndexedDB if possible
+            if (ready && chunkStorage.db) {
+                await chunkStorage.db.indices.put({
+                    type: 'archives',
+                    data: parsed
+                });
+                console.log('Migrated archives from localStorage to IndexedDB');
+            }
         } else {
             namedArchives = {};
         }
         
-        // Migration logic (only for this specific user)
+        // Legacy archive for backward compatibility
+        const saved = localStorage.getItem(`nostr-archived-notes-${currentPubkey}`);
+        if (saved) {
+            archivedNotes = new Set(JSON.parse(saved));
+        } else {
+            archivedNotes = new Set();
+        }
+        
+        // Migration logic
         if (archivedNotes.size > 0 && !namedArchives['My Archive']) {
             namedArchives['My Archive'] = new Set([...archivedNotes]);
             archivedNotes.clear();
-            saveArchivedNotes();
+            await saveArchivedNotes();
         }
     } catch (error) {
         console.error('Error loading archived notes:', error);
@@ -2488,20 +2542,51 @@ function setupKeyboardShortcuts() {
     });
 }
 
-function saveArchivedNotes() {
-    if (!currentPubkey) return; // Don't save if no user connected
+async function saveArchivedNotes() {
+    if (!currentPubkey) return;
     try {
-        // Save legacy for backward compatibility
-        localStorage.setItem(`nostr-archived-notes-${currentPubkey}`, JSON.stringify([...archivedNotes]));
-
-        // Save named archives (convert Sets to arrays for JSON)
+        // Try IndexedDB first
+        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+        const ready = await chunkStorage.init();
+        
+        if (ready && chunkStorage.db) {
+            // Save to IndexedDB
+            const toSave = {};
+            Object.keys(namedArchives).forEach(name => {
+                toSave[name] = [...namedArchives[name]];
+            });
+            
+            await chunkStorage.db.indices.put({
+                type: 'archives',
+                data: toSave
+            });
+            
+            console.log('Archives saved to IndexedDB');
+            return;
+        }
+        
+        // Fallback to localStorage (with size limit warning)
         const toSave = {};
         Object.keys(namedArchives).forEach(name => {
             toSave[name] = [...namedArchives[name]];
         });
+        
+        const jsonSize = JSON.stringify(toSave).length;
+        
+        // Warn if approaching localStorage limits (5MB)
+        if (jsonSize > 3000000) { // 3MB warning threshold
+            showToast('⚠️ Archive data is large. Consider reducing archived notes.', 'warning', 5000);
+        }
+        
         localStorage.setItem(`nostr-named-archives-${currentPubkey}`, JSON.stringify(toSave));
+        
     } catch (error) {
-        console.error('Error saving archived notes:', error);
+        if (error.name === 'QuotaExceededError') {
+            showToast('Storage quota exceeded! Archives are too large. Try removing some archived notes.', 'error', 8000);
+            console.error('Archive storage quota exceeded - too many notes archived');
+        } else {
+            console.error('Error saving archived notes:', error);
+        }
     }
 }
 
@@ -2919,7 +3004,7 @@ function closeArchiveModal(event) {
     document.getElementById('tag-filters').innerHTML = '<button class="tag-filter active" data-tag="">Loading...</button>';
 
     // Load archives for this specific user
-    loadArchivedNotes();
+await loadArchivedNotes();
     updateArchiveList();
 
     // Save the npub for next time
@@ -3008,15 +3093,18 @@ function closeArchiveModal(event) {
         renderNotes();
         await verifyCompletenessQuick(currentPubkey);
         
-        // Always schedule background loading to get complete history
-        if (!loadedFromChunkCache) {
-            const estimatedTotal = notes.length * 5;
-            scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
-        } else {
-            // Refresh cached chunks in background
-            const estimatedTotal = (cachedChunkStats && cachedChunkStats.totalNotes) || notes.length;
-            scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
-        }
+        // Only schedule background loading if we don't have a good cache
+if (!loadedFromChunkCache) {
+    // No cache - do full background fetch
+    const estimatedTotal = notes.length * 5;
+    scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
+} else if (cachedChunkStats && cachedChunkStats.totalNotes < 1000) {
+    // Small cache - probably incomplete, refresh it
+    const estimatedTotal = notes.length * 5;
+    scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
+}
+// If we loaded from cache with substantial notes (1000+), don't background fetch
+// The incremental update in loadNotesHybrid already handled getting new notes
         
         updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
         
@@ -3184,14 +3272,7 @@ async function fetchNotesFromRelays(pubkey) {
         relayStatuses.set(relay, 'connecting');
         
         try {
-            updateStatus(`<span class="emoji">🔄</span> ${relayName}: Connecting.`);
-            
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => {
-                    relayStatuses.set(relay, 'timeout');
-                    reject(new Error('Timeout after 60s'));
-                }, 60000);
-            });
+            updateStatus(`<span class="emoji">🔄</span> ${relayName}: Connecting...`);
             
             const fetchPromise = fetchAllNotesFromRelay(relay, pubkey, (progress, status) => {
                 relayStatuses.set(relay, 'fetching');
@@ -3202,7 +3283,7 @@ async function fetchNotesFromRelays(pubkey) {
                 );
             });
             
-            const events = await Promise.race([fetchPromise, timeoutPromise]);
+            const events = await fetchPromise;
             
             // DEDUPLICATE IMMEDIATELY per relay
             let newCount = 0;
@@ -3287,13 +3368,13 @@ async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback
     const batchSize = 1000;
     let consecutiveEmptyBatches = 0;
     const MAX_EMPTY_BATCHES = 3;
-    const MAX_RELAY_TIME = 120000; // 2 minutes max per relay
+    const MAX_RELAY_TIME = 0; // No timeout for deep scan - let it complete naturally
     
     const startTime = Date.now();
     
     while (true) {
-        // Check if we've exceeded total relay time
-        if (Date.now() - startTime > MAX_RELAY_TIME) {
+        // Check if we've exceeded total relay time (only if timeout is set)
+        if (MAX_RELAY_TIME > 0 && Date.now() - startTime > MAX_RELAY_TIME) {
             console.warn(`[${relayUrl}] Timeout after ${MAX_RELAY_TIME / 1000}s - stopping with ${allEvents.length} notes`);
             progressCallback(100, `timeout (${allEvents.length} notes)`);
             return {
@@ -3734,7 +3815,9 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
     const allEvents = [];
     let until = null;
     let batchNumber = 1;
-   const batchSize = 1000
+    const batchSize = 1000;
+    let consecutiveEmptyBatches = 0;
+    const MAX_EMPTY_BATCHES = 3;
     
     while (true) {
         progressCallback(
@@ -3743,47 +3826,54 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
         );
         
         try {
-            
             const batchEvents = await fetchBatchFromRelay(relayUrl, pubkey, until, batchSize);
-
-// ADD THIS DEBUGGING LINE
-console.log(`[${relayUrl}] Batch ${batchNumber}: ${batchEvents.length} events (total: ${allEvents.length})`);
-
-// Check if we got events BEFORE trying to access them
-if (batchEvents.length === 0) {
-    console.warn(`[${relayUrl}] Batch ${batchNumber} returned 0 events - stopping`);
-    break;
-}
-
-allEvents.push(...batchEvents);
-
-// Safety check: ensure we have a valid event before accessing its timestamp
-const oldestEvent = batchEvents[batchEvents.length - 1];
-if (!oldestEvent || !oldestEvent.created_at) {
-    console.warn(`[${relayUrl}] Invalid event structure in batch ${batchNumber} - stopping`);
-    break;
-}
-
-until = oldestEvent.created_at - 1;
-batchNumber++;
-
-// Rate limiting
-await new Promise(resolve => setTimeout(resolve, 250));
-
-// Safety check - prevent infinite loops
-if (batchNumber > 200) {
-    console.warn(`[${relayUrl}] Safety limit: 200 batches reached (${allEvents.length} notes)`);
-    break;
-}
-
-// Rate limiting - longer delay for hosted environments
-await new Promise(resolve => setTimeout(resolve, 250)); // Increased to 250ms for stability
-
-// Safety check - prevent infinite loops
-if (batchNumber > 200) { // Increased from 100 to 200 for large accounts
-    console.warn(`[${relayUrl}] Safety limit: 200 batches reached (${allEvents.length} notes)`);
-    break;
-}
+            
+            console.log(`[${relayUrl}] Batch ${batchNumber}: ${batchEvents.length} events (total: ${allEvents.length})`);
+            
+            // Check if we got events
+            if (batchEvents.length === 0) {
+                consecutiveEmptyBatches++;
+                console.log(`[${relayUrl}] Empty batch ${consecutiveEmptyBatches}/${MAX_EMPTY_BATCHES}`);
+                
+                if (consecutiveEmptyBatches >= MAX_EMPTY_BATCHES) {
+                    console.log(`[${relayUrl}] Reached end (${MAX_EMPTY_BATCHES} empty batches)`);
+                    break;
+                }
+                
+                // Try going back further in time
+                if (until) {
+                    until = until - (30 * 24 * 60 * 60); // Go back 30 days
+                } else {
+                    break;
+                }
+                
+                batchNumber++;
+                await new Promise(resolve => setTimeout(resolve, 500));
+                continue;
+            }
+            
+            // Reset empty batch counter when we get results
+            consecutiveEmptyBatches = 0;
+            allEvents.push(...batchEvents);
+            
+            // Safety check: ensure we have a valid event before accessing its timestamp
+            const oldestEvent = batchEvents[batchEvents.length - 1];
+            if (!oldestEvent || !oldestEvent.created_at) {
+                console.warn(`[${relayUrl}] Invalid event structure in batch ${batchNumber} - stopping`);
+                break;
+            }
+            
+            until = oldestEvent.created_at - 1;
+            batchNumber++;
+            
+            // Rate limiting - 250ms delay between batches for stability
+            await new Promise(resolve => setTimeout(resolve, 250));
+            
+            // Safety check - prevent infinite loops (500 batches = ~500k notes max)
+            if (batchNumber > 500) {
+                console.warn(`[${relayUrl}] Safety limit: 500 batches reached (${allEvents.length} notes)`);
+                break;
+            }
             
         } catch (error) {
             console.error(`Error fetching batch ${batchNumber} from ${relayUrl}:`, error);
@@ -3796,8 +3886,6 @@ if (batchNumber > 200) { // Increased from 100 to 200 for large accounts
 }
 
    
-// Enhanced hybrid loading with chunked storage
-// Enhanced hybrid loading with chunked storage
 async function loadNotesHybrid(pubkey, silent = false) {
     try {
         // Initialize chunked storage
@@ -3818,12 +3906,51 @@ async function loadNotesHybrid(pubkey, silent = false) {
                 updateStatus(`Loading all notes from chunked storage...`);
             }
             
-            // ALWAYS load all notes from chunks if they exist
-            const allNotes = await chunkStorage.loadAllNotes();
+            // Load all notes from chunks
+            const cachedNotes = await chunkStorage.loadAllNotes();
             
-            if (allNotes.length > 0) {
-                if (!silent) updateStatus(`Loaded ${allNotes.length} notes from ${chunkStats.totalChunks} chunks`);
-                return allNotes;
+            if (cachedNotes.length > 0) {
+                if (!silent) updateStatus(`Loaded ${cachedNotes.length} notes from ${chunkStats.totalChunks} chunks`);
+                
+                // 🆕 INCREMENTAL UPDATE: Check for new notes since last sync
+                const lastSyncTime = await chunkStorage.getLastSyncTime();
+                
+                if (lastSyncTime) {
+                    const hoursSinceSync = (Date.now() - lastSyncTime) / (1000 * 60 * 60);
+                    
+                    if (hoursSinceSync > 1) { // Only check if it's been more than 1 hour
+                        if (!silent) updateStatus(`Last synced ${hoursSinceSync.toFixed(1)} hours ago - checking for new notes...`);
+                        
+                        // Get newest timestamp from cached notes
+                        const newestTimestamp = Math.max(...cachedNotes.map(n => n.created_at));
+                        
+                        // Fetch only NEW notes
+                        const newNotes = await fetchNotesFromRelaysSince(pubkey, newestTimestamp);
+                        
+                        if (newNotes.length > 0) {
+                            if (!silent) updateStatus(`Found ${newNotes.length} new notes since last sync!`);
+                            
+                            // Merge and deduplicate
+                            const mergedNotes = [...cachedNotes, ...newNotes];
+                            const uniqueNotes = Array.from(
+                                new Map(mergedNotes.map(n => [n.id, n])).values()
+                            );
+                            
+                            // Update chunk storage with new notes
+                            await chunkStorage.storeNotesInChunks(uniqueNotes);
+                            await chunkStorage.storeLastSyncTime();
+                            
+                            if (!silent) updateStatus(`Updated storage with ${newNotes.length} new notes`);
+                            
+                            return uniqueNotes;
+                        } else {
+                            if (!silent) updateStatus('No new notes found');
+                            await chunkStorage.storeLastSyncTime(); // Update sync time anyway
+                        }
+                    }
+                }
+                
+                return cachedNotes;
             }
         }
         
@@ -3837,6 +3964,7 @@ async function loadNotesHybrid(pubkey, silent = false) {
             const stored = await chunkStorage.storeNotesInChunks(freshNotes);
             
             if (stored && !silent) {
+                await chunkStorage.storeLastSyncTime();
                 const newStats = await chunkStorage.getStats();
                 updateStatus(`Stored ${freshNotes.length} notes in ${newStats.totalChunks} chunks`);
             }
@@ -4292,7 +4420,32 @@ organizeNotesIntoChunks(notes) {
             return null;
         }
     }
+
+    // 🆕 ADD THESE TWO METHODS HERE
+async storeLastSyncTime() {
+    if (!this.db) return;
+    try {
+        await this.db.indices.put({
+            type: 'last_sync',
+            data: Date.now()
+        });
+    } catch (error) {
+        console.error('Error storing last sync time:', error);
+    }
 }
+
+async getLastSyncTime() {
+    if (!this.db) return null;
+    try {
+        const result = await this.db.indices.get('last_sync');
+        return result ? result.data : null;
+    } catch (error) {
+        console.error('Error getting last sync time:', error);
+        return null;
+    }
+}
+}
+
 
 // Chunk management utilities
 async function getChunkStorageInfo(pubkey) {
@@ -6141,19 +6294,21 @@ function applyDateFilters() {
 
 
 function toggleTag(tag) {
-    // Only clear archive state for special tags, not hashtags
-    if (!tag.startsWith('#')) {
-        // Clear archive active states when selecting any tag (but NOT quick filters)
-        currentArchive = 'default';
-        document.querySelectorAll('.archive-item').forEach(item => {
-            item.classList.remove('active');
-        });
-    }
+    // DON'T clear archive state - we want filters to work INSIDE archives
+    // The archive context should persist when applying filters
     
     if (!tag) {
         // "All Notes" clears ALL selections including quick filters AND dates
         selectedTags.clear();
         currentTag = '';
+        currentArchive = 'default';
+        searchQuery = '';
+        
+        // Clear archive active states
+        document.querySelectorAll('.archive-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
         activeQuickFilters.clear();
         
         // Clear quick filter buttons
@@ -6178,6 +6333,13 @@ function toggleTag(tag) {
         filteredNotes = allNotes.slice();
         resetPagination();
         renderNotes();
+        
+        // Force advanced mode off AGAIN after render
+        window.inAdvancedSearchMode = false;
+        
+        // Force update the count display
+        document.getElementById('notes-title').textContent = 'All Notes';
+        document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
         return;
     } 
     
@@ -6196,21 +6358,39 @@ function toggleTag(tag) {
             // If we're in an archive, stay in the archive but show all notes from that archive
             if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
                 // Stay in archive, just remove hashtag filter
+                currentTag = '__archive_' + currentArchive;
                 applyFilters();
                 renderNotes();
             } else {
                 // Nothing active, go to "All Notes"
                 currentTag = '';
+                currentArchive = 'default';
+                searchQuery = '';
+                
                 document.querySelectorAll('.tag-filter').forEach(btn => {
                     btn.classList.remove('active');
                     if (btn.dataset.tag === '') {
                         btn.classList.add('active');
                     }
                 });
+                
+                document.querySelectorAll('.archive-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
                 window.inAdvancedSearchMode = false;
+                
+                // CRITICAL: Set filtered notes directly without calling applyFilters
                 filteredNotes = allNotes.slice();
                 resetPagination();
                 renderNotes();
+                
+                // Force advanced mode off AGAIN after render
+                window.inAdvancedSearchMode = false;
+                
+                // Force update the count display
+                document.getElementById('notes-title').textContent = 'All Notes';
+                document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
             }
         } else {
             // Other tags still selected, continue with appropriate filtering
@@ -6250,6 +6430,13 @@ function toggleTag(tag) {
                 filteredNotes = allNotes.slice();
                 resetPagination();
                 renderNotes();
+                
+                // Force advanced mode off AGAIN after render
+                window.inAdvancedSearchMode = false;
+                
+                // Force update the count display
+                document.getElementById('notes-title').textContent = 'All Notes';
+                document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
             }
         } else if (hasOriginal && hasReplies && selectedTags.size === 2 && !hasReposts && !hasQuotes) {
             // If only original and replies are selected, clear them but keep quick filters and dates
@@ -6271,6 +6458,13 @@ function toggleTag(tag) {
                 filteredNotes = allNotes.slice();
                 resetPagination();
                 renderNotes();
+                
+                // Force advanced mode off AGAIN after render
+                window.inAdvancedSearchMode = false;
+                
+                // Force update the count display
+                document.getElementById('notes-title').textContent = 'All Notes';
+                document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
             }
         } else {
             // Normal tag selection - use appropriate filter system
@@ -6285,6 +6479,20 @@ function toggleTag(tag) {
     
     setActiveTagButtons();
 }
+
+function debugFilterState() {
+    console.log('=== FILTER STATE DEBUG ===');
+    console.log('allNotes.length:', allNotes.length);
+    console.log('filteredNotes.length:', filteredNotes.length);
+    console.log('selectedTags:', Array.from(selectedTags));
+    console.log('currentTag:', currentTag);
+    console.log('currentArchive:', currentArchive);
+    console.log('activeQuickFilters:', Array.from(activeQuickFilters));
+    console.log('searchQuery:', searchQuery);
+    console.log('inAdvancedSearchMode:', window.inAdvancedSearchMode);
+}
+
+window.debugFilterState = debugFilterState;
 
 function noteMatchesTag(note, tag) {
     if (tag === '__original') return !note.isReply && !note.isRepost && !note.isQuote;
@@ -6313,94 +6521,111 @@ function noteMatchesTag(note, tag) {
 }
 
       function applyFilters() {
-    // If we have active quick filters, delegate to the advanced search system
-    if (activeQuickFilters.size > 0) {
-        applyAllFilters();
+    // Prevent concurrent filtering
+    if (isFiltering) {
+        clearTimeout(filterDebounceTimeout);
+        filterDebounceTimeout = setTimeout(() => applyFilters(), 100);
         return;
     }
     
-    // Original applyFilters logic continues here...
-    filteredNotes = allNotes.slice();
-
-    // If multiple tags are selected, keep notes that match ANY selected tag
-    if (selectedTags.size > 0) {
-        const tags = Array.from(selectedTags);
+    isFiltering = true;
+    
+    try {
+        // If we have active quick filters, delegate to the advanced search system
+        if (activeQuickFilters.size > 0) {
+            applyAllFilters();
+            return;
+        }
         
-        // If we're in an archive context, first filter by archive, then by hashtags
-        if (currentTag && currentTag.startsWith('__archive_')) {
+        // Start with all notes
+        let workingSet = allNotes;
+        
+        // OPTIMIZATION: Apply archive filter FIRST (most restrictive)
+        if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
             const archiveName = currentTag.replace('__archive_', '');
             if (namedArchives[archiveName]) {
-                // First filter to only notes in this archive
-                filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
-                // Then filter by selected hashtags within that archive
-                filteredNotes = filteredNotes.filter(note =>
-                    tags.some(tag => noteMatchesTag(note, tag))
-                );
+                const archiveSet = namedArchives[archiveName];
+                workingSet = workingSet.filter(note => archiveSet.has(note.id));
             }
-        } else {
-            // Normal hashtag filtering (not in archive context)
-            filteredNotes = filteredNotes.filter(note =>
+        }
+        
+        // OPTIMIZATION: Apply content type filters early (fast)
+        if (selectedTags.size > 0) {
+            const tags = Array.from(selectedTags);
+            workingSet = workingSet.filter(note =>
                 tags.some(tag => noteMatchesTag(note, tag))
             );
-        }
-    } else {
-        // Fall back to old single-select behavior (currentTag)
-        if (currentTag === '__archived') {
-            filteredNotes = filteredNotes.filter(note => archivedNotes.has(note.id));
-        } else if (currentTag === '__original') {
-            filteredNotes = filteredNotes.filter(note => !note.isReply && !note.isRepost && !note.isQuote);
-        } else if (currentTag === '__replies') {
-            filteredNotes = filteredNotes.filter(note => note.isReply);
-        } else if (currentTag === '__reposts') {
-            filteredNotes = filteredNotes.filter(note => note.isRepost);
-        } else if (currentTag === '__quotes') {
-            filteredNotes = filteredNotes.filter(note => note.isQuote);
-        } else if (currentTag && currentTag.startsWith('__archive_')) {
-            const archiveName = currentTag.replace('__archive_', '');
-            if (namedArchives[archiveName]) {
-                filteredNotes = filteredNotes.filter(note => namedArchives[archiveName].has(note.id));
+        } else if (currentTag && currentTag !== '' && !currentTag.startsWith('__archive_')) {
+            // Fall back to old single-select behavior
+            if (currentTag === '__archived') {
+                workingSet = workingSet.filter(note => archivedNotes.has(note.id));
+            } else if (currentTag === '__original') {
+                workingSet = workingSet.filter(note => !note.isReply && !note.isRepost && !note.isQuote);
+            } else if (currentTag === '__replies') {
+                workingSet = workingSet.filter(note => note.isReply);
+            } else if (currentTag === '__reposts') {
+                workingSet = workingSet.filter(note => note.isRepost);
+            } else if (currentTag === '__quotes') {
+                workingSet = workingSet.filter(note => note.isQuote);
+            } else if (currentTag) {
+                workingSet = workingSet.filter(note => note.hashtags.includes(currentTag));
             }
-        } else if (currentTag) {
-            filteredNotes = filteredNotes.filter(note => note.hashtags.includes(currentTag));
         }
-        // If no specific tag, show ALL notes (don't filter)
-    }
-
-    // Enhanced text search - NOW INCLUDES NPUB SEARCHING
-    if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        filteredNotes = filteredNotes.filter(note => {
-            // Search in content
-            if (note.content.toLowerCase().includes(q)) return true;
-            
-            // Search in hashtags
-            if (note.hashtags && note.hashtags.some(tag => tag.includes(q))) return true;
-            
-            // NEW: Search in reply target npub
-            if (note.isReply) {
-                const replyTargetNpub = getReplyTargetNpub(note);
-                if (replyTargetNpub && replyTargetNpub.toLowerCase().includes(q)) {
-                    return true;
-                }
+        
+        // OPTIMIZATION: Apply text search LAST (most expensive)
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            workingSet = workingSet.filter(note => {
+                // Search in content
+                if (note.content.toLowerCase().includes(q)) return true;
                 
-                // Also search in the hex pubkey if searching by npub prefix
-                if (note.tags && Array.isArray(note.tags)) {
-                    const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
-                    if (pTags.length > 0) {
-                        const targetPubkey = pTags[0][1];
-                        if (targetPubkey.toLowerCase().includes(q)) {
-                            return true;
+                // Search in hashtags
+                if (note.hashtags && note.hashtags.some(tag => tag.includes(q))) return true;
+                
+                // Search in reply target npub
+                if (note.isReply) {
+                    const replyTargetNpub = getReplyTargetNpub(note);
+                    if (replyTargetNpub && replyTargetNpub.toLowerCase().includes(q)) {
+                        return true;
+                    }
+                    
+                    if (note.tags && Array.isArray(note.tags)) {
+                        const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
+                        if (pTags.length > 0) {
+                            const targetPubkey = pTags[0][1];
+                            if (targetPubkey.toLowerCase().includes(q)) {
+                                return true;
+                            }
                         }
                     }
                 }
-            }
-
-            return false;
-        });
+                
+                return false;
+            });
+        }
+        
+        filteredNotes = workingSet;
+        resetPagination();
+        
+    } finally {
+        isFiltering = false;
     }
+}
 
-    // Reset pagination when filters change
-    resetPagination();
+function showFilteringIndicator() {
+    const title = document.getElementById('notes-title');
+    if (title && !title.textContent.includes('⏳')) {
+        title.dataset.originalText = title.textContent;
+        title.textContent = '⏳ Filtering...';
+    }
+}
+
+function hideFilteringIndicator() {
+    const title = document.getElementById('notes-title');
+    if (title && title.dataset.originalText) {
+        title.textContent = title.dataset.originalText;
+        delete title.dataset.originalText;
+    }
 }
 
 
@@ -6605,12 +6830,17 @@ function noteMatchesTag(note, tag) {
                 html += `
                     <div class="${cardClass}">
                         <div class="note-header">
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" class="note-checkbox" ${isSelected ? 'checked' : ''} 
-                                       onchange="toggleNoteSelection('${note.id}')">
-                                <span>${noteIndicator}${date}</span>
-                            </div>
-                            <div class="note-actions">
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <input type="checkbox" class="note-checkbox" ${isSelected ? 'checked' : ''} 
+               onchange="toggleNoteSelection('${note.id}')">
+        ${noteIndicator}
+<span onclick="copyNeventToClipboard('${note.id}')" 
+      class="date-copy-btn" 
+      title="Click to copy note link">
+    ${date}
+</span>
+    </div>
+    <div class="note-actions">
                                 ${archiveButtonHtml}
                                 <button class="btn btn-small" style="background: #95a5a6;" 
                                         onclick="showNoteInfo('${note.id}')">
@@ -6640,16 +6870,44 @@ function noteMatchesTag(note, tag) {
 }
 
 
-        function refreshNotes() {
+        async function refreshNotes() {
     if (!currentPubkey) {
         showToast('No user connected - cannot refresh', 'error');
         return;
     }
     
-    showToast('Refreshing notes...', 'success', 2000);
+    // Prevent refresh during background loading
+    if (isBackgroundLoading) {
+        showToast('Background loading in progress - please wait', 'warning');
+        return;
+    }
     
-    // Use incremental refresh instead of full fetch
-    loadNotesIncremental(true); // true = isRefresh
+    showToast('Checking for new notes...', 'success', 2000);
+    
+    try {
+        // Just do a quick check on primary relays
+        const newNotes = await fetchNotesFromRelaysSince(currentPubkey, allNotes[0]?.created_at || 0);
+        
+        if (newNotes.length > 0) {
+            allNotes.unshift(...newNotes);
+            allNotes.sort((a, b) => b.created_at - a.created_at);
+            
+            // Update storage
+            const chunkStorage = new ChunkedNoteStorage(currentPubkey);
+            const ready = await chunkStorage.init();
+            if (ready) await chunkStorage.storeNotesInChunks(allNotes);
+            
+            updateTagFilters();
+            applyFilters();
+            renderNotes();
+            showToast(`Found ${newNotes.length} new notes!`, 'success');
+        } else {
+            showToast('No new notes found', 'success');
+        }
+    } catch (error) {
+        console.error('Refresh error:', error);
+        showToast('Refresh failed: ' + error.message, 'error');
+    }
 }
 
 async function loadNotesIncremental(isRefresh = false) {
@@ -6920,11 +7178,11 @@ if (currentTag.startsWith('__archive_')) {
     ` : '';
     
     const modalHtml = `
-        <div class="modal" onclick="closeModal(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <button class="modal-close" onclick="closeModal()">Close</button>
-                <h3>Note Information</h3> 
-                <p><strong>Nevent:</strong> <button onclick="copyToClipboard('${nevent}')" class="copy-btn">Copy</button><br><small style="word-break: break-all;">${nevent}</small></p>
+    <div class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">Close</button>
+            <h3>Note Information</h3> 
+            <p><strong>Nevent:</strong><br><small style="word-break: break-all;">${nevent}</small></p>
                 <p><strong>ID:</strong><br><small style="word-break: break-all;">${note.id}</small></p>
                 <p><strong>Author:</strong><br><small style="word-break: break-all;">${note.pubkey}</small></p>
                 <p><strong>Created:</strong> ${date.toLocaleString()}</p>
@@ -7023,9 +7281,6 @@ function showThreadView(noteId) {
 </div>
                 <div class="thread-scroll" style="max-height: 50vh; overflow-y: auto; padding-right: 10px;">
                     ${threadHtml}
-                </div>
-                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 13px;">
-                    ${threadNotes.length} ${threadNotes.length === 1 ? 'note' : 'notes'} in this thread
                 </div>
             </div>
         </div>
@@ -7826,12 +8081,6 @@ function makeLinksClickable(content) {
     const urlRegex = /(https?:\/\/[^\s<>"]+)/gi;
     
     return content.replace(urlRegex, (url) => {
-        // Skip video URLs
-        const videoRegex = /\.(mp4|mov|avi|webm)(\?[^\s"<>]*)?$/i;
-        if (videoRegex.test(url)) {
-            return url;
-        }
-        
         // Skip image URLs (they're handled by processImageLinks)
         const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
         if (imageRegex.test(url)) {
@@ -7844,7 +8093,7 @@ function makeLinksClickable(content) {
             return url;
         }
         
-        // Make all other URLs clickable
+        // Make ALL other URLs clickable (including videos)
         return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
     });
 }
@@ -8008,10 +8257,24 @@ function toggleQuickFilter(type) {
     const dateFilters = ['week', 'month', '6months', 'year'];
     
     if (activeQuickFilters.has(type)) {
-        // Remove filter
-        activeQuickFilters.delete(type);
-        button.classList.remove('active');
-    } else {
+    // Remove filter
+    activeQuickFilters.delete(type);
+    button.classList.remove('active');
+    
+    // FIX: Check if we should use simple or advanced filtering after removal
+    if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !searchQuery) {
+        // No filters left - use simple filtering
+        window.inAdvancedSearchMode = false;
+        filteredNotes = allNotes.slice();
+        resetPagination();
+        renderNotes();
+        
+        // Update UI
+        document.getElementById('notes-title').textContent = 'All Notes';
+        document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+        return; // Exit early
+    }
+} else {
         // If this is a date filter, clear other date filters first
         if (dateFilters.includes(type)) {
             dateFilters.forEach(dateFilter => {
@@ -8033,15 +8296,8 @@ function toggleQuickFilter(type) {
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
-    // Clear archive selection when ANY quick filter operation happens
-    // but DON'T clear hashtag selections (selectedTags) OR manual date filters (unless it's a date quick filter)
-    currentArchive = 'default';
-    currentTag = '';
-    
-    // Clear archive active states
-    document.querySelectorAll('.archive-item').forEach(item => {
-        item.classList.remove('active');
-    });
+// DON'T clear archive selection - we want quick filters to work INSIDE archives
+// Archive context should persist when applying quick filters
     
     // Update "All Notes" button state based on whether we have any selections
     document.querySelectorAll('.tag-filter').forEach(btn => {
@@ -8060,10 +8316,27 @@ function toggleQuickFilter(type) {
     console.log('selectedTags preserved:', Array.from(selectedTags));
     
     // Apply combined filters (quick filters + hashtag selections)
-    applyAllFilters();
+    // Apply combined filters with debouncing for better performance
+// Apply combined filters with debouncing for better performance
+clearTimeout(filterDebounceTimeout);
+filterDebounceTimeout = setTimeout(() => {
+    // FIX: If no quick filters remain, check if we need advanced search
+    if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !searchQuery) {
+        window.inAdvancedSearchMode = false;
+        filteredNotes = allNotes.slice();
+        resetPagination();
+        renderNotes();
+        document.getElementById('notes-title').textContent = 'All Notes';
+        document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+    } else {
+        applyAllFilters();
+    }
+}, 150); // 150ms debounce
 }
 
 async function applyAllFilters() {
+    showFilteringIndicator();
+
     const query = document.getElementById('search-input').value;
     const filters = {};
     
@@ -8246,7 +8519,15 @@ async function performSearchWithFilters(query, filters) {
     // Apply hashtag filtering AFTER the advanced search results
     let finalResults = results;
     
-    // Apply hashtag/tag filtering if any tags are selected
+    // FIRST: Apply archive filter if we're in an archive
+    if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        if (namedArchives[archiveName]) {
+            finalResults = finalResults.filter(note => namedArchives[archiveName].has(note.id));
+        }
+    }
+    
+    // SECOND: Apply hashtag/tag filtering if any tags are selected
     if (selectedTags.size > 0) {
         const tags = Array.from(selectedTags);
         finalResults = finalResults.filter(note =>
@@ -8311,16 +8592,28 @@ if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.h
 }
     
     // Update UI
-    const title = document.getElementById('notes-title');
-    const count = document.getElementById('notes-count');
+const title = document.getElementById('notes-title');
+const count = document.getElementById('notes-count');
+
+// Check if we're in an archive context
+if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+    const archiveName = currentTag.replace('__archive_', '');
     
+    if (activeFilters.length > 0) {
+        title.textContent = `Archive: ${archiveName} (${activeFilters.join(' + ')})`;
+    } else {
+        title.textContent = `Archive: ${archiveName}`;
+    }
+} else {
+    // Not in an archive
     if (activeFilters.length > 0) {
         title.textContent = `Filtered Notes (${activeFilters.join(' + ')})`;
     } else {
         title.textContent = 'All Notes';
     }
-    
-    count.textContent = `${finalResults.length} notes`;
+}
+
+count.textContent = `${finalResults.length} notes`;
     
     // Store that we're in advanced search mode
     window.inAdvancedSearchMode = true;
@@ -8407,6 +8700,26 @@ async function diagnoseLoadingIssue() {
     console.log(JSON.stringify(results, null, 2));
     return results;
 }
+
+function copyNeventToClipboard(noteId) {
+    const note = allNotes.find(n => n.id === noteId);
+    if (!note) {
+        showToast('Note not found', 'error');
+        return;
+    }
+    
+    const nevent = createNevent(note);
+    
+    navigator.clipboard.writeText(nevent).then(() => {
+       showToast('Nevent copied!', 'success', 1500);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        showToast('Failed to copy link', 'error');
+    });
+}
+
+// Make it globally available
+window.copyNeventToClipboard = copyNeventToClipboard;
 
 // Make it globally available
 window.diagnoseLoadingIssue = diagnoseLoadingIssue;
