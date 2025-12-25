@@ -2238,13 +2238,13 @@ function normalizeNpub(input) {
 
         // Enhanced relay list with better reliability
     const RELAYS = [
-    'wss://relay.damus.io',
-    'wss://relay.primal.net',
-    'wss://nostr.wine',
-    'wss://nos.lol',
+    'wss://relay.primal.net',      // Fastest - move to top
+    'wss://relay.damus.io',         
+    'wss://nostr.wine',             
+    'wss://relay.snort.social',     // Add this fast relay
+    'wss://nos.lol',                
     'wss://nostr.land/',
     'wss://fiatjaf.com',
-
 ];
 
         // Initialize the app
@@ -3255,13 +3255,8 @@ function clearLegacyCache(pubkey) {
 }
 
 async function fetchNotesFromRelays(pubkey) {
-    // SIMPLE FIX: Stop if we're disconnected or pubkey changed
-    if (!currentPubkey || currentPubkey !== pubkey) {
-        console.log('fetchNotesFromRelays: Stopped - user disconnected or switched');
-        return [];
-    }
-    
-    const uniqueEventsMap = new Map(); // Deduplicate as we go
+    const uniqueEventsMap = new Map();
+    const globalSeenIds = new Set(); // NEW: Shared Set to track IDs across ALL relays
     const completedRelays = [];
     
     console.log('=== STARTING RELAY FETCH ===');
@@ -3281,11 +3276,11 @@ async function fetchNotesFromRelays(pubkey) {
                     20 + ((completedCount / RELAYS.length) * 60), 
                     `${relayName}: ${status} | ${completedCount}/${RELAYS.length} relays done`
                 );
-            });
+            }, globalSeenIds); // Pass the shared Set
             
             const events = await fetchPromise;
             
-            // DEDUPLICATE IMMEDIATELY per relay
+            // Deduplicate and count new notes
             let newCount = 0;
             events.forEach(event => {
                 if (event?.id && !uniqueEventsMap.has(event.id)) {
@@ -3309,7 +3304,6 @@ async function fetchNotesFromRelays(pubkey) {
         }
     });
     
-    // Wait for ALL relays to finish
     await Promise.allSettled(relayPromises);
     
     return Array.from(uniqueEventsMap.values());
@@ -3361,7 +3355,7 @@ class LoadingTracker {
 }
 
 // SOLUTION 2: Enhanced relay fetching with better error handling AND TIMEOUT
-async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback) {
+async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback, globalSeenIds = null) {
     const allEvents = [];
     let until = null;
     let batchNumber = 1;
@@ -3393,6 +3387,8 @@ async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback
         try {
             const batchEvents = await fetchBatchFromRelay(relayUrl, pubkey, until, batchSize);
             
+            console.log(`[${relayUrl}] Batch ${batchNumber}: ${batchEvents.length} events (total: ${allEvents.length})`);
+            
             if (batchEvents.length === 0) {
                 consecutiveEmptyBatches++;
                 console.log(`[${relayUrl}] Empty batch ${consecutiveEmptyBatches}/${MAX_EMPTY_BATCHES}`);
@@ -3414,9 +3410,52 @@ async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback
             }
             
             consecutiveEmptyBatches = 0;
-            allEvents.push(...batchEvents);
-            
-            const oldestEvent = batchEvents[batchEvents.length - 1];
+
+// Check duplicates if we have a global map
+let newCount = 0;
+if (globalSeenIds) {
+    // Cross-relay deduplication - check against ALL relays
+    batchEvents.forEach(event => {
+        if (event?.id && !globalSeenIds.has(event.id)) {
+            globalSeenIds.add(event.id);
+            allEvents.push(event);
+            newCount++;
+        }
+    });
+    
+    // Stop if this batch is >95% duplicates after batch 10
+    // Track consecutive high-duplicate batches
+// Add this at the top of the function with other variables
+let consecutiveHighDuplicateBatches = 0;
+
+// Then use it without 'this.'
+consecutiveHighDuplicateBatches++;
+// and
+consecutiveHighDuplicateBatches = 0;
+
+if (batchNumber > 20 && batchEvents.length > 0) {  // Changed from 10 to 20
+    const duplicateRate = ((batchEvents.length - newCount) / batchEvents.length) * 100;
+    
+    if (duplicateRate > 95) {  // Changed from 98 to 95
+        this.consecutiveHighDuplicateBatches++;
+        console.log(`[${relayUrl}] High duplicate rate: ${duplicateRate.toFixed(1)}% (${newCount}/${batchEvents.length} new) - consecutive: ${this.consecutiveHighDuplicateBatches}/25`);  // Update display
+        
+        // Only stop after 25 consecutive high-duplicate batches
+        if (this.consecutiveHighDuplicateBatches >= 25) {  // Changed from 10 to 25
+            console.log(`[${relayUrl}] Stopping: 5 consecutive batches with >95% duplicates. Total fetched: ${allEvents.length}`);
+            break;
+        }
+    } else {
+        // Reset counter if we find a good batch
+        this.consecutiveHighDuplicateBatches = 0;
+    }
+}
+} else {
+    // No global map - use old behavior (add everything)
+    allEvents.push(...batchEvents);
+}
+
+const oldestEvent = batchEvents[batchEvents.length - 1];
             if (!oldestEvent || !oldestEvent.created_at) {
                 console.warn(`[${relayUrl}] Invalid event structure - stopping`);
                 break;
@@ -3425,6 +3464,7 @@ async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback
             until = oldestEvent.created_at - 1;
             batchNumber++;
             
+            // Rate limiting - 200ms delay between batches for stability
             await new Promise(resolve => setTimeout(resolve, 250));
             
             if (batchNumber > 500) {
@@ -3457,10 +3497,11 @@ async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback
 async function fetchNotesFromRelaysComplete(pubkey) {
     const tracker = new LoadingTracker(pubkey);
     const uniqueEventsMap = new Map();
+    const globalSeenIds = new Set(); // NEW: Shared Set to track IDs across ALL relays
     
     updateStatus('🚀 Starting complete relay scan...');
     
-    const primaryRelays = RELAYS.slice(0, 5);
+    const primaryRelays = RELAYS.slice(0, 8);
     updateStatus(`Phase 1: Fetching from ${primaryRelays.length} primary relays in parallel...`);
     
     const primaryPromises = primaryRelays.map(async (relay) => {
@@ -3469,33 +3510,42 @@ async function fetchNotesFromRelaysComplete(pubkey) {
             updateStatus(`📡 ${relayName}: Starting...`);
             
             const result = await fetchAllNotesFromRelayEnhanced(relay, pubkey, (progress, status) => {
-                updateStatus(`📡 ${relayName}: ${status}`);
-            });
-            
-            let newCount = 0;
-            result.events.forEach(event => {
-                if (event?.id && !uniqueEventsMap.has(event.id)) {
-                    uniqueEventsMap.set(event.id, event);
-                    newCount++;
-                }
-            });
-            
-            const oldest = result.events.length > 0 ? 
-                result.events[result.events.length - 1].created_at : null;
-            const newest = result.events.length > 0 ? 
-                result.events[0].created_at : null;
-            
-            tracker.recordRelayResult(relay, newCount, oldest, newest, result.completed);
-            
-            updateStatus(`✅ ${relayName}: ${newCount} unique notes (${uniqueEventsMap.size} total)`);
-            return { relay, success: true, newCount };
-            
-        } catch (error) {
-            updateStatus(`❌ ${relayName}: ${error.message}`);
-            tracker.recordRelayResult(relay, 0, null, null, false);
-            return { relay, success: false, newCount: 0 };
-        }
-    });
+    updateStatus(`📡 ${relayName}: ${status}`);
+}, globalSeenIds); // Pass the shared Set  // NO THIRD PARAMETER
+        
+        let newCount = 0;
+        let duplicateCount = 0;
+        
+        result.events.forEach(event => {
+            if (event?.id && !uniqueEventsMap.has(event.id)) {
+                uniqueEventsMap.set(event.id, event);
+                newCount++;
+            } else if (event?.id) {
+                duplicateCount++;
+            }
+        });
+        
+        const oldest = result.events.length > 0 ? 
+            result.events[result.events.length - 1].created_at : null;
+        const newest = result.events.length > 0 ? 
+            result.events[0].created_at : null;
+        
+        tracker.recordRelayResult(relay, newCount, oldest, newest, result.completed);
+        
+        // Calculate duplicate rate
+        const duplicateRate = result.events.length > 0 ? 
+            (duplicateCount / result.events.length) * 100 : 0;
+        
+        updateStatus(`✅ ${relayName}: ${newCount} unique notes, ${duplicateCount} duplicates (${duplicateRate.toFixed(1)}% duplicate rate) - Total: ${uniqueEventsMap.size}`);
+        
+        return { relay, success: true, newCount, duplicateCount };
+        
+    } catch (error) {
+        updateStatus(`❌ ${relayName}: ${error.message}`);
+        tracker.recordRelayResult(relay, 0, null, null, false);
+        return { relay, success: false, newCount: 0 };
+    }
+});
     
     await Promise.all(primaryPromises);
     
@@ -3513,8 +3563,8 @@ async function fetchNotesFromRelaysComplete(pubkey) {
                 updateStatus(`📡 ${relayName}: Checking for missing notes...`);
                 
                 const result = await fetchAllNotesFromRelayEnhanced(relay, pubkey, (progress, status) => {
-                    updateStatus(`📡 ${relayName}: ${status}`);
-                });
+    updateStatus(`📡 ${relayName}: ${status}`);
+}, globalSeenIds); // Pass the shared Set
                 
                 let newCount = 0;
                 result.events.forEach(event => {
@@ -3811,12 +3861,14 @@ async function fetchNewNotesFromRelay(relayUrl, pubkey, sinceTimestamp) {
     });
 }
 
-async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
+async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback, globalSeenIds = null) {
     const allEvents = [];
+    const seenIds = new Set(); // Track duplicates within this relay
     let until = null;
     let batchNumber = 1;
     const batchSize = 1000;
     let consecutiveEmptyBatches = 0;
+    let consecutiveHighDuplicateBatches = 0; // Track consecutive high-duplicate batches
     const MAX_EMPTY_BATCHES = 3;
     
     while (true) {
@@ -3854,7 +3906,55 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
             
             // Reset empty batch counter when we get results
             consecutiveEmptyBatches = 0;
-            allEvents.push(...batchEvents);
+            
+            // NEW: Check against global map if provided, otherwise use local seenIds
+            let newInBatch = 0;
+            
+            if (globalSeenIds) {
+                // Cross-relay deduplication
+                batchEvents.forEach(event => {
+                    if (event?.id && !globalSeenIds.has(event.id)) {
+                        globalSeenIds.add(event.id);
+                        seenIds.add(event.id);
+                        allEvents.push(event);
+                        newInBatch++;
+                    }
+                });
+                
+                // Stop if this batch is >95% duplicates after batch 10
+                if (batchNumber > 20 && batchEvents.length > 0) {
+                    const duplicateRate = ((batchEvents.length - newInBatch) / batchEvents.length) * 100;
+                    
+                    if (duplicateRate > 98) {
+                        consecutiveHighDuplicateBatches++;
+                        console.log(`[${relayUrl}] High duplicate rate: ${duplicateRate.toFixed(1)}% (${newInBatch}/${batchEvents.length} new) - consecutive: ${consecutiveHighDuplicateBatches}/10`);
+                        
+                        // Only stop after 10 consecutive high-duplicate batches
+                        if (consecutiveHighDuplicateBatches >= 10) {
+                            console.log(`[${relayUrl}] Stopping: 10 consecutive batches with >95% duplicates. Total fetched: ${allEvents.length}`);
+                            break;
+                        }
+                    } else {
+                        // Reset counter if we find a good batch
+                        consecutiveHighDuplicateBatches = 0;
+                    }
+                }
+            } else {
+                // Local deduplication only (within this relay)
+                batchEvents.forEach(event => {
+                    if (event?.id && !seenIds.has(event.id)) {
+                        seenIds.add(event.id);
+                        allEvents.push(event);
+                        newInBatch++;
+                    }
+                });
+                
+                // Early termination if mostly duplicates within this relay
+                if (batchNumber > 10 && newInBatch < batchEvents.length * 0.1) {
+                    console.log(`[${relayUrl}] Low new event rate (${newInBatch}/${batchEvents.length} new), stopping early at ${allEvents.length} notes`);
+                    break;
+                }
+            }
             
             // Safety check: ensure we have a valid event before accessing its timestamp
             const oldestEvent = batchEvents[batchEvents.length - 1];
@@ -3866,10 +3966,10 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
             until = oldestEvent.created_at - 1;
             batchNumber++;
             
-            // Rate limiting - 250ms delay between batches for stability
+            // Rate limiting - 100ms delay between batches for speed
             await new Promise(resolve => setTimeout(resolve, 250));
             
-            // Safety check - prevent infinite loops (500 batches = ~500k notes max)
+            // Safety check - prevent infinite loops
             if (batchNumber > 500) {
                 console.warn(`[${relayUrl}] Safety limit: 500 batches reached (${allEvents.length} notes)`);
                 break;
@@ -3884,7 +3984,6 @@ async function fetchAllNotesFromRelay(relayUrl, pubkey, progressCallback) {
     progressCallback(100, `complete (${allEvents.length} notes)`);
     return allEvents;
 }
-
    
 async function loadNotesHybrid(pubkey, silent = false) {
     try {
@@ -5827,8 +5926,6 @@ function debugNoteClassifications() {
 
 // Make it globally available
 window.debugNoteClassifications = debugNoteClassifications;
-
-// ADD these functions after your clearIndexedDB functions (around line 2500):
 
 // 1. ADD this function to show storage usage information
 async function showStorageInfo() {
