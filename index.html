@@ -2863,45 +2863,85 @@ async function saveArchivedNotes() {
 }
 
         function toggleArchiveNote(noteId, archiveName = null) {
-            // If no specific archive is provided, show archive selection
-            if (!archiveName && Object.keys(namedArchives).length > 0) {
-                showArchiveSelectionModal(noteId);
-                return;
-            }
-            
-            // Legacy behavior - add to default archive
-            if (archivedNotes.has(noteId)) {
-                archivedNotes.delete(noteId);
-                // Also remove from all named archives
-                Object.keys(namedArchives).forEach(name => {
-                    namedArchives[name].delete(noteId);
-                });
-            } else {
-                // Add to "My Archive" if it exists, otherwise create it
-                if (!namedArchives['My Archive']) {
-                    namedArchives['My Archive'] = new Set();
-                }
-                namedArchives['My Archive'].add(noteId);
-            }
-            
-            saveArchivedNotes();
-            renderNotes();
-            updateTagFilters();
-            updateArchiveList();
+    // If no specific archive is provided, show archive selection
+    if (!archiveName && Object.keys(namedArchives).length > 0) {
+        showArchiveSelectionModal(noteId);
+        return;
+    }
+    
+    // Legacy behavior - add to default archive
+    if (archivedNotes.has(noteId)) {
+        archivedNotes.delete(noteId);
+        // Also remove from all named archives
+        Object.keys(namedArchives).forEach(name => {
+            namedArchives[name].delete(noteId);
+        });
+    } else {
+        // Add to "My Archive" if it exists, otherwise create it
+        if (!namedArchives['My Archive']) {
+            namedArchives['My Archive'] = new Set();
         }
+        namedArchives['My Archive'].add(noteId);
+    }
+    
+    saveArchivedNotes();
+
+    // Lock the title to prevent updates
+const titleEl = document.getElementById('notes-title');
+const countEl = document.getElementById('notes-count');
+const originalTitle = titleEl.textContent;
+const originalCount = countEl.textContent;
+
+// Temporarily freeze the title
+Object.defineProperty(titleEl, 'textContent', {
+    set: function() { /* ignore */ },
+    get: function() { return originalTitle; },
+    configurable: true
+});
+
+updateArchiveList();
+updateTagFilters();
+
+// Unfreeze and restore
+delete titleEl.textContent;
+titleEl.textContent = originalTitle;
+countEl.textContent = originalCount;
+
+    // Update just the button state for this specific note
+    const noteCard = document.querySelector(`[data-note-id="${noteId}"]`);
+    if (noteCard) {
+        const archiveBtn = noteCard.querySelector('.btn-archive');
+        if (archiveBtn) {
+            const isArchived = Object.values(namedArchives).some(archive => archive.has(noteId));
+            archiveBtn.classList.toggle('archived', isArchived);
+            archiveBtn.textContent = isArchived ? '✓ Archived' : 'Archive';
+        }
+    }
+}
 
         function addToArchive(noteId, archiveName) {
-            if (!namedArchives[archiveName]) {
-                namedArchives[archiveName] = new Set();
-            }
-            
-            namedArchives[archiveName].add(noteId);
-            
-            saveArchivedNotes();
-            renderNotes();
-            updateTagFilters();
-            updateArchiveList();
-        }
+    if (!namedArchives[archiveName]) {
+        namedArchives[archiveName] = new Set();
+    }
+    
+    namedArchives[archiveName].add(noteId);
+    
+    saveArchivedNotes();
+    
+    // PRESERVE filter title before render
+    const titleEl = document.getElementById('notes-title');
+    const countEl = document.getElementById('notes-count');
+    const savedTitle = titleEl.textContent;
+    const savedCount = countEl.textContent;
+    
+    updateTagFilters();
+    updateArchiveList();
+    renderNotes();
+    
+    // RESTORE filter title after render
+    titleEl.textContent = savedTitle;
+    countEl.textContent = savedCount;
+}
 
         function showArchiveSelectionModal(noteId) {
     const archiveNames = Object.keys(namedArchives);
@@ -6019,38 +6059,37 @@ async function fetchRecentNotesFromRelay(relayUrl, pubkey, since) {
     let isReply = false;
     
     if (event.kind === 6) {
-        // Kind 6 is ONLY a repost - set flag and exit early
-        isRepost = true;
-        
-        if (!content.trim()) {
-            content = "Boosted a note";
-        } else {
-            try {
-                const embeddedEvent = JSON.parse(content);
-                if (embeddedEvent.content) {
-                    content = `Reposted: "${embeddedEvent.content.substring(0, 200)}${embeddedEvent.content.length > 200 ? '...' : ''}"`;
-                }
-            } catch (e) {
-                content = `Reposted: ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}`;
+    // Kind 6 is ONLY a repost - set flag and exit early
+    isRepost = true;
+    
+    if (!content.trim()) {
+        content = "Boosted a note";
+    } else {
+        try {
+            const embeddedEvent = JSON.parse(content);
+            if (embeddedEvent.content) {
+                content = `Reposted: "${embeddedEvent.content.substring(0, 200)}${embeddedEvent.content.length > 200 ? '...' : ''}"`;
             }
+        } catch (e) {
+            content = `Reposted: ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}`;
         }
-        
-        // IMPORTANT: Return early for reposts to prevent further processing
-        const hashtags = extractHashtags(content);
-        return {
-            id: event.id,
-            pubkey: event.pubkey,
-            created_at: event.created_at,
-            content: content,
-            hashtags: hashtags,
-            isReply: false,    // Explicitly false
-            isRepost: true,    // Only this is true
-            isQuote: false,    // Explicitly false
-            kind: event.kind,
-            tags: event.tags || []
-        };
-        
-    } else if (event.kind === 1) {
+    }
+    
+    // Return early with cleaned repost
+    const hashtags = extractHashtags(content);
+    return {
+        id: event.id,
+        pubkey: event.pubkey,
+        created_at: event.created_at,
+        content: content,
+        hashtags: hashtags,
+        isReply: false,
+        isRepost: true,
+        isQuote: false,
+        kind: event.kind,
+        tags: event.tags || []
+    };
+}else if (event.kind === 1) {
         // Only process kind 1 events for replies/quotes
         const eTags = event.tags?.filter(tag => tag[0] === 'e') || [];
         const pTags = event.tags?.filter(tag => tag[0] === 'p' && tag[1] !== event.pubkey) || [];
@@ -6521,6 +6560,7 @@ function trackLoadTime() {
     if (repostsBtn) repostsBtn.addEventListener('click', () => toggleTag('__reposts'));
     if (quotesBtn) quotesBtn.addEventListener('click', () => toggleTag('__quotes'));
 
+    
     setActiveTagButtons();
 
     // --- one-time drag-select listeners for tag filters ---
@@ -8527,10 +8567,10 @@ function processYouTubeLinks(content) {
 }
 
 function processImageLinks(content) {
-    // More flexible regex for images
-    const imageRegex = /(https?:\/\/[^\s"<>]+\.(jpg|jpeg|png|gif|webp)(?:\?[^\s"<>]*)?)/gi;
+    // Match <a> tags that link to images
+    const imageRegex = /<a href="(https?:\/\/[^"]+\.(?:jpg|jpeg|png|gif|webp)(?:\?[^"]*)?)"[^>]*>.*?<\/a>/gi;
     
-    return content.replace(imageRegex, (url) => {
+    return content.replace(imageRegex, (match, url) => {
         return `<div class="image-preview" onclick="loadImage(this, '${url}')" style="
             border: 1px dashed var(--border-color);
             padding: 20px;
@@ -8600,19 +8640,13 @@ function makeLinksClickable(content) {
     const urlRegex = /(https?:\/\/[^\s<>"]+)/gi;
     
     return content.replace(urlRegex, (url) => {
-        // Skip image URLs (they're handled by processImageLinks)
-        const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
-        if (imageRegex.test(url)) {
-            return url;
-        }
-        
         // Skip YouTube URLs (they're handled by processYouTubeLinks)
         const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
         if (youtubeRegex.test(url)) {
             return url;
         }
         
-        // Make ALL other URLs clickable (including videos)
+        // Make ALL URLs clickable (INCLUDING images - processImageLinks will handle them later)
         return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
     });
 }
