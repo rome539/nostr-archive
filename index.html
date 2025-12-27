@@ -191,6 +191,27 @@
     outline: none;
 }
 
+/* Placeholder text styling for all themes */
+input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+input::-webkit-input-placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+input::-moz-placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+input:-ms-input-placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
    /* Loading and transition improvements */
 .btn {
     background: var(--primary-color);
@@ -453,16 +474,110 @@
 }
 
 .note-card {
-    background: var(--card-background);
-    padding: 24px;
-    margin-bottom: 18px;
-    border-radius: 12px;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    padding-bottom: 50px; /* Space for the engagement box */
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s ease;
+}
+
+.reactions-box {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid rgba(0,0,0,0.06);
-    /* Default: Blue border for original notes */
-    border-left: 4px solid var(--primary-color);
+    min-width: 120px;
+    max-width: 150px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reactions-box.loading {
+    color: var(--primary-color);
+    font-style: italic;
+}
+
+.reactions-box:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.reactions-popup {
+    position: absolute;
+    bottom: 65px; /* Position it above the engagement box (50px padding-bottom + 12px box height + some gap) */
+    right: 12px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+}
+
+.reactions-popup.show {
+    display: block;
+    animation: slideUpFade 0.2s ease;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reactions-popup-header {
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 13px;
+}
+
+.reaction-item {
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    font-size: 13px;
+}
+
+.reaction-emoji {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.reaction-count {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.no-reactions {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 12px;
+    padding: 8px 0;
 }
 
 .note-card:hover {
@@ -2005,16 +2120,27 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px;">
     </div>
     
-    <!-- Quick filters - now toggleable -->
+    <!-- Primary Quick filters - 3x2 grid -->
 <div class="quick-filters" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px;">
-    <button class="btn btn-tiny quick-filter-btn" data-filter="week" onclick="toggleQuickFilter('week')">This Week</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month')">This Month</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="6months" onclick="toggleQuickFilter('6months')">6 Months</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year')">This Year</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images')">Images</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube')">Videos</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long')">Long</button>
     <button class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links')">Links</button>
+</div>
+
+<!-- Secondary filters dropdown -->
+<div style="margin-bottom: 12px;">
+<select id="secondary-filter-dropdown" onchange="handleSecondaryFilter()" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color); font-size: 13px;">
+<option value="">More Filters...</option>
+<option value="week">This Week</option>
+<option value="6months">6 Months</option>
+<option value="most-liked">Most Liked</option>
+<option value="most-zapped">Most Zapped</option>
+<option value="most-reposted">Most Reposted</option>
+<option value="most-quoted">Most Quoted</option>
+</select>
 </div>
     
     <!-- Date range filters -->
@@ -2060,7 +2186,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         <div class="sidebar-section">
             <h4>Export</h4>
             <button id="export-json" class="btn" style="font-size: 14px; padding: 8px;">Export JSON</button>
-            <button id="export-md" class="btn" style="font-size: 14px; padding: 8px;">Export Markdown</button>
+           <button id="export-md" class="btn" style="font-size: 14px; padding: 8px;">Export CSV</button>
         <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
         <input type="file" id="import-file" accept=".json,.md,.txt" style="display: none;">
         <div class="import-archive-block">
@@ -2186,6 +2312,14 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         let hashtagElementCache = null;
         let noteMatchCache = null;
 
+        // Engagement tracking
+let engagementCache = new Map();
+const processedEngagementEvents = new Set();
+let engagementFetchQueue = new Set();
+let isFetchingEngagement = false;
+let cancelEngagementFetch = false;
+let currentSortMode = null;
+
         // Performance optimization
 let filterDebounceTimeout = null;
 let isFiltering = false;
@@ -2297,7 +2431,7 @@ document.getElementById('search-input').addEventListener('input', function(e) {
             document.getElementById('refresh-btn').addEventListener('click', refreshNotes);
             document.getElementById('deep-scan-btn').addEventListener('click', performDeepScan);
             document.getElementById('export-json').addEventListener('click', exportAsJSON);
-            document.getElementById('export-md').addEventListener('click', exportAsMarkdown);
+            document.getElementById('export-md').addEventListener('click', exportAsCSV);
             document.getElementById('create-archive-btn').addEventListener('click', createNewArchive);
             document.getElementById('new-archive-name').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -2458,6 +2592,9 @@ function setupKeyboardShortcuts() {
                 break;
                 
             case 'Escape':
+    // ⭐ CANCEL ENGAGEMENT FETCH FIRST - before anything else
+    cancelEngagementFetch = true;
+    
     // Always clear everything and go back to "All Notes" state
     const searchInput = document.getElementById('search-input');
     
@@ -2470,6 +2607,8 @@ function setupKeyboardShortcuts() {
     selectedTags.clear();
     currentTag = '';
     currentArchive = 'default';
+    currentSortMode = null;  // ⭐ Clear sort mode
+    window.inAdvancedSearchMode = false;
     
     // Clear all UI active states
     document.querySelectorAll('.quick-filter-btn').forEach(btn => {
@@ -2491,8 +2630,15 @@ function setupKeyboardShortcuts() {
     document.getElementById('date-from').value = '';
     document.getElementById('date-to').value = '';
     
+    // Clear dropdown
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
+    
     // Clear selections
     deselectAll();
+    
+    // Re-sort notes to original chronological order
+    allNotes.sort((a, b) => b.created_at - a.created_at);
     
     // Force reset to all notes
     filteredNotes = allNotes.slice();
@@ -2631,7 +2777,8 @@ async function saveArchivedNotes() {
         // Reset to All Notes view
         currentArchive = 'default';
         currentTag = '';
-        selectedTags.clear(); // ADDED: Clear hashtag selections
+        selectedTags.clear(); // Clear hashtag selections
+        currentSortMode = null; // Clear engagement sort mode
         
         // Clear all active states
         document.querySelectorAll('.archive-item').forEach(item => {
@@ -2655,7 +2802,12 @@ async function saveArchivedNotes() {
     // Normal archive selection
     currentArchive = archiveName;
     currentTag = '__archive_' + archiveName;
-    selectedTags.clear(); // ADDED: Clear hashtag selections when switching to archive
+    selectedTags.clear(); // Clear hashtag selections when switching to archive
+    
+    // ADD: Clear "most" filter when entering archive
+    currentSortMode = null;
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
     
     // Clear all active states first
     document.querySelectorAll('.archive-item').forEach(item => {
@@ -3103,18 +3255,19 @@ if (!loadedFromChunkCache) {
     const estimatedTotal = notes.length * 5;
     scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
 }
+// Check if neon-green theme is active
+const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+const checkmark = isNeonGreen ? '' : '✅ ';
+
 // If we loaded from cache with substantial notes (1000+), don't background fetch
 // The incremental update in loadNotesHybrid already handled getting new notes
-        
-        updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
-        
+updateStatus(`${checkmark}Successfully loaded ${allNotes.length} notes!`);
     } catch (error) {
         console.error('Error loading notes:', error);
         showError('Failed to load notes: ' + error.message);
     } finally {
         showLoading(false);
         trackLoadTime();
-        
         // Reset button after completion
         connectBtn.classList.remove('loading');
         connectBtn.disabled = false;
@@ -3497,21 +3650,32 @@ const oldestEvent = batchEvents[batchEvents.length - 1];
 async function fetchNotesFromRelaysComplete(pubkey) {
     const tracker = new LoadingTracker(pubkey);
     const uniqueEventsMap = new Map();
-    const globalSeenIds = new Set(); // NEW: Shared Set to track IDs across ALL relays
+    const globalSeenIds = new Set();
     
-    updateStatus('🚀 Starting complete relay scan...');
+    // Check if neon-green theme is active
+    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    
+    // Emoji helpers - return empty string for neon-green
+    const rocket = isNeonGreen ? '' : '🚀 ';
+    const satellite = isNeonGreen ? '' : '📡 ';
+    const checkmark = isNeonGreen ? '' : '✅ ';
+    const cross = isNeonGreen ? '' : '❌ ';
+    
+    updateStatus(`${rocket}Starting complete relay scan...`);
+    updateProgress(5);
     
     const primaryRelays = RELAYS.slice(0, 8);
     updateStatus(`Phase 1: Fetching from ${primaryRelays.length} primary relays in parallel...`);
     
+    let completedPrimaryRelays = 0;
     const primaryPromises = primaryRelays.map(async (relay) => {
         const relayName = relay.replace('wss://', '');
         try {
-            updateStatus(`📡 ${relayName}: Starting...`);
+            updateStatus(`${satellite}${relayName}: Starting...`);
             
             const result = await fetchAllNotesFromRelayEnhanced(relay, pubkey, (progress, status) => {
-    updateStatus(`📡 ${relayName}: ${status}`);
-}, globalSeenIds); // Pass the shared Set  // NO THIRD PARAMETER
+                updateStatus(`${satellite}${relayName}: ${status}`);
+            }, globalSeenIds);
         
         let newCount = 0;
         let duplicateCount = 0;
@@ -3532,17 +3696,24 @@ async function fetchNotesFromRelaysComplete(pubkey) {
         
         tracker.recordRelayResult(relay, newCount, oldest, newest, result.completed);
         
-        // Calculate duplicate rate
         const duplicateRate = result.events.length > 0 ? 
             (duplicateCount / result.events.length) * 100 : 0;
         
-        updateStatus(`✅ ${relayName}: ${newCount} unique notes, ${duplicateCount} duplicates (${duplicateRate.toFixed(1)}% duplicate rate) - Total: ${uniqueEventsMap.size}`);
+        updateStatus(`${checkmark}${relayName}: ${newCount} unique notes, ${duplicateCount} duplicates (${duplicateRate.toFixed(1)}% duplicate rate) - Total: ${uniqueEventsMap.size}`);
+        
+        // Update progress: Phase 1 is 5-60%
+        completedPrimaryRelays++;
+        const phase1Progress = 5 + (completedPrimaryRelays / primaryRelays.length) * 55;
+        updateProgress(Math.floor(phase1Progress));
         
         return { relay, success: true, newCount, duplicateCount };
         
     } catch (error) {
-        updateStatus(`❌ ${relayName}: ${error.message}`);
+        updateStatus(`${cross}${relayName}: ${error.message}`);
         tracker.recordRelayResult(relay, 0, null, null, false);
+        completedPrimaryRelays++;
+        const phase1Progress = 5 + (completedPrimaryRelays / primaryRelays.length) * 55;
+        updateProgress(Math.floor(phase1Progress));
         return { relay, success: false, newCount: 0 };
     }
 });
@@ -3551,20 +3722,22 @@ async function fetchNotesFromRelaysComplete(pubkey) {
     
     const primaryCount = uniqueEventsMap.size;
     updateStatus(`Phase 1 complete: ${primaryCount} unique notes from primary relays`);
+    updateProgress(60);
     
     const secondaryRelays = RELAYS.slice(5);
     if (secondaryRelays.length > 0) {
         updateStatus(`Phase 2: Checking ${secondaryRelays.length} additional relays sequentially...`);
         
+        let completedSecondaryRelays = 0;
         for (const relay of secondaryRelays) {
             const relayName = relay.replace('wss://', '');
             
             try {
-                updateStatus(`📡 ${relayName}: Checking for missing notes...`);
+                updateStatus(`${satellite}${relayName}: Checking for missing notes...`);
                 
                 const result = await fetchAllNotesFromRelayEnhanced(relay, pubkey, (progress, status) => {
-    updateStatus(`📡 ${relayName}: ${status}`);
-}, globalSeenIds); // Pass the shared Set
+                    updateStatus(`${satellite}${relayName}: ${status}`);
+                }, globalSeenIds);
                 
                 let newCount = 0;
                 result.events.forEach(event => {
@@ -3582,16 +3755,24 @@ async function fetchNotesFromRelaysComplete(pubkey) {
                 tracker.recordRelayResult(relay, newCount, oldest, newest, result.completed);
                 
                 if (newCount > 0) {
-                    updateStatus(`✅ ${relayName}: Found ${newCount} missing notes! (${uniqueEventsMap.size} total)`);
+                    updateStatus(`${checkmark}${relayName}: Found ${newCount} missing notes! (${uniqueEventsMap.size} total)`);
                 } else {
-                    updateStatus(`✅ ${relayName}: No new notes (${uniqueEventsMap.size} total)`);
+                    updateStatus(`${checkmark}${relayName}: No new notes (${uniqueEventsMap.size} total)`);
                 }
+                
+                // Update progress: Phase 2 is 60-90%
+                completedSecondaryRelays++;
+                const phase2Progress = 60 + (completedSecondaryRelays / secondaryRelays.length) * 30;
+                updateProgress(Math.floor(phase2Progress));
                 
                 await new Promise(resolve => setTimeout(resolve, 500));
                 
             } catch (error) {
-                updateStatus(`❌ ${relayName}: ${error.message}`);
+                updateStatus(`${cross}${relayName}: ${error.message}`);
                 tracker.recordRelayResult(relay, 0, null, null, false);
+                completedSecondaryRelays++;
+                const phase2Progress = 60 + (completedSecondaryRelays / secondaryRelays.length) * 30;
+                updateProgress(Math.floor(phase2Progress));
             }
         }
     }
@@ -3603,10 +3784,9 @@ async function fetchNotesFromRelaysComplete(pubkey) {
     updateStatus(`Total unique notes: ${report.totalUnique}`);
     updateStatus(`Relays completed: ${report.completedRelays}/${report.totalRelays}`);
     updateStatus(`Confidence level: ${report.confidence.toFixed(1)}%`);
+    updateProgress(90);
     
     console.table(report.relayDetails);
-    
-    // Warning removed - completion info already shown in status
     
     return {
         events: Array.from(uniqueEventsMap.values()),
@@ -3625,13 +3805,22 @@ async function performDeepScan() {
         return;
     }
     
+    // Disable Deep Scan button and update text
+    const deepScanBtn = document.getElementById('deep-scan-btn');
+    if (deepScanBtn) {
+        deepScanBtn.disabled = true;
+        deepScanBtn.textContent = 'Scanning...';
+    }
+    
     try {
         showLoading(true);
         updateStatus('Starting deep scan...', true);
+        updateProgress(0); // Start at 0%
         
         const result = await fetchNotesFromRelaysComplete(currentPubkey);
         
         updateStatus('Sorting notes...');
+        updateProgress(95); // Almost done
         allNotes = result.events.sort((a, b) => b.created_at - a.created_at);
         
         const chunkStorage = new ChunkedNoteStorage(currentPubkey);
@@ -3645,6 +3834,8 @@ async function performDeepScan() {
         updateTagFilters();
         applyFilters();
         renderNotes();
+        
+        updateProgress(100); // Complete
         
         // Show completion toast
         showToast(`Deep scan complete: ${allNotes.length} notes loaded (${result.report.confidence.toFixed(0)}% confidence)`, 'success', 5000);
@@ -3664,10 +3855,15 @@ async function performDeepScan() {
         showToast('Deep scan failed: ' + error.message, 'error');
     } finally {
         showLoading(false);
+        
+        // Re-enable Deep Scan button and restore text
+        if (deepScanBtn) {
+            deepScanBtn.disabled = false;
+            deepScanBtn.textContent = 'Deep Scan';
+        }
     }
 }
 
-// SOLUTION 5: Verification function - check if we missed anything
 async function verifyCompletenessQuick(pubkey) {
     // Quick check: ask relays for a COUNT (if they support it)
     // Most relays don't support COUNT, so this is a rough estimate
@@ -3693,7 +3889,10 @@ async function verifyCompletenessQuick(pubkey) {
         const ratio = ourRecent / maxRecent;
         
         if (ratio < 0.9 && maxRecent > 10) {
-            showToast(`⚠️ Possible missing notes: You have ${ourRecent} recent notes, but relays report ~${maxRecent}. Try "Deep Scan".`, 'warning', 8000);
+            showDismissibleBanner(
+                `⚠️ Possible missing notes: You have ${ourRecent} recent notes, but relays report ~${maxRecent}. Try "Deep Scan".`,
+                'warning'
+            );
             return false;
         }
         
@@ -4710,73 +4909,91 @@ class SmartFilterEngine {
     }
     
     // Apply detailed filters to loaded notes
-    applyDetailedFilters(notes, filters) {
-        return notes.filter(note => {
-            // Text search
-            if (filters.searchText) {
-                const searchTerms = filters.searchText.toLowerCase().split(/\s+/);
-                const searchableText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
-                if (!searchTerms.every(term => searchableText.includes(term))) {
-                    return false;
-                }
-            }
-            
-            // Hashtag filter
-            if (filters.hashtags && filters.hashtags.length > 0) {
-                if (!filters.hashtags.some(tag => note.hashtags && note.hashtags.includes(tag))) {
-                    return false;
-                }
-            }
-            
-            // Date range
-            if (filters.dateFrom && note.created_at < Math.floor(filters.dateFrom.getTime() / 1000)) {
+    // Apply detailed filters to loaded notes
+applyDetailedFilters(notes, filters) {
+    return notes.filter(note => {
+        // Text search
+        if (filters.searchText) {
+            const searchTerms = filters.searchText.toLowerCase().split(/\s+/);
+            const searchableText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
+            if (!searchTerms.every(term => searchableText.includes(term))) {
                 return false;
             }
-            if (filters.dateTo && note.created_at > Math.floor(filters.dateTo.getTime() / 1000)) {
+        }
+        
+        // Hashtag filter
+        if (filters.hashtags && filters.hashtags.length > 0) {
+            if (!filters.hashtags.some(tag => note.hashtags && note.hashtags.includes(tag))) {
                 return false;
             }
-            
-            // Content type
-            if (filters.contentType === 'replies' && !note.isReply) {
+        }
+        
+        // Date range
+        if (filters.dateFrom && note.created_at < Math.floor(filters.dateFrom.getTime() / 1000)) {
+            return false;
+        }
+        if (filters.dateTo && note.created_at > Math.floor(filters.dateTo.getTime() / 1000)) {
+            return false;
+        }
+        
+        // Content type
+        if (filters.contentType === 'replies' && !note.isReply) {
+            return false;
+        }
+        if (filters.contentType === 'original' && note.isReply) {
+            return false;
+        }
+        
+        // Image filter
+        if (filters.hasImages) {
+            const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
+            if (!imageRegex.test(note.content)) {
                 return false;
             }
-            if (filters.contentType === 'original' && note.isReply) {
+        }
+        
+        // YouTube filter
+        if (filters.hasYouTube) {
+            const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
+            if (!youtubeRegex.test(note.content)) {
                 return false;
             }
-            
-            // Media filters
-            if (filters.hasImages) {
-                const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
-                if (!imageRegex.test(note.content)) {
-                    return false;
-                }
-            }
-            
-            if (filters.hasYouTube) {
-                const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
-                if (!youtubeRegex.test(note.content)) {
-                    return false;
-                }
-            }
+        }
 
-           if (filters.hasLinks) {
-                const linkRegex = /https?:\/\/[^\s<>"]+/gi;
-                if (!linkRegex.test(note.content)) {
+        // Links filter
+        if (filters.hasLinks) {
+            // Match all URLs
+            const allUrls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+            
+            if (allUrls.length === 0) return false; // No links at all
+            
+            // If we're ALSO filtering for images or videos, allow those
+            if (filters.hasImages || filters.hasYouTube) {
+                // Already has links, and we want images/videos - this is fine
+            } else {
+                // Links-only filter: exclude notes that ONLY have images/videos
+                const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
+                const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+                
+                // Check if there's at least one link that's NOT just an image or video
+                const hasNonMediaLink = allUrls.some(url => !imageRegex.test(url) && !youtubeRegex.test(url));
+                if (!hasNonMediaLink) {
                     return false;
                 }
             }
-            
-            // Length filters
-            if (filters.minLength && note.content.length < filters.minLength) {
-                return false;
-            }
-            if (filters.maxLength && note.content.length > filters.maxLength) {
-                return false;
-            }
-            
-            return true;
-        });
-    }
+        }
+        
+        // Length filters
+        if (filters.minLength && note.content.length < filters.minLength) {
+            return false;
+        }
+        if (filters.maxLength && note.content.length > filters.maxLength) {
+            return false;
+        }
+        
+        return true;
+    });
+}
     
     // Clear caches
     clearCaches() {
@@ -5184,9 +5401,13 @@ async function loadNotes(silent = false, isRefresh = false) {
             scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
         }
         
-        // Calculate what was actually new
-        const newNotesCount = allNotes.length - previousNotesCount;
-        updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
+        // Check if neon-green theme is active
+const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+const checkmark = isNeonGreen ? '' : '✅ ';
+
+// Calculate what was actually new
+const newNotesCount = allNotes.length - previousNotesCount;
+updateStatus(`${checkmark}Successfully loaded ${allNotes.length} notes!`);
         
         if (!silent && isRefresh === true) {
             if (newNotesCount > 0) {
@@ -5247,7 +5468,6 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         
         const ws = new WebSocket(relayUrl);
         activeWebSockets.add(ws); // Track this WebSocket
-        
         const events = [];
         let timeoutId;
         let isResolved = false;
@@ -5297,9 +5517,9 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
             ws.send(JSON.stringify(subscription));
             
             timeoutId = setTimeout(() => {
-    console.warn(`[${relayUrl}] Timeout after 45s, returning ${events.length} events`);
-    resolveOnce(events);
-}, 90000); // Changed from 90000 to 45000
+                console.warn(`[${relayUrl}] Timeout after 45s, returning ${events.length} events`);
+                resolveOnce(events);
+            }, 45000); // 45 seconds timeout
         };
         
         ws.onmessage = function(event) {
@@ -5337,7 +5557,6 @@ function fetchBatchFromRelayCore(relayUrl, pubkey, until, limit) {
         };
     });
 }
-
 // Account size detection for progressive loading
 async function estimateAccountSize(pubkey) {
     try {
@@ -5536,9 +5755,13 @@ async function loadRecentNotesFromRelays(pubkey, daysBack) {
             updateStatus(`${relayName}: Loading recent notes...`);
             
             const recentNotes = await fetchRecentNotesFromRelay(relay, pubkey, since);
-            
-            updateStatus(`✅ ${relayName}: ${recentNotes.length} recent notes`);
-            return { relay, events: recentNotes, success: true };
+
+// Check if neon-green theme is active
+const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+const checkmark = isNeonGreen ? '' : '✅ ';
+
+updateStatus(`${checkmark}${relayName}: ${recentNotes.length} recent notes`);
+return { relay, events: recentNotes, success: true };
             
         } catch (error) {
             updateStatus(`❌ ${relayName}: ${error.message}`);
@@ -5566,8 +5789,12 @@ async function loadRecentNotesFromRelays(pubkey, daysBack) {
         }
     });
     
-    updateStatus(`✅ Loaded ${uniqueEvents.length} recent notes from relays`);
-    return uniqueEvents;
+    // Check if neon-green theme is active
+const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+const checkmark = isNeonGreen ? '' : '✅ ';
+
+updateStatus(`${checkmark}Loaded ${uniqueEvents.length} recent notes from relays`);
+return uniqueEvents;
 }
 
 async function scheduleBackgroundLoading(pubkey, accountInfo) {
@@ -5652,31 +5879,36 @@ if (fullNotes.length > currentNoteCount) {
             console.log(`Background loading found ${newNotes.length} additional notes`);
             
             if (newNotes.length > 0) {
-                // FINAL CHECK: Only update if still the same user
-                if (currentPubkey === pubkey) {
-                    // Add to global array
-                    allNotes.push(...newNotes);
-                    allNotes.sort((a, b) => b.created_at - a.created_at);
-                    
-                    // Update UI if user is on default view
-                    updateTagFilters();
-                    
-                    if (!currentTag && selectedTags.size === 0 && activeQuickFilters.size === 0) {
-                        applyFilters();
-                        renderNotes();
-                    }
-                    
-                    hideBackgroundLoadingIndicator();
-                    showToast(`Background loading complete: ${newNotes.length} additional notes found!`, 'success');
-                    updateStatus(`✅ Background loading: +${newNotes.length} older notes (${allNotes.length} total)`);
-                } else {
-                    console.log('Skipping UI update - user switched');
-                    hideBackgroundLoadingIndicator();
-                }
-            } else {
-                hideBackgroundLoadingIndicator();
-                updateStatus('✅ Background loading complete: chunk storage updated, no additional notes in memory');
-            }
+    // FINAL CHECK: Only update if still the same user
+    if (currentPubkey === pubkey) {
+        // Add to global array
+        allNotes.push(...newNotes);
+        allNotes.sort((a, b) => b.created_at - a.created_at);
+        
+        // Update UI if user is on default view
+        updateTagFilters();
+        
+        if (!currentTag && selectedTags.size === 0 && activeQuickFilters.size === 0) {
+            applyFilters();
+            renderNotes();
+        }
+        
+        hideBackgroundLoadingIndicator();
+        // REMOVED: Don't show toast for background loading - it's silent
+        updateStatus(`✅ Background loading: +${newNotes.length} older notes (${allNotes.length} total)`);
+    } else {
+        console.log('Skipping UI update - user switched');
+        hideBackgroundLoadingIndicator();
+    }
+} else {
+    hideBackgroundLoadingIndicator();
+    
+    // Check if neon-green theme is active
+    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    const checkmark = isNeonGreen ? '' : '✅ ';
+    
+    updateStatus(`${checkmark}Background loading complete: chunk storage updated, no additional notes in memory`);
+}
             
         } catch (error) {
             console.error('Background loading failed:', error);
@@ -6026,7 +6258,7 @@ async function showAppInfo() {
                         <li>Create custom archives to organize notes</li>
                         <li>Search by content, hashtags, and date ranges</li>
                         <li>Filter by images, videos, and note length</li>
-                        <li>Export notes as JSON or Markdown</li>
+                        <li>Export notes as JSON or CSV</li>
                         <li>Fast IndexedDB caching for better performance</li>
                         <li>Multiple theme options including Neon Green</li>
                         <li>Keyboard shortcuts for power users</li>
@@ -6385,8 +6617,13 @@ function setActiveTagButtons() {
 }
 
 function applyDateFilters() {
-        // Use advanced filtering system
-        applyAllFilters();
+    // ADD: Clear "most" filter when applying date filters
+    currentSortMode = null;
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
+    
+    // Use advanced filtering system
+    applyAllFilters();
 }
 
 
@@ -6499,13 +6736,18 @@ function toggleTag(tag) {
             }
         }
     } else {
-        selectedTags.add(tag);
-        
-        // Check if all content types are selected - that equals "All Notes"
-        const hasOriginal = selectedTags.has('__original');
-        const hasReplies = selectedTags.has('__replies');
-        const hasReposts = selectedTags.has('__reposts');
-        const hasQuotes = selectedTags.has('__quotes');
+    selectedTags.add(tag);
+    
+    // ADD: Clear "most" filter when selecting a hashtag/tag
+    currentSortMode = null;
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
+    
+    // Check if all content types are selected - that equals "All Notes"
+    const hasOriginal = selectedTags.has('__original');
+    const hasReplies = selectedTags.has('__replies');
+    const hasReposts = selectedTags.has('__reposts');
+    const hasQuotes = selectedTags.has('__quotes');
         
         // If all 4 content types are selected, clear them but keep quick filters and dates
         if (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4) {
@@ -6606,6 +6848,11 @@ function noteMatchesTag(note, tag) {
 
         function handleSearch() {
     searchQuery = document.getElementById('search-input').value.toLowerCase();
+    
+    // ADD: Clear "most" filter when searching
+    currentSortMode = null;
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
     
     // If there are active quick filters, use the advanced search system
     if (activeQuickFilters.size > 0) {
@@ -6827,14 +7074,14 @@ function hideFilteringIndicator() {
     // Define isNeonGreen here so it can be used below
     const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
 
-    if (currentTag.startsWith('__archive_')) {
-        const archiveName = currentTag.replace('__archive_', '');
-        if (exportJsonBtn) exportJsonBtn.textContent = `Export "${archiveName}" JSON`;
-        if (exportMdBtn) exportMdBtn.textContent = `Export "${archiveName}" Markdown`;
-    } else {
-        if (exportJsonBtn) exportJsonBtn.textContent = 'Export JSON';
-        if (exportMdBtn) exportMdBtn.textContent = 'Export Markdown';
-    }
+   if (currentTag.startsWith('__archive_')) {
+    const archiveName = currentTag.replace('__archive_', '');
+    if (exportJsonBtn) exportJsonBtn.textContent = `Export "${archiveName}" JSON`;
+    if (exportMdBtn) exportMdBtn.textContent = `Export "${archiveName}" CSV`;
+} else {
+    if (exportJsonBtn) exportJsonBtn.textContent = 'Export JSON';
+    if (exportMdBtn) exportMdBtn.textContent = 'Export CSV';
+}
 
     if (emptyState) emptyState.classList.add('hidden');
 
@@ -6925,30 +7172,31 @@ function hideFilteringIndicator() {
                 }
                 
                 html += `
-                    <div class="${cardClass}">
-                        <div class="note-header">
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <input type="checkbox" class="note-checkbox" ${isSelected ? 'checked' : ''} 
-               onchange="toggleNoteSelection('${note.id}')">
-        ${noteIndicator}
-<span onclick="copyNeventToClipboard('${note.id}')" 
-      class="date-copy-btn" 
-      title="Click to copy note link">
-    ${date}
-</span>
+    <div class="${cardClass}" data-note-id="${note.id}">
+        <div class="note-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" class="note-checkbox" ${isSelected ? 'checked' : ''} 
+                       onchange="toggleNoteSelection('${note.id}')">
+                ${noteIndicator}
+                <span onclick="copyNeventToClipboard('${note.id}')" 
+                      class="date-copy-btn" 
+                      title="Click to copy note link">
+                    ${date}
+                </span>
+            </div>
+            <div class="note-actions">
+                ${archiveButtonHtml}
+                <button class="btn btn-small" style="background: #95a5a6;" 
+                        onclick="showNoteInfo('${note.id}')">
+                    <span class="emoji">ℹ️</span> Info
+                </button>
+            </div>
+        </div>
+        <div class="note-content">${processYouTubeLinks(processImageLinks(makeLinksClickable(escapeHtml(note.content))))}</div>
+        ${hashtagsHtml ? `<div class="hashtags">${hashtagsHtml}</div>` : ''}
+        ${createReactionsBoxHTML(note.id)}
     </div>
-    <div class="note-actions">
-                                ${archiveButtonHtml}
-                                <button class="btn btn-small" style="background: #95a5a6;" 
-                                        onclick="showNoteInfo('${note.id}')">
-                                    <span class="emoji">ℹ️</span> Info
-                                </button>
-                            </div>
-                        </div>
-                        <div class="note-content">${processYouTubeLinks(processImageLinks(makeLinksClickable(escapeHtml(note.content))))}</div>
-                        ${hashtagsHtml ? `<div class="hashtags">${hashtagsHtml}</div>` : ''}
-                    </div>
-                `;
+`;
             });
                 
             // Update progress and yield control
@@ -6958,16 +7206,35 @@ function hideFilteringIndicator() {
         }
         
         container.innerHTML = html;
-        setupLazyLoading();
-        updateSelectionUI();
-        setupHashtagDragSelection();
-    };
+    setupLazyLoading();
+    updateSelectionUI();
+    setupHashtagDragSelection();
+    
+    // Fetch engagement stats for visible notes
+    setTimeout(() => {
+        const visibleNoteIds = notesToRender.map(note => note.id);
+        fetchEngagementStats(visibleNoteIds);
+        
+        // Update reactions boxes after data loads
+        setTimeout(() => {
+            visibleNoteIds.forEach(noteId => {
+                const reactionsBox = document.querySelector(`[data-note-id="${noteId}"] .reactions-box`);
+                if (reactionsBox) {
+                    const stats = getEngagementStats(noteId);
+                    const total = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+                    reactionsBox.textContent = `${total} engagement${total !== 1 ? 's' : ''}`;
+                    reactionsBox.classList.remove('loading');
+                }
+            });
+        }, 2000);
+    }, 100);
+}
     
     renderInChunks();
 }
 
 
-        async function refreshNotes() {
+async function refreshNotes() {
     if (!currentPubkey) {
         showToast('No user connected - cannot refresh', 'error');
         return;
@@ -6979,10 +7246,16 @@ function hideFilteringIndicator() {
         return;
     }
     
-    showToast('Checking for new notes...', 'success', 2000);
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = 'Refreshing...';
+    }
+    
+    // REMOVED: showToast('Refreshing notes and engagement...', 'success', 2000);
     
     try {
-        // Just do a quick check on primary relays
+        // STEP 1: Check for new notes
         const newNotes = await fetchNotesFromRelaysSince(currentPubkey, allNotes[0]?.created_at || 0);
         
         if (newNotes.length > 0) {
@@ -6996,14 +7269,93 @@ function hideFilteringIndicator() {
             
             updateTagFilters();
             applyFilters();
-            renderNotes();
-            showToast(`Found ${newNotes.length} new notes!`, 'success');
-        } else {
-            showToast('No new notes found', 'success');
         }
+        
+        // STEP 2: CRITICAL - Clear ALL engagement data to force fresh fetch
+        console.log('Clearing engagement cache for refresh...');
+        processedEngagementEvents.clear();
+        engagementCache.clear();
+        cancelEngagementFetch = false; // Reset cancellation flag
+        
+        // Re-render to show "Loading..." state
+        renderNotes();
+        
+        // STEP 3: Fetch fresh engagement data for ALL currently visible notes
+        const notesContainer = document.getElementById('notes-container');
+        const visibleNoteElements = notesContainer.querySelectorAll('.note-card');
+        const visibleNoteIds = Array.from(visibleNoteElements).map(el => el.getAttribute('data-note-id')).filter(Boolean);
+
+        console.log(`Fetching engagement for ${visibleNoteIds.length} visible notes...`);
+        updateStatus(`Fetching engagement for ${visibleNoteIds.length} visible notes...`);
+        
+        // Fetch engagement with proper await
+        await fetchEngagementStats(visibleNoteIds);
+        
+        // STEP 4: Wait for relay responses (15 seconds for better reliability)
+        console.log('Waiting for relay responses...');
+        await new Promise(resolve => setTimeout(resolve, 15000));
+        
+        // STEP 5: Update all engagement boxes with fresh data
+        console.log('Updating engagement boxes...');
+        let updatedCount = 0;
+        visibleNoteIds.forEach(noteId => {
+            const stats = getEngagementStats(noteId);
+            const total = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+            
+            // Update the box in the DOM
+            const reactionsBox = document.querySelector(`[data-note-id="${noteId}"] .reactions-box`);
+            if (reactionsBox) {
+                reactionsBox.textContent = `${total} engagement${total !== 1 ? 's' : ''}`;
+                reactionsBox.classList.remove('loading');
+                updatedCount++;
+            }
+            
+            // Also update the popup if it exists
+            const popup = document.getElementById('popup-' + noteId);
+            if (popup) {
+                const formattedSats = (stats.zapAmount || 0).toLocaleString();
+                popup.innerHTML = `
+                    <div class="reactions-popup-header">Engagement (${total})</div>
+                    <div class="reaction-item">
+                        <span>Reactions</span>
+                        <span class="reaction-count">${stats.reactions}</span>
+                    </div>
+                    <div class="reaction-item">
+                        <span>Zaps (${formattedSats} sats)</span>
+                        <span class="reaction-count">${stats.zaps}</span>
+                    </div>
+                    <div class="reaction-item">
+                        <span>Reposts</span>
+                        <span class="reaction-count">${stats.reposts}</span>
+                    </div>
+                    <div class="reaction-item">
+                        <span>Quotes</span>
+                        <span class="reaction-count">${stats.quotes}</span>
+                    </div>
+                `;
+            }
+        });
+        
+        console.log(`Updated ${updatedCount} engagement boxes`);
+        
+        // Success message
+        if (newNotes.length > 0) {
+            showToast(`${newNotes.length} new notes + ${updatedCount} engagement stats refreshed!`, 'success', 4000);
+        } else {
+            showToast(`No new notes - ${updatedCount} engagement stats refreshed!`, 'success', 4000);
+        }
+        
+        updateStatus(`Refresh complete: ${newNotes.length} new notes, ${updatedCount} engagement stats updated`);
+        
     } catch (error) {
         console.error('Refresh error:', error);
         showToast('Refresh failed: ' + error.message, 'error');
+    } finally {
+        // Re-enable refresh button
+        if (refreshBtn) {
+            refreshBtn.disabled = false;
+            refreshBtn.textContent = 'Refresh Notes';
+        }
     }
 }
 
@@ -7122,16 +7474,20 @@ async function loadNotesForced(isRefresh = false) {
         
         renderNotes();
         
-        const newNotesCount = allNotes.length - previousNotesCount;
-        updateStatus(`✅ Successfully loaded ${allNotes.length} notes!`);
-        
-        if (isRefresh) {
-            if (newNotesCount > 0) {
-                showToast(`Refresh complete - ${newNotesCount} new notes loaded (${allNotes.length} total)`, 'success');
-            } else {
-                showToast(`Refresh complete - no new notes found (${allNotes.length} total)`, 'success');
-            }
-        }
+       // Check if neon-green theme is active
+const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+const checkmark = isNeonGreen ? '' : '✅ ';
+
+const newNotesCount = allNotes.length - previousNotesCount;
+updateStatus(`${checkmark}Successfully loaded ${allNotes.length} notes!`);
+
+if (isRefresh) {
+    if (newNotesCount > 0) {
+        showToast(`Refresh complete - ${newNotesCount} new notes loaded (${allNotes.length} total)`, 'success');
+    } else {
+        showToast(`Refresh complete - no new notes found (${allNotes.length} total)`, 'success');
+    }
+}
         
     } catch (error) {
         console.error('Error loading notes:', error);
@@ -7167,84 +7523,116 @@ function setupLazyLoading() {
 }
 
         function exportAsJSON() {
-            const dataToExport = filteredNotes;
-            
-            let filterType;
-let displayName; // Add this to show user-friendly names
-
-if (currentTag.startsWith('__archive_')) {
-    const archiveName = currentTag.replace('__archive_', '');
-    filterType = archiveName;
-    displayName = `Archive: ${archiveName}`;
-} else if (currentTag === '__original') {
-    filterType = 'original-notes';
-    displayName = 'Original Notes';
-} else if (currentTag === '__replies') {
-    filterType = 'replies';
-    displayName = 'Replies';
-} else if (currentTag) {
-    filterType = currentTag;
-    displayName = `Tag: ${currentTag}`;
-} else {
-    filterType = 'all-notes';
-    displayName = 'All Notes';
-}
-            
-            const data = {
-                exported_at: new Date().toISOString(),
-                filter_type: filterType,
-                total_notes: dataToExport.length,
-                notes: dataToExport.map(note => ({
-    id: note.id,
-    date: new Date(note.created_at * 1000).toISOString(),
-    content: note.content,
-    hashtags: note.hashtags,
-    archived: Object.values(namedArchives).some(archive => archive.has(note.id)),
-    isReply: note.isReply,
-    isRepost: note.isRepost,
-    isQuote: note.isQuote
-}))
-            };
-            
-            downloadFile(
-                JSON.stringify(data, null, 2),
-                `nostr-notes-${filterType}-${new Date().toISOString().split('T')[0]}.json`,
-                'application/json'
-            );
-        }
-
-        function exportAsMarkdown() {
-            const dataToExport = filteredNotes;
-            
-            const filterType = currentTag.startsWith('__archive_') 
-                ? currentTag.replace('__archive_', '') 
-                : currentTag === '__archived' ? 'My Archive' 
-                : currentTag || 'All Notes';
-            
-            let markdown = `# My Nostr Notes\n\n`;
-            markdown += `Exported: ${new Date().toISOString()}\n`;
-            markdown += `Filter: ${filterType}\n`;
-            markdown += `Total Notes: ${dataToExport.length}\n\n---\n\n`;
-            
-            dataToExport.forEach(note => {
-                const date = new Date(note.created_at * 1000).toLocaleString();
-                const isArchived = archivedNotes.has(note.id);
-                const isReply = note.isReply;
-                const noteType = note.isRepost ? '🔄' : note.isQuote ? '💭' : note.isReply ? '💬' : '📝';
-                markdown += `## ${noteType} ${date}${isArchived ? ' 🗂️' : ''}\n\n`;
-                markdown += `${note.content}\n\n`;
-                if (note.hashtags.length > 0) {
-                    markdown += `**Tags:** ${note.hashtags.join(', ')}\n\n`;
+    const dataToExport = filteredNotes;
+    
+    let filterType;
+    let displayName;
+    
+    if (currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        filterType = archiveName;
+        displayName = `Archive: ${archiveName}`;
+    } else if (currentTag === '__original') {
+        filterType = 'original-notes';
+        displayName = 'Original Notes';
+    } else if (currentTag === '__replies') {
+        filterType = 'replies';
+        displayName = 'Replies';
+    } else if (currentTag) {
+        filterType = currentTag;
+        displayName = `Tag: ${currentTag}`;
+    } else {
+        filterType = 'all-notes';
+        displayName = 'All Notes';
+    }
+    
+    const data = {
+        exported_at: new Date().toISOString(),
+        filter_type: filterType,
+        display_name: displayName,
+        total_notes: dataToExport.length,
+        notes: dataToExport.map(note => {
+            const stats = getEngagementStats(note.id);
+            return {
+                id: note.id,
+                date: new Date(note.created_at * 1000).toISOString(),
+                content: note.content,
+                hashtags: note.hashtags,
+                archived: Object.values(namedArchives).some(archive => archive.has(note.id)),
+                isReply: note.isReply,
+                isRepost: note.isRepost,
+                isQuote: note.isQuote,
+                engagement: {
+                    reactions: stats.reactions,
+                    zaps: stats.zaps,
+                    zap_amount_sats: stats.zapAmount,
+                    reposts: stats.reposts,
+                    quotes: stats.quotes,
+                    total: stats.reactions + stats.zaps + stats.reposts + stats.quotes
                 }
-                markdown += `---\n\n`;
-            });
-            
-            downloadFile(
-                markdown,
-                `nostr-notes-${filterType.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.md`,
-                'text/markdown'
-            );
-        }
+            };
+        })
+    };
+    
+    downloadFile(
+        JSON.stringify(data, null, 2),
+        `nostr-notes-${filterType}-${new Date().toISOString().split('T')[0]}.json`,
+        'application/json'
+    );
+}
+
+        function exportAsCSV() {
+    const dataToExport = filteredNotes;
+    
+    const filterType = currentTag.startsWith('__archive_') 
+        ? currentTag.replace('__archive_', '') 
+        : currentTag === '__archived' ? 'My Archive' 
+        : currentTag || 'All Notes';
+    
+    // CSV Header
+    let csv = 'Date,Type,Content,Reactions,Zaps,Zap Amount (sats),Reposts,Quotes,Total Engagement,Hashtags,Archived,Note ID\n';
+    
+    dataToExport.forEach(note => {
+        const date = new Date(note.created_at * 1000).toISOString();
+        const isArchived = Object.values(namedArchives).some(archive => archive.has(note.id));
+        
+        // Determine note type
+        let noteType = 'Original';
+        if (note.isRepost) noteType = 'Repost';
+        else if (note.isQuote) noteType = 'Quote';
+        else if (note.isReply) noteType = 'Reply';
+        
+        // Get engagement stats
+        const stats = getEngagementStats(note.id);
+        const totalEngagement = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+        
+        // Escape content for CSV (handle quotes and newlines)
+        const escapedContent = note.content
+            .replace(/"/g, '""') // Escape quotes
+            .replace(/\n/g, ' ') // Replace newlines with spaces
+            .substring(0, 500); // Limit to 500 chars for readability
+        
+        // Build row
+        csv += `"${date}",`;
+        csv += `"${noteType}",`;
+        csv += `"${escapedContent}",`;
+        csv += `${stats.reactions},`;
+        csv += `${stats.zaps},`;
+        csv += `${stats.zapAmount || 0},`;
+        csv += `${stats.reposts},`;
+        csv += `${stats.quotes},`;
+        csv += `${totalEngagement},`;
+        csv += `"${note.hashtags.join(', ')}",`;
+        csv += `"${isArchived ? 'Yes' : 'No'}",`;
+        csv += `"${note.id}"\n`;
+    });
+    
+    downloadFile(
+        csv,
+        `nostr-notes-${filterType.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.csv`,
+        'text/csv'
+    );
+}
 
         function showNoteInfo(noteId) {
     const note = allNotes.find(n => n.id === noteId);
@@ -7697,6 +8085,32 @@ function showToast(message, type = 'success', duration = 3000) {
     }, duration);
 }
 
+function showDismissibleBanner(message, type = 'warning') {
+    // Remove any existing banner first
+    const existingBanner = document.getElementById('dismissible-banner');
+    if (existingBanner) existingBanner.remove();
+    
+    const banner = document.createElement('div');
+    banner.id = 'dismissible-banner';
+    banner.className = `dismissible-banner ${type}`;
+    banner.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" style="
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 8px;
+            margin-left: 12px;
+        ">×</button>
+    `;
+    
+    // Insert at the top of main-app
+    const mainApp = document.getElementById('main-app');
+    mainApp.insertBefore(banner, mainApp.firstChild);
+}
+
         // Utility functions
         function downloadFile(content, filename, mimeType) {
             const blob = new Blob([content], { type: mimeType });
@@ -7825,12 +8239,20 @@ data.notes.forEach(importedNote => {
         else foundByContent++;
         
         if (importedNote.archived || importedNote.archiveName) {
-            archivedTrue++;
-            const archiveName = data.filter_type && data.filter_type !== 'all' 
-                ? data.filter_type 
-                : 'Imported Archive';
-            
-            archivesToCreate.add(archiveName);
+    archivedTrue++;
+    
+    // Use the original archive name from the export
+    let archiveName = 'Imported Archive'; // Default fallback
+    
+    if (data.filter_type && data.filter_type !== 'all-notes') {
+        // Use the filter_type from the export
+        archiveName = data.filter_type;
+    } else if (data.display_name && data.display_name !== 'All Notes') {
+        // Or use the display_name if filter_type is generic
+        archiveName = data.display_name.replace('Archive: ', '').replace('Tag: ', '');
+    }
+    
+    archivesToCreate.add(archiveName);
             notesToArchive.push({
                 noteId: existingNote.id,
                 archiveName: archiveName
@@ -8277,6 +8699,7 @@ function performInMemorySearch(query, filters) {
         results = results.filter(note => note.isQuote);
     }
     
+    // Apply length filters
     if (filters.minLength) {
         results = results.filter(note => note.content.length >= filters.minLength);
     }
@@ -8285,62 +8708,81 @@ function performInMemorySearch(query, filters) {
         results = results.filter(note => note.content.length <= filters.maxLength);
     }
     
+    // Apply image filter
     if (filters.hasImages) {
         const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
         results = results.filter(note => imageRegex.test(note.content));
     }
     
+    // Apply YouTube filter
     if (filters.hasYouTube) {
         const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
         results = results.filter(note => youtubeRegex.test(note.content));
     }
-
-     if (filters.hasLinks) {
-        // More flexible regex that catches various link formats
-        const linkRegex = /https?:\/\/[^\s<>"]+/gi;
-        results = results.filter(note => linkRegex.test(note.content));
-    }
     
-    if (query && query.trim()) {
-    const searchTerms = query.toLowerCase().split(/\s+/);
-    results = results.filter(note => {
-        const searchText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
-        
-        // Check content and hashtags
-        const matchesContent = searchTerms.every(term => searchText.includes(term));
-        if (matchesContent) return true;
-        
-        // NEW: Also check reply target npub
-        if (note.isReply) {
-            const replyTargetNpub = getReplyTargetNpub(note);
-            if (replyTargetNpub) {
-                const matchesNpub = searchTerms.every(term => 
-                    replyTargetNpub.toLowerCase().includes(term)
-                );
-                if (matchesNpub) return true;
+    // Apply links filter
+    if (filters.hasLinks) {
+        results = results.filter(note => {
+            // Match all URLs
+            const allUrls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+            
+            if (allUrls.length === 0) return false; // No links at all
+            
+            // If we're ALSO filtering for images or videos, allow those
+            if (filters.hasImages || filters.hasYouTube) {
+                return true; // Already has links, and we want images/videos
             }
             
-            // Also check hex pubkey
-            if (note.tags && Array.isArray(note.tags)) {
-                const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
-                if (pTags.length > 0) {
-                    const targetPubkey = pTags[0][1];
-                    const matchesHex = searchTerms.every(term => 
-                        targetPubkey.toLowerCase().includes(term)
+            // If links-only filter, exclude notes that ONLY have images/videos
+            const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
+            const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+            
+            // Check if there's at least one link that's NOT just an image or video
+            return allUrls.some(url => !imageRegex.test(url) && !youtubeRegex.test(url));
+        });
+    }
+    
+    // Apply text search
+    if (query && query.trim()) {
+        const searchTerms = query.toLowerCase().split(/\s+/);
+        results = results.filter(note => {
+            const searchText = (note.content + ' ' + (note.hashtags || []).join(' ')).toLowerCase();
+            
+            // Check content and hashtags
+            const matchesContent = searchTerms.every(term => searchText.includes(term));
+            if (matchesContent) return true;
+            
+            // NEW: Also check reply target npub
+            if (note.isReply) {
+                const replyTargetNpub = getReplyTargetNpub(note);
+                if (replyTargetNpub) {
+                    const matchesNpub = searchTerms.every(term => 
+                        replyTargetNpub.toLowerCase().includes(term)
                     );
-                    if (matchesHex) return true;
+                    if (matchesNpub) return true;
+                }
+                
+                // Also check hex pubkey
+                if (note.tags && Array.isArray(note.tags)) {
+                    const pTags = note.tags.filter(tag => tag[0] === 'p' && tag[1]);
+                    if (pTags.length > 0) {
+                        const targetPubkey = pTags[0][1];
+                        const matchesHex = searchTerms.every(term => 
+                            targetPubkey.toLowerCase().includes(term)
+                        );
+                        if (matchesHex) return true;
+                    }
                 }
             }
-        }
-        
-        return false;
-    });
-}
+            
+            return false;
+        });
+    }
     
     return results;
 }
 
-
+// Track active quick filters
 // Track active quick filters
 let activeQuickFilters = new Set();
 
@@ -8358,78 +8800,89 @@ function toggleQuickFilter(type) {
     activeQuickFilters.delete(type);
     button.classList.remove('active');
     
-    // FIX: Check if we should use simple or advanced filtering after removal
+    // CHECK: After removing this filter, are there ANY content filters left?
+    const hasContentFilters = 
+        activeQuickFilters.size > 0 || 
+        selectedTags.size > 0 || 
+        searchQuery || 
+        document.getElementById('date-from').value || 
+        document.getElementById('date-to').value ||
+        (currentArchive !== 'default' && currentTag.startsWith('__archive_'));
+    
+    // If NO content filters remain, clear the "most" sort mode
+    if (!hasContentFilters && currentSortMode) {
+        console.log('No content filters remain - clearing sort mode');
+        cancelEngagementFetch = true;
+        currentSortMode = null;
+        const dropdown = document.getElementById('secondary-filter-dropdown');
+        if (dropdown) dropdown.value = '';
+    }
+    
+    // Check what's still active
     if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !searchQuery) {
-        // No filters left - use simple filtering
-        window.inAdvancedSearchMode = false;
-        filteredNotes = allNotes.slice();
-        resetPagination();
-        renderNotes();
-        
-        // Update UI
-        document.getElementById('notes-title').textContent = 'All Notes';
-        document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
-        return; // Exit early
-    }
-} else {
-        // If this is a date filter, clear other date filters first
-        if (dateFilters.includes(type)) {
-            dateFilters.forEach(dateFilter => {
-                if (dateFilter !== type && activeQuickFilters.has(dateFilter)) {
-                    activeQuickFilters.delete(dateFilter);
-                    document.querySelector(`[data-filter="${dateFilter}"]`).classList.remove('active');
-                }
-            });
-            
-            // IMPORTANT: Also clear manual date inputs when selecting a quick date filter
-            document.getElementById('date-from').value = '';
-            document.getElementById('date-to').value = '';
+        if (currentSortMode) {
+            // Only sort mode is active - apply it to ALL notes
+            applyAllFilters();
+        } else {
+            // Nothing active at all - back to All Notes
+            window.inAdvancedSearchMode = false;
+            allNotes.sort((a, b) => b.created_at - a.created_at);
+            filteredNotes = allNotes.slice();
+            resetPagination();
+            renderNotes();
+            document.getElementById('notes-title').textContent = 'All Notes';
+            document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+            return;
         }
-        
-        // Add filter
-        activeQuickFilters.add(type);
-        button.classList.add('active');
+    } else {
+        // Other filters still active - reapply everything
+        applyAllFilters();
     }
+    } else {
+    // MOVED TO TOP: Clear "most" filter FIRST when ACTIVATING a quick filter
+    currentSortMode = null;
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
+    
+    // If this is a date filter, clear other date filters first
+    if (dateFilters.includes(type)) {
+        dateFilters.forEach(dateFilter => {
+            if (dateFilter !== type && activeQuickFilters.has(dateFilter)) {
+                activeQuickFilters.delete(dateFilter);
+                document.querySelector(`[data-filter="${dateFilter}"]`).classList.remove('active');
+            }
+        });
+        
+        // Clear manual date inputs when selecting a quick date filter
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+    }
+    
+    // Add filter
+    activeQuickFilters.add(type);
+    button.classList.add('active');
+}
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
-// DON'T clear archive selection - we want quick filters to work INSIDE archives
-// Archive context should persist when applying quick filters
-    
-    // Update "All Notes" button state based on whether we have any selections
+    // Update "All Notes" button state
     document.querySelectorAll('.tag-filter').forEach(btn => {
         if (btn.dataset.tag === '') {
-            // "All Notes" is only active if no hashtags AND no quick filters are selected
-            if (selectedTags.size === 0 && activeQuickFilters.size === 0) {
+            if (selectedTags.size === 0 && activeQuickFilters.size === 0 && !currentSortMode) {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
             }
         }
-        // Don't modify hashtag button states here - let setActiveTagButtons handle them
     });
     
-    console.log('currentArchive after:', currentArchive);
-    console.log('selectedTags preserved:', Array.from(selectedTags));
-    
-    // Apply combined filters (quick filters + hashtag selections)
-    // Apply combined filters with debouncing for better performance
-// Apply combined filters with debouncing for better performance
-clearTimeout(filterDebounceTimeout);
-filterDebounceTimeout = setTimeout(() => {
-    // FIX: If no quick filters remain, check if we need advanced search
-    if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !searchQuery) {
-        window.inAdvancedSearchMode = false;
-        filteredNotes = allNotes.slice();
-        resetPagination();
-        renderNotes();
-        document.getElementById('notes-title').textContent = 'All Notes';
-        document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
-    } else {
+    // Apply combined filters with debouncing
+    clearTimeout(filterDebounceTimeout);
+    filterDebounceTimeout = setTimeout(() => {
         applyAllFilters();
-    }
-}, 150); // 150ms debounce
+    }, 150);
 }
+
 
 async function applyAllFilters() {
     showFilteringIndicator();
@@ -8437,40 +8890,50 @@ async function applyAllFilters() {
     const query = document.getElementById('search-input').value;
     const filters = {};
     
+    // CHECK DROPDOWN VALUE and add it to activeQuickFilters temporarily
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    const dropdownValue = dropdown ? dropdown.value : '';
+    
     // Process quick filters - find the EARLIEST date from all active filters
     let earliestDate = null;
     
-    activeQuickFilters.forEach(filterType => {
+    // Combine activeQuickFilters with dropdown value
+    const allFilters = new Set(activeQuickFilters);
+    if (dropdownValue && !dropdownValue.startsWith('most-')) {
+        allFilters.add(dropdownValue);
+    }
+    
+    allFilters.forEach(filterType => {
         const now = new Date();
         
         switch(filterType) {
-    case 'week':
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        if (!earliestDate || weekAgo < earliestDate) {
-            earliestDate = weekAgo;
-        }
-        break;
-        
-    case 'month':
-        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        if (!earliestDate || monthAgo < earliestDate) {
-            earliestDate = monthAgo;
-        }
-        break;
-        
-    case '6months':
-        const sixMonthsAgo = new Date(now.getTime() - 182 * 24 * 60 * 60 * 1000);
-        if (!earliestDate || sixMonthsAgo < earliestDate) {
-            earliestDate = sixMonthsAgo;
-        }
-        break;
-        
-    case 'year':
-        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-        if (!earliestDate || yearAgo < earliestDate) {
-            earliestDate = yearAgo;
-        }
-        break;
+            case 'week':
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                if (!earliestDate || weekAgo < earliestDate) {
+                    earliestDate = weekAgo;
+                }
+                break;
+                
+            case 'month':
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                if (!earliestDate || monthAgo < earliestDate) {
+                    earliestDate = monthAgo;
+                }
+                break;
+                
+            case '6months':
+                const sixMonthsAgo = new Date(now.getTime() - 182 * 24 * 60 * 60 * 1000);
+                if (!earliestDate || sixMonthsAgo < earliestDate) {
+                    earliestDate = sixMonthsAgo;
+                }
+                break;
+                
+            case 'year':
+                const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                if (!earliestDate || yearAgo < earliestDate) {
+                    earliestDate = yearAgo;
+                }
+                break;
                 
             case 'images':
                 filters.hasImages = true;
@@ -8492,28 +8955,326 @@ async function applyAllFilters() {
     
     // Set the earliest date if any date filters are active
     // Manual date range filters - check these FIRST before quick filters
-const dateFromValue = document.getElementById('date-from').value;
-const dateToValue = document.getElementById('date-to').value;
+    const dateFromValue = document.getElementById('date-from').value;
+    const dateToValue = document.getElementById('date-to').value;
 
-if (dateFromValue) {
-    // Create date at start of day
-    const fromDate = new Date(dateFromValue + 'T00:00:00');
-    filters.dateFrom = fromDate;
-} else if (earliestDate) {
-    // Only use quick filter dates if no manual date is set
-    filters.dateFrom = earliestDate;
-}
+    if (dateFromValue) {
+        // Create date at start of day
+        const fromDate = new Date(dateFromValue + 'T00:00:00');
+        filters.dateFrom = fromDate;
+    } else if (earliestDate) {
+        // Only use quick filter dates if no manual date is set
+        filters.dateFrom = earliestDate;
+    }
 
-if (dateToValue) {
-    // Create date at end of day
-    const toDate = new Date(dateToValue + 'T23:59:59');
-    filters.dateTo = toDate;
-}
+    if (dateToValue) {
+        // Create date at end of day
+        const toDate = new Date(dateToValue + 'T23:59:59');
+        filters.dateTo = toDate;
+    }
     
     performSearchWithFilters(query, filters);
 }
 
+function handleSecondaryFilter() {
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    const filterValue = dropdown.value;
+    
+    if (!filterValue) return;
+    
+    // Reset dropdown FIRST
+    dropdown.value = '';
+    
+    if (filterValue.startsWith('most-')) {
+        // SORT - engagement-based sorting (TOGGLE)
+        
+        // Check if this sort mode is already active - if so, turn it off
+        if (currentSortMode === filterValue) {
+            // Turn off engagement sorting - return to chronological
+            currentSortMode = null;
+            cancelEngagementFetch = true;
+            
+            // Re-sort to chronological order
+            allNotes.sort((a, b) => b.created_at - a.created_at);
+            
+            // Re-apply any active filters (without engagement sort)
+            if (activeQuickFilters.size > 0 || selectedTags.size > 0 || searchQuery) {
+                applyAllFilters();
+            } else {
+                filteredNotes = allNotes.slice();
+                resetPagination();
+                renderNotes();
+                document.getElementById('notes-title').textContent = 'All Notes';
+                document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+            }
+            
+            return; // Exit early
+        }
+        
+        // Otherwise, activate this sort mode
+        currentSortMode = filterValue;
+        
+        // Clear processed events at the START of a new sort operation
+        processedEngagementEvents.clear();
+        engagementCache.clear();
+        
+        // Show loading in title
+        const title = document.getElementById('notes-title');
+        title.textContent = '⏳ Fetching engagement stats...';
+
+        // Fetch engagement stats for ALL notes (show toast for large sets)
+const notesToFetch = filteredNotes.length;
+
+if (notesToFetch > 5000) {
+    showToast(`Fetching engagement for ${notesToFetch.toLocaleString()} notes - this will take a few minutes...`, 'success', 4000);
+}
+
+// Reset cancellation flag before starting
+cancelEngagementFetch = false;
+
+const visibleNoteIds = filteredNotes.slice(0, notesToFetch).map(note => note.id);
+
+console.log(`Fetching engagement for ${visibleNoteIds.length} notes...`);
+        
+        // HELPER FUNCTION: Build filters object (will be called twice)
+        const buildFiltersObject = () => {
+            const filters = {};
+            let earliestDate = null;
+            
+            // DEBUG: Log what we're building
+            console.log('=== BUILDING FILTERS ===');
+            console.log('activeQuickFilters:', Array.from(activeQuickFilters));
+            console.log('Manual date from:', document.getElementById('date-from').value);
+            console.log('Manual date to:', document.getElementById('date-to').value);
+            console.log('selectedTags:', Array.from(selectedTags));
+            console.log('currentTag:', currentTag);
+            console.log('currentArchive:', currentArchive);
+            console.log('filteredNotes.length before filters:', filteredNotes.length);
+            
+            // Build filters from activeQuickFilters
+            activeQuickFilters.forEach(filterType => {
+                const now = new Date();
+                
+                switch(filterType) {
+                    case 'week':
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        if (!earliestDate || weekAgo < earliestDate) earliestDate = weekAgo;
+                        break;
+                    case 'month':
+                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                        if (!earliestDate || monthAgo < earliestDate) earliestDate = monthAgo;
+                        break;
+                    case '6months':
+                        const sixMonthsAgo = new Date(now.getTime() - 182 * 24 * 60 * 60 * 1000);
+                        if (!earliestDate || sixMonthsAgo < earliestDate) earliestDate = sixMonthsAgo;
+                        break;
+                    case 'year':
+                        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                        if (!earliestDate || yearAgo < earliestDate) earliestDate = yearAgo;
+                        break;
+                    case 'images':
+                        filters.hasImages = true;
+                        break;
+                    case 'youtube':
+                        filters.hasYouTube = true;
+                        break;
+                    case 'long':
+                        filters.minLength = 500;
+                        break;
+                    case 'links':
+                        filters.hasLinks = true;
+                        break;
+                }
+            });
+            
+            if (earliestDate) {
+                filters.dateFrom = earliestDate;
+            }
+            
+            // ALSO check manual date inputs
+            const dateFromInput = document.getElementById('date-from').value;
+            const dateToInput = document.getElementById('date-to').value;
+            
+            if (dateFromInput) {
+                const manualDateFrom = new Date(dateFromInput);
+                manualDateFrom.setHours(0, 0, 0, 0);
+                
+                // Use manual date if no quick filter, or if it's earlier
+                if (!filters.dateFrom || manualDateFrom < filters.dateFrom) {
+                    filters.dateFrom = manualDateFrom;
+                }
+            }
+            
+            if (dateToInput) {
+                const manualDateTo = new Date(dateToInput);
+                manualDateTo.setHours(23, 59, 59, 999);
+                filters.dateTo = manualDateTo;
+            }
+            
+            console.log('Built filters:', filters);
+            console.log('=== END BUILDING FILTERS ===');
+            
+            return filters;
+        };
+        
+        // Check if already cancelled before starting
+        if (cancelEngagementFetch) {
+            console.log('Engagement fetch cancelled before start');
+            currentSortMode = null;
+            title.textContent = 'All Notes';
+            return;
+        }
+        
+        fetchEngagementStats(visibleNoteIds).then(() => {
+            // Check if cancelled while fetching
+            if (cancelEngagementFetch) {
+                console.log('Engagement fetch cancelled during processing');
+                return;
+            }
+            
+            // Wait for ALL relay connections to fully complete (10s max per relay)
+            setTimeout(() => {
+                // Check again before sorting
+                if (cancelEngagementFetch) {
+                    console.log('Engagement fetch cancelled before sorting');
+                    return;
+                }
+                
+                console.log('Sorting notes by engagement...');
+                filteredNotes = sortNotesByEngagement(filteredNotes, currentSortMode);
+                
+                // Debug: Check top 10 notes
+                console.log('Top 10 notes after sorting:');
+                filteredNotes.slice(0, 10).forEach((note, i) => {
+                    const stats = getEngagementStats(note.id);
+                    console.log(`${i+1}. ${note.id.substring(0, 8)}: ${stats.zaps} zaps, ${stats.reactions} reactions, ${stats.reposts} reposts`);
+                });
+                
+                console.log('filteredNotes.length after sort:', filteredNotes.length);
+                
+                resetPagination();
+                
+                // Get query and build filters
+                const query = document.getElementById('search-input').value;
+                console.log('=== FIRST RENDER (11 seconds) ===');
+                const filters = buildFiltersObject();
+                
+                // Rebuild the title with all filters + sort mode
+                performSearchWithFilters(query, filters);
+                
+                console.log('filteredNotes.length after FIRST performSearchWithFilters:', filteredNotes.length);
+                
+                // Wait for render to complete, THEN update engagement boxes
+                setTimeout(() => {
+                    if (cancelEngagementFetch) return;
+                    
+                    const currentlyRenderedIds = filteredNotes.slice(0, 100).map(note => note.id);
+                    console.log(`Updating ${currentlyRenderedIds.length} engagement boxes...`);
+                    
+                    currentlyRenderedIds.forEach(noteId => {
+                        const reactionsBox = document.querySelector(`[data-note-id="${noteId}"] .reactions-box`);
+                        if (reactionsBox) {
+                            const stats = getEngagementStats(noteId);
+                            const total = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+                            reactionsBox.textContent = `${total} engagement${total !== 1 ? 's' : ''}`;
+                            reactionsBox.classList.remove('loading');
+                        }
+                    });
+                    
+                    // RE-SORT AND UPDATE after more data arrives (19 seconds total)
+                    setTimeout(() => {
+                        if (cancelEngagementFetch) return;
+                        
+                        console.log('Final update after all data arrived...');
+                        
+                        // RE-SORT with complete data
+                        filteredNotes = sortNotesByEngagement(filteredNotes, currentSortMode);
+                        
+                        // Debug: Check if order changed
+                        console.log('Top 10 after final sort:');
+                        filteredNotes.slice(0, 10).forEach((note, i) => {
+                            const stats = getEngagementStats(note.id);
+                            console.log(`${i+1}. ${note.id.substring(0, 8)}: ${stats.zaps} zaps, ${stats.reactions} reactions, ${stats.reposts} reposts`);
+                        });
+                        
+                        console.log('filteredNotes.length after final sort:', filteredNotes.length);
+                        
+                        // Re-render with correct sort order
+                        resetPagination();
+                        
+                        // CRITICAL: Rebuild filters again for final render
+                        console.log('=== FINAL RENDER (19 seconds) ===');
+                        const finalFilters = buildFiltersObject();
+                        performSearchWithFilters(query, finalFilters);
+                        
+                        console.log('filteredNotes.length after FINAL performSearchWithFilters:', filteredNotes.length);
+                        
+                        // Update boxes one more time after re-render
+                        setTimeout(() => {
+                            if (cancelEngagementFetch) return;
+                            
+                            const finalIds = filteredNotes.slice(0, 100).map(note => note.id);
+                            finalIds.forEach(noteId => {
+                                const reactionsBox = document.querySelector(`[data-note-id="${noteId}"] .reactions-box`);
+                                if (reactionsBox) {
+                                    const stats = getEngagementStats(noteId);
+                                    const total = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+                                    reactionsBox.textContent = `${total} engagement${total !== 1 ? 's' : ''}`;
+                                    reactionsBox.classList.remove('loading');
+                                }
+                            });
+                        }, 500);
+                    }, 8000); // Wait another 8 seconds for late-arriving data
+                }, 1000);
+            }, 10000); // Wait 10 seconds for all relay data to arrive
+        });
+    } else {
+        // FILTER - Toggle in activeQuickFilters
+        const dateFilters = ['week', 'month', '6months', 'year'];
+        
+        // Check if this filter is already active
+        if (activeQuickFilters.has(filterValue)) {
+            // Remove the filter (toggle off)
+            activeQuickFilters.delete(filterValue);
+            
+            // Update button visual state if it exists
+            const btn = document.querySelector(`[data-filter="${filterValue}"]`);
+            if (btn) btn.classList.remove('active');
+        } else {
+            // Add the filter (toggle on)
+            if (dateFilters.includes(filterValue)) {
+                // Clear other date filters first (mutually exclusive)
+                dateFilters.forEach(df => {
+                    if (df !== filterValue) {
+                        activeQuickFilters.delete(df);
+                        const btn = document.querySelector(`[data-filter="${df}"]`);
+                        if (btn) btn.classList.remove('active');
+                    }
+                });
+                
+                // Clear manual date inputs
+                document.getElementById('date-from').value = '';
+                document.getElementById('date-to').value = '';
+            }
+            
+            // Add the filter
+            activeQuickFilters.add(filterValue);
+            
+            // Update button visual state if it exists
+            const btn = document.querySelector(`[data-filter="${filterValue}"]`);
+            if (btn) btn.classList.add('active');
+        }
+        
+        // Apply all filters together
+        applyAllFilters();
+    }
+}
+
 function clearAllFilters() {
+    // Cancel any ongoing engagement fetch
+    cancelEngagementFetch = true;
+    currentSortMode = null;
+    
     // Clear quick filters
     activeQuickFilters.clear();
     document.querySelectorAll('.quick-filter-btn').forEach(btn => {
@@ -8545,6 +9306,13 @@ function clearAllFilters() {
             btn.classList.add('active');
         }
     });
+    
+    // Reset dropdown
+    const dropdown = document.getElementById('secondary-filter-dropdown');
+    if (dropdown) dropdown.value = '';
+    
+    // Re-sort notes to original chronological order
+    allNotes.sort((a, b) => b.created_at - a.created_at);
     
     // CRITICAL: Force reset to exact original count
     filteredNotes = allNotes.slice();
@@ -8632,24 +9400,38 @@ async function performSearchWithFilters(query, filters) {
         );
     }
     
-    // Store the final filtered results
+    // CRITICAL FIX: If we're in engagement sort mode, filter but preserve sort order
+if (currentSortMode && currentSortMode.startsWith('most-')) {
+    // We need to re-sort ALL the filtered results, not filter the old sorted list
+    // Sort finalResults by the current engagement mode
+    filteredNotes = sortNotesByEngagement(finalResults, currentSortMode);
+    console.log('In engagement sort mode - sorted', finalResults.length, 'filtered notes');
+} else {
+    // Normal mode: replace filteredNotes with filtered results
     filteredNotes = finalResults;
+}
+    
     searchQuery = query;
     renderNotes();
     
     // Build comprehensive filter description
     const activeFilters = [];
     
-
     // Add quick filters
-if (activeQuickFilters.has('week')) activeFilters.push('This Week');
-if (activeQuickFilters.has('month')) activeFilters.push('This Month');
-if (activeQuickFilters.has('6months')) activeFilters.push('6 Months');
-if (activeQuickFilters.has('year')) activeFilters.push('This Year');
-if (activeQuickFilters.has('images')) activeFilters.push('Images');
-if (activeQuickFilters.has('youtube')) activeFilters.push('Videos');
-if (activeQuickFilters.has('long')) activeFilters.push('Long');
-if (activeQuickFilters.has('links')) activeFilters.push('Links');
+    if (activeQuickFilters.has('week')) activeFilters.push('This Week');
+    if (activeQuickFilters.has('month')) activeFilters.push('This Month');
+    if (activeQuickFilters.has('6months')) activeFilters.push('Last 6 Months');
+    if (activeQuickFilters.has('year')) activeFilters.push('This Year');
+    if (activeQuickFilters.has('images')) activeFilters.push('Has Images');
+    if (activeQuickFilters.has('youtube')) activeFilters.push('Has Videos');
+    if (activeQuickFilters.has('long')) activeFilters.push('Long Notes');
+    if (activeQuickFilters.has('links')) activeFilters.push('Has Links');
+    
+    // Add sorting mode if active
+    if (currentSortMode === 'most-liked') activeFilters.push('Most Reactions');
+    if (currentSortMode === 'most-zapped') activeFilters.push('Most Zapped');
+    if (currentSortMode === 'most-reposted') activeFilters.push('Most Reposted');
+    if (currentSortMode === 'most-quoted') activeFilters.push('Most Quoted');
     
     // Add selected hashtags from multi-selection
     selectedTags.forEach(tag => {
@@ -8684,33 +9466,37 @@ if (activeQuickFilters.has('links')) activeFilters.push('Links');
     }
     
     // Manual date filters (only show if no quick date filters)
-if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.has('month') && !activeQuickFilters.has('6months') && !activeQuickFilters.has('year')) {
-    activeFilters.push('Date Filtered');
-}
+    if (filters.dateFrom && !activeQuickFilters.has('week') && !activeQuickFilters.has('month') && !activeQuickFilters.has('6months') && !activeQuickFilters.has('year')) {
+        activeFilters.push('Date Filtered');
+    }
     
     // Update UI
-const title = document.getElementById('notes-title');
-const count = document.getElementById('notes-count');
-
-// Check if we're in an archive context
-if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
-    const archiveName = currentTag.replace('__archive_', '');
+    const title = document.getElementById('notes-title');
+    const count = document.getElementById('notes-count');
     
-    if (activeFilters.length > 0) {
-        title.textContent = `Archive: ${archiveName} (${activeFilters.join(' + ')})`;
+    // Check if we're in an archive context
+    if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        
+        if (activeFilters.length > 0) {
+            title.textContent = `Archive: ${archiveName} (${activeFilters.join(' + ')})`;
+        } else {
+            title.textContent = `Archive: ${archiveName}`;
+        }
     } else {
-        title.textContent = `Archive: ${archiveName}`;
+        // Not in an archive
+        if (activeFilters.length > 0) {
+            title.textContent = `Filtered Notes (${activeFilters.join(' + ')})`;
+        } else {
+            title.textContent = 'All Notes';
+        }
     }
-} else {
-    // Not in an archive
-    if (activeFilters.length > 0) {
-        title.textContent = `Filtered Notes (${activeFilters.join(' + ')})`;
-    } else {
-        title.textContent = 'All Notes';
-    }
-}
-
-count.textContent = `${finalResults.length} notes`;
+    
+    count.textContent = `${filteredNotes.length} notes`;
+    
+    console.log('=== AFTER performSearchWithFilters ===');
+    console.log('filteredNotes.length:', filteredNotes.length);
+    console.log('Applied filters:', activeFilters.join(' + '));
     
     // Store that we're in advanced search mode
     window.inAdvancedSearchMode = true;
@@ -8815,6 +9601,354 @@ function copyNeventToClipboard(noteId) {
     });
 }
 
+
+// ==================== ENGAGEMENT STATS SYSTEM ====================
+
+async function fetchEngagementStats(noteIds) {
+    if (isFetchingEngagement || noteIds.length === 0) return;
+    
+    isFetchingEngagement = true;
+    
+    try {
+        // Split into batches of 1000 with proper delays
+        const batchSize = 1000;
+        const batches = [];
+        
+        for (let i = 0; i < noteIds.length; i += batchSize) {
+            batches.push(noteIds.slice(i, i + batchSize));
+        }
+        
+        console.log(`Fetching engagement in ${batches.length} batches of up to ${batchSize} notes each`);
+        
+        // Process batches SEQUENTIALLY with longer delays
+        for (let i = 0; i < batches.length; i++) {
+            // CHECK FOR CANCELLATION AT START OF EACH BATCH
+            if (cancelEngagementFetch) {
+                console.log(`Engagement fetch cancelled at batch ${i + 1}/${batches.length}`);
+                break;
+            }
+            
+            const batch = batches[i];
+            console.log(`Processing batch ${i + 1}/${batches.length} (${batch.length} notes)`);
+            
+            // USE MORE RELAYS - increased from 3 to 6 for better coverage
+            const relaysToUse = RELAYS.slice(0, 6);
+            
+            const promises = relaysToUse.map(relay => 
+                fetchEngagementFromRelay(relay, batch)
+            );
+            
+            // Wait for this batch to complete before moving to next
+            await Promise.all(promises);
+            
+            // CHECK FOR CANCELLATION AGAIN AFTER BATCH COMPLETES
+            if (cancelEngagementFetch) {
+                console.log(`Engagement fetch cancelled after batch ${i + 1}/${batches.length}`);
+                break;
+            }
+            
+            // Longer delay for 1000-note batches to let relays recover
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        console.log('All engagement batches fetched');
+    } catch (error) {
+        console.error('Error fetching engagement stats:', error);
+    } finally {
+        isFetchingEngagement = false;
+        cancelEngagementFetch = false;
+    }
+}
+
+function fetchEngagementFromRelay(relay, noteIds) {
+    return new Promise((resolve) => {
+        const ws = new WebSocket(relay);
+        const timeout = setTimeout(() => {
+            ws.close();
+            resolve();
+        }, 20000);
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify([
+                'REQ',
+                'engagement-' + Date.now(),
+                {
+                    kinds: [7, 9735, 6, 1],
+                    '#e': noteIds,
+                    limit: 5000
+                }
+            ]));
+        };
+
+        ws.onmessage = (event) => {
+            const [type, , eventData] = JSON.parse(event.data);
+            if (type === 'EVENT') {
+                processEngagementEvent(eventData);
+            } else if (type === 'EOSE') {
+                clearTimeout(timeout);
+                ws.close();
+                resolve();
+            }
+        };
+
+        ws.onerror = () => {
+            clearTimeout(timeout);
+            resolve();
+        };
+    });
+}
+
+function processEngagementEvent(event) {
+    if (!event || !event.tags) return;
+    
+    // DEDUPLICATION: Skip if we've already processed this event
+    if (processedEngagementEvents.has(event.id)) {
+        return;
+    }
+    processedEngagementEvents.add(event.id);
+    
+    const eTags = event.tags.filter(tag => tag[0] === 'e');
+    if (eTags.length === 0) return;
+    
+    // Find which note this engagement is FOR
+    let targetNoteId;
+    
+    if (event.kind === 9735 || event.kind === 6 || event.kind === 7) {
+        // For reactions/zaps/reposts, ALWAYS use the LAST e-tag
+        // This is the most direct target (the note being reacted to)
+        // The "reply" and "root" markers are for threading context only
+        targetNoteId = eTags[eTags.length - 1][1];
+    } else if (event.kind === 1) {
+        const qTags = event.tags.filter(tag => tag[0] === 'q');
+        
+        if (qTags.length > 0) {
+            const quoteTarget = eTags.find(tag => tag[3] === 'reply') || eTags[eTags.length - 1];
+            if (quoteTarget) targetNoteId = quoteTarget[1];
+        } else {
+            return;
+        }
+    }
+    
+    if (!targetNoteId) return;
+    
+    // Initialize cache entry if needed
+    if (!engagementCache.has(targetNoteId)) {
+        engagementCache.set(targetNoteId, {
+            reactions: 0,
+            zaps: 0,
+            zapAmount: 0,
+            reposts: 0,
+            quotes: 0
+        });
+    }
+    
+    const stats = engagementCache.get(targetNoteId);
+    
+    // Increment the appropriate counter
+    if (event.kind === 7) {
+        stats.reactions++;
+    } else if (event.kind === 9735) {
+        stats.zaps++;
+        
+        const bolt11Tag = event.tags.find(tag => tag[0] === 'bolt11');
+        if (bolt11Tag && bolt11Tag[1]) {
+            const invoice = bolt11Tag[1];
+            const amountMatch = invoice.match(/lnbc(\d+)([munp]?)/i);
+            if (amountMatch) {
+                let amount = parseInt(amountMatch[1]);
+                const unit = amountMatch[2];
+                
+                if (unit === 'm') amount = amount * 100000;
+                else if (unit === 'u') amount = amount * 100;
+                else if (unit === 'n') amount = amount / 10;
+                else if (unit === 'p') amount = amount / 10000;
+                else amount = amount * 100000000;
+                
+                stats.zapAmount += Math.floor(amount);
+            }
+        }
+    } else if (event.kind === 6) {
+        stats.reposts++;
+    } else if (event.kind === 1) {
+        stats.quotes++;
+    }
+}
+
+function getEngagementStats(noteId) {
+    if (engagementCache.has(noteId)) {
+        return engagementCache.get(noteId);
+    }
+    
+    engagementFetchQueue.add(noteId);
+    return { reactions: 0, zaps: 0, zapAmount: 0, reposts: 0, quotes: 0 };
+}
+
+function createReactionsBoxHTML(noteId) {
+    const stats = getEngagementStats(noteId);
+    const total = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+    const formattedSats = (stats.zapAmount || 0).toLocaleString();
+    
+    return `
+        <div class="reactions-container">
+            <div class="reactions-box" onclick="toggleReactionsPopup(event, '${noteId}')" title="Click to see engagement">
+                ${total} engagement${total !== 1 ? 's' : ''}
+            </div>
+            <div class="reactions-popup" id="popup-${noteId}">
+                <div class="reactions-popup-header">Engagement (${total})</div>
+                <div class="reaction-item">
+                    <span>Reactions</span>
+                    <span class="reaction-count">${stats.reactions}</span>
+                </div>
+                <div class="reaction-item">
+                    <span>Zaps (${formattedSats} sats)</span>
+                    <span class="reaction-count">${stats.zaps}</span>
+                </div>
+                <div class="reaction-item">
+                    <span>Reposts</span>
+                    <span class="reaction-count">${stats.reposts}</span>
+                </div>
+                <div class="reaction-item">
+                    <span>Quotes</span>
+                    <span class="reaction-count">${stats.quotes}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function toggleReactionsPopup(event, noteId) {
+    event.stopPropagation();
+    
+    const popup = document.getElementById('popup-' + noteId);
+    if (!popup) return;
+    
+    // UPDATE popup content with current stats before showing
+    const stats = getEngagementStats(noteId);
+    const total = stats.reactions + stats.zaps + stats.reposts + stats.quotes;
+    
+    // Format sats with commas
+    const formattedSats = (stats.zapAmount || 0).toLocaleString();
+    
+    popup.innerHTML = `
+        <div class="reactions-popup-header">Engagement (${total})</div>
+        <div class="reaction-item">
+            <span>Reactions</span>
+            <span class="reaction-count">${stats.reactions}</span>
+        </div>
+        <div class="reaction-item">
+            <span>Zaps (${formattedSats} sats)</span>
+            <span class="reaction-count">${stats.zaps}</span>
+        </div>
+        <div class="reaction-item">
+            <span>Reposts</span>
+            <span class="reaction-count">${stats.reposts}</span>
+        </div>
+        <div class="reaction-item">
+            <span>Quotes</span>
+            <span class="reaction-count">${stats.quotes}</span>
+        </div>
+    `;
+    
+    document.querySelectorAll('.reactions-popup.show').forEach(p => {
+        if (p.id !== 'popup-' + noteId) {
+            p.classList.remove('show');
+        }
+    });
+    
+    popup.classList.toggle('show');
+}
+
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.reactions-box') && !event.target.closest('.reactions-popup')) {
+        document.querySelectorAll('.reactions-popup.show').forEach(popup => {
+            popup.classList.remove('show');
+        });
+    }
+});
+
+// ==================== SORTING SYSTEM ====================
+
+function sortNotesByEngagement(notes, sortMode) {
+    const sortedNotes = [...notes];
+    
+    console.log(`Sorting by: ${sortMode}`);
+    
+    switch (sortMode) {
+        case 'most-liked':
+            const likedSorted = sortedNotes.sort((a, b) => {
+                const aStats = getEngagementStats(a.id);
+                const bStats = getEngagementStats(b.id);
+                return (bStats.reactions || 0) - (aStats.reactions || 0);
+            });
+            
+            console.log('Top 10 most liked notes:');
+            likedSorted.slice(0, 10).forEach((note, i) => {
+                const stats = getEngagementStats(note.id);
+                console.log(`${i+1}. ${note.id.substring(0, 8)}: ${stats.reactions} reactions, ${stats.zaps} zaps, ${stats.reposts} reposts`);
+            });
+            
+            return likedSorted;
+            
+        case 'most-zapped':
+            const zappedSorted = sortedNotes.sort((a, b) => {
+                const aStats = getEngagementStats(a.id);
+                const bStats = getEngagementStats(b.id);
+                return (bStats.zaps || 0) - (aStats.zaps || 0);
+            });
+            
+            console.log('Top 10 most zapped notes:');
+            zappedSorted.slice(0, 10).forEach((note, i) => {
+                const stats = getEngagementStats(note.id);
+                console.log(`${i+1}. ${note.id.substring(0, 8)}: ${stats.zaps} zaps, ${stats.reactions} reactions, ${stats.reposts} reposts`);
+            });
+            
+            return zappedSorted;
+            
+        case 'most-reposted':
+            const repostedSorted = sortedNotes.sort((a, b) => {
+                const aStats = getEngagementStats(a.id);
+                const bStats = getEngagementStats(b.id);
+                return (bStats.reposts || 0) - (aStats.reposts || 0);
+            });
+            
+            console.log('Top 10 most reposted notes:');
+            repostedSorted.slice(0, 10).forEach((note, i) => {
+                const stats = getEngagementStats(note.id);
+                console.log(`${i+1}. ${note.id.substring(0, 8)}: ${stats.reposts} reposts, ${stats.reactions} reactions, ${stats.zaps} zaps`);
+            });
+            
+            return repostedSorted;
+            
+        case 'most-quoted':
+            const quotedSorted = sortedNotes.sort((a, b) => {
+                const aStats = getEngagementStats(a.id);
+                const bStats = getEngagementStats(b.id);
+                return (bStats.quotes || 0) - (aStats.quotes || 0);
+            });
+            
+            console.log('Top 10 most quoted notes:');
+            quotedSorted.slice(0, 10).forEach((note, i) => {
+                const stats = getEngagementStats(note.id);
+                console.log(`${i+1}. ${note.id.substring(0, 8)}: ${stats.quotes} quotes, ${stats.reactions} reactions, ${stats.zaps} zaps`);
+            });
+            
+            return quotedSorted;
+            
+        default:
+            return sortedNotes;
+    }
+}
+
+function fetchEngagementForVisibleNotes() {
+    if (engagementFetchQueue.size === 0) return;
+    
+    const noteIds = Array.from(engagementFetchQueue);
+    engagementFetchQueue.clear();
+    
+    fetchEngagementStats(noteIds);
+}
+
+
 // Make it globally available
 window.copyNeventToClipboard = copyNeventToClipboard;
 
@@ -8828,6 +9962,10 @@ window.closeThreadView = closeThreadView;
 window.toggleQuickFilter = toggleQuickFilter;
 window.applyDateFilters = applyDateFilters;
 window.clearAllFilters = clearAllFilters;
+window.handleSecondaryFilter = handleSecondaryFilter;
+window.toggleReactionsPopup = toggleReactionsPopup;
+window.getEngagementStats = getEngagementStats;
+window.fetchEngagementStats = fetchEngagementStats;
 
 // Add global event listeners for hashtag selection
 document.addEventListener('mouseup', endHashtagSelection);
