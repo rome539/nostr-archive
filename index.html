@@ -3921,16 +3921,15 @@ async function verifyCompletenessQuick(pubkey) {
         );
         
         const maxRecent = Math.max(...samples);
-        const ourRecent = allNotes.filter(note => {
-            const daysSince = (Date.now() / 1000 - note.created_at) / (24 * 60 * 60);
-            return daysSince <= 30;
-        }).length;
         
-        const ratio = ourRecent / maxRecent;
+        // FIX: Count our TOTAL notes, not just recent ones
+        const totalNotesWeHave = allNotes.length;
         
-        if (ratio < 0.9 && maxRecent > 10) {
+        // Only show warning if the discrepancy is significant
+        // AND we have a reasonable sample from relays
+        if (maxRecent > totalNotesWeHave + 50 && maxRecent > 100) {
             showDismissibleBanner(
-                `⚠️ Possible missing notes: You have ${ourRecent} recent notes, but relays report ~${maxRecent}. Try "Deep Scan".`,
+                `⚠️ Possible missing notes: You have ${totalNotesWeHave} total notes, but relays report ~${maxRecent} recent notes. Try "Deep Scan".`,
                 'warning'
             );
             return false;
@@ -6894,8 +6893,12 @@ function noteMatchesTag(note, tag) {
     const dropdown = document.getElementById('secondary-filter-dropdown');
     if (dropdown) dropdown.value = '';
     
-    // If there are active quick filters, use the advanced search system
-    if (activeQuickFilters.size > 0) {
+    // Check if there are any active date filters
+    const hasDateFilters = document.getElementById('date-from').value || 
+                          document.getElementById('date-to').value;
+    
+    // If there are active quick filters OR date filters, use the advanced search system
+    if (activeQuickFilters.size > 0 || hasDateFilters) {
         applyAllFilters();
     } else {
         // Use the simple filter system
@@ -7280,19 +7283,7 @@ async function refreshNotes() {
         return;
     }
     
-    // Prevent refresh during background loading
-    if (isBackgroundLoading) {
-        showToast('Background loading in progress - please wait', 'warning');
-        return;
-    }
-    
-    const refreshBtn = document.getElementById('refresh-btn');
-    if (refreshBtn) {
-        refreshBtn.disabled = true;
-        refreshBtn.textContent = 'Refreshing...';
-    }
-    
-    // REMOVED: showToast('Refreshing notes and engagement...', 'success', 2000);
+    // ... existing code ...
     
     try {
         // STEP 1: Check for new notes
@@ -7309,6 +7300,10 @@ async function refreshNotes() {
             
             updateTagFilters();
             applyFilters();
+            
+            // ADD: Dismiss the warning banner since we successfully refreshed
+            const warningBanner = document.getElementById('dismissible-banner');
+            if (warningBanner) warningBanner.remove();
         }
         
         // STEP 2: CRITICAL - Clear ALL engagement data to force fresh fetch
@@ -7383,6 +7378,10 @@ async function refreshNotes() {
             showToast(`${newNotes.length} new notes + ${updatedCount} engagement stats refreshed!`, 'success', 4000);
         } else {
             showToast(`No new notes - ${updatedCount} engagement stats refreshed!`, 'success', 4000);
+            
+            // ADD: Also dismiss warning if no new notes but we successfully checked
+            const warningBanner = document.getElementById('dismissible-banner');
+            if (warningBanner) warningBanner.remove();
         }
         
         updateStatus(`Refresh complete: ${newNotes.length} new notes, ${updatedCount} engagement stats updated`);
