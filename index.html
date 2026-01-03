@@ -7283,7 +7283,17 @@ async function refreshNotes() {
         return;
     }
     
-    // ... existing code ...
+    // Prevent refresh during background loading
+    if (isBackgroundLoading) {
+        showToast('Background loading in progress - please wait', 'warning');
+        return;
+    }
+    
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = 'Refreshing...';
+    }
     
     try {
         // STEP 1: Check for new notes
@@ -7300,17 +7310,13 @@ async function refreshNotes() {
             
             updateTagFilters();
             applyFilters();
-            
-            // ADD: Dismiss the warning banner since we successfully refreshed
-            const warningBanner = document.getElementById('dismissible-banner');
-            if (warningBanner) warningBanner.remove();
         }
         
         // STEP 2: CRITICAL - Clear ALL engagement data to force fresh fetch
         console.log('Clearing engagement cache for refresh...');
         processedEngagementEvents.clear();
         engagementCache.clear();
-        cancelEngagementFetch = false; // Reset cancellation flag
+        cancelEngagementFetch = false;
         
         // Re-render to show "Loading..." state
         renderNotes();
@@ -7373,15 +7379,15 @@ async function refreshNotes() {
         
         console.log(`Updated ${updatedCount} engagement boxes`);
         
+        // Dismiss warning banner after successful refresh
+        const warningBanner = document.getElementById('dismissible-banner');
+        if (warningBanner) warningBanner.remove();
+        
         // Success message
         if (newNotes.length > 0) {
             showToast(`${newNotes.length} new notes + ${updatedCount} engagement stats refreshed!`, 'success', 4000);
         } else {
             showToast(`No new notes - ${updatedCount} engagement stats refreshed!`, 'success', 4000);
-            
-            // ADD: Also dismiss warning if no new notes but we successfully checked
-            const warningBanner = document.getElementById('dismissible-banner');
-            if (warningBanner) warningBanner.remove();
         }
         
         updateStatus(`Refresh complete: ${newNotes.length} new notes, ${updatedCount} engagement stats updated`);
