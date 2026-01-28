@@ -2337,29 +2337,18 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     .quick-filter-btn,
     button {
         -webkit-tap-highlight-color: transparent;
-        outline: none;
     }
     
-    .tag-filter:active,
-    .quick-filter-btn:active,
-    button:active {
-        opacity: 0.8;
+    /* Only show opacity feedback on active press, not persistent */
+    .tag-filter:active:not(.active),
+    .quick-filter-btn:active:not(.active) {
+        opacity: 0.7;
     }
     
-    /* Ensure active state only shows for actually active filters */
-    .tag-filter:not(.active):focus,
-    .quick-filter-btn:not(.active):focus {
-        background: var(--background-color);
-        border-color: var(--border-color);
-    }
-    
-    .tag-filter[data-tag="__original"]:not(.active):focus,
-    .tag-filter[data-tag="__replies"]:not(.active):focus,
-    .tag-filter[data-tag="__archived"]:not(.active):focus,
-    .tag-filter[data-tag^="__archive_"]:not(.active):focus {
-        background: var(--background-color);
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
+    /* Don't interfere with active state styling */
+    .tag-filter.active,
+    .quick-filter-btn.active {
+        opacity: 1 !important;
     }
     
     /* Improve tag badges for touch */
@@ -6980,7 +6969,11 @@ function trackLoadTime() {
             transition: background-color 0.2s ease;
         `;
         letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
-        letterHeader.onclick = () => toggleHashtagGroup(letter);
+        letterHeader.onclick = (event) => {
+            toggleHashtagGroup(letter);
+            // Remove focus to prevent persistent highlight on mobile
+            event.target.blur();
+        };
         container.appendChild(letterHeader);
         
         // Add container for hashtags (initially hidden)
@@ -7066,8 +7059,8 @@ function trackLoadTime() {
                 if (btn.dataset.tag === tag) {
                     btn.classList.add('active');
                 }
-                // Remove focus to prevent persistent highlight on mobile
-                btn.blur();
+                // Remove focus to prevent persistent highlight on mobile (use setTimeout)
+                setTimeout(() => btn.blur(), 0);
             });
             
             applyFilters();
@@ -7082,11 +7075,6 @@ function trackLoadTime() {
         container.style.display = 'block';
     } else {
         container.style.display = 'none';
-    }
-    
-    // Remove focus to prevent persistent highlight on mobile
-    if (event && event.target) {
-        event.target.blur();
     }
 }
 
@@ -9369,9 +9357,9 @@ function toggleQuickFilter(type) {
     button.classList.add('active');
 }
     
-    // Remove focus to prevent persistent highlight on mobile
+    // Remove focus to prevent persistent highlight on mobile (use setTimeout to ensure it happens after click processing)
     if (button) {
-        button.blur();
+        setTimeout(() => button.blur(), 0);
     }
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
