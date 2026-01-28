@@ -330,6 +330,20 @@ input:-ms-input-placeholder {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+/* Disable hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .btn:hover {
+        background: var(--primary-color);
+        transform: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn.quick-filter-btn:hover {
+        background: inherit;
+        transform: none;
+    }
+}
+
         .btn:disabled {
             background: #bdc3c7;
             cursor: not-allowed;
@@ -1841,6 +1855,15 @@ border-color: var(--accent) !important;
     background: var(--primary-color) !important;
     color: white !important;
     border-color: var(--primary-color) !important;
+}
+
+/* Disable hover on touch devices to prevent sticky highlighting */
+@media (hover: none) and (pointer: coarse) {
+    .hashtag-group-header:hover {
+        background: var(--background-color) !important;
+        color: var(--text-color) !important;
+        border-color: var(--border-color) !important;
+    }
 }
 
 /* Fix text color for dark themes */
