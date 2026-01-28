@@ -2386,26 +2386,22 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         cursor: pointer;
     }
     
-    /* Prevent focus styles on touch devices */
-    @media (hover: none) {
-        .quick-filter-btn:focus,
-        .tag-filter:focus,
-        .hashtag-group-header:focus {
-            outline: none;
-        }
+    /* Completely disable focus on quick filter buttons */
+    .quick-filter-btn:focus,
+    .tag-filter:focus,
+    .hashtag-group-header:focus {
+        outline: none !important;
     }
     
-    /* Force immediate visual update for quick filter buttons on mobile */
-    @media (max-width: 768px) {
-        .quick-filter-btn {
-            transition: none !important;
-        }
-        
-        .quick-filter-btn.active {
-            /* Ensure the active state is immediately visible */
-            background: var(--primary-color) !important;
-            color: white !important;
-        }
+    /* Force immediate visual update for quick filter buttons */
+    .quick-filter-btn {
+        transition: none !important;
+    }
+    
+    .quick-filter-btn.active {
+        /* Ensure the active state is immediately visible */
+        background: var(--primary-color) !important;
+        color: white !important;
     }
     
     /* Prevent focus from keeping buttons highlighted after tap on mobile */
@@ -2651,12 +2647,12 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     
     <!-- Primary Quick filters - 3x2 grid -->
 <div class="quick-filters" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px;">
-    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month'); this.blur();">This Month</button>
-    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year'); this.blur();">This Year</button>
-    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images'); this.blur();">Images</button>
-    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube'); this.blur();">Videos</button>
-    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long'); this.blur();">Long</button>
-    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links'); this.blur();">Links</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="this.blur(); toggleQuickFilter('month', this);">This Month</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="this.blur(); toggleQuickFilter('year', this);">This Year</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="this.blur(); toggleQuickFilter('images', this);">Images</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="this.blur(); toggleQuickFilter('youtube', this);">Videos</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="this.blur(); toggleQuickFilter('long', this);">Long</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="this.blur(); toggleQuickFilter('links', this);">Links</button>
 </div>
 
 <!-- Secondary filters dropdown -->
@@ -9362,11 +9358,11 @@ function performInMemorySearch(query, filters) {
 // Track active quick filters
 let activeQuickFilters = new Set();
 
-function toggleQuickFilter(type) {
+function toggleQuickFilter(type, buttonElement) {
     console.log('toggleQuickFilter called:', type);
     console.log('activeQuickFilters before:', Array.from(activeQuickFilters));
     
-    const button = document.querySelector(`[data-filter="${type}"]`);
+    const button = buttonElement || document.querySelector(`[data-filter="${type}"]`);
     
     // Define which filters are date-based (mutually exclusive)
     const dateFilters = ['week', 'month', '6months', 'year'];
@@ -10607,16 +10603,6 @@ document.addEventListener('DOMContentLoaded', function() {
     themeSelector.addEventListener('change', function(e) {
         document.body.setAttribute('data-theme', e.target.value);
         localStorage.setItem('nostr-theme', e.target.value);
-    });
-    
-    // Add touch handlers for quick filter buttons to eliminate double-tap delay
-    document.querySelectorAll('.quick-filter-btn').forEach(button => {
-        button.addEventListener('touchstart', function(e) {
-            // Prevent the default behavior which causes the delay
-            e.preventDefault();
-            // Trigger the click immediately
-            this.click();
-        }, { passive: false });
     });
 });
 
