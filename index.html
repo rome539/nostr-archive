@@ -427,8 +427,14 @@ input:-ms-input-placeholder {
 .quick-filter-btn.active {
     background: var(--primary-color) !important;
     color: white !important;
-    transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+}
+
+/* Remove raise effect on mobile */
+@media (max-width: 768px) {
+    .quick-filter-btn.active {
+        transform: none !important;
+    }
 }
 
 /* Theme-specific active states */
@@ -2345,6 +2351,15 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     .quick-filter-btn:focus,
     .hashtag-group-header:focus {
         outline: none;
+        background: var(--background-color) !important;
+        border-color: var(--border-color) !important;
+    }
+    
+    /* Hashtag group headers should never stay highlighted */
+    .hashtag-group-header:focus,
+    .hashtag-group-header:active {
+        background: var(--background-color) !important;
+        border: 1px solid var(--border-color) !important;
     }
     
     /* Only apply hover on actual hover, not on focus */
@@ -6982,12 +6997,19 @@ function trackLoadTime() {
         `;
         letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
         
-        // Handle click with immediate blur
-        letterHeader.addEventListener('click', function(event) {
+        // Handle click with immediate and repeated blur
+        const handleClick = function(event) {
             event.preventDefault();
+            event.stopPropagation();
+            // Blur multiple times to ensure it sticks on mobile
             this.blur();
             toggleHashtagGroup(letter);
-        });
+            setTimeout(() => this.blur(), 0);
+            setTimeout(() => this.blur(), 10);
+        };
+        
+        letterHeader.addEventListener('click', handleClick);
+        letterHeader.addEventListener('touchend', handleClick);
         
         container.appendChild(letterHeader);
         
