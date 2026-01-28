@@ -2332,6 +2332,36 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         touch-action: manipulation;
     }
     
+    /* Remove persistent highlight on mobile tap */
+    .tag-filter,
+    .quick-filter-btn,
+    button {
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .tag-filter:active,
+    .quick-filter-btn:active,
+    button:active {
+        opacity: 0.8;
+    }
+    
+    /* Ensure active state only shows for actually active filters */
+    .tag-filter:not(.active):focus,
+    .quick-filter-btn:not(.active):focus {
+        background: var(--background-color);
+        border-color: var(--border-color);
+    }
+    
+    .tag-filter[data-tag="__original"]:not(.active):focus,
+    .tag-filter[data-tag="__replies"]:not(.active):focus,
+    .tag-filter[data-tag="__archived"]:not(.active):focus,
+    .tag-filter[data-tag^="__archive_"]:not(.active):focus {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+    }
+    
     /* Improve tag badges for touch */
     .tag-badge {
         padding: 6px 12px;
@@ -7036,6 +7066,8 @@ function trackLoadTime() {
                 if (btn.dataset.tag === tag) {
                     btn.classList.add('active');
                 }
+                // Remove focus to prevent persistent highlight on mobile
+                btn.blur();
             });
             
             applyFilters();
@@ -7050,6 +7082,11 @@ function trackLoadTime() {
         container.style.display = 'block';
     } else {
         container.style.display = 'none';
+    }
+    
+    // Remove focus to prevent persistent highlight on mobile
+    if (event && event.target) {
+        event.target.blur();
     }
 }
 
@@ -9331,6 +9368,11 @@ function toggleQuickFilter(type) {
     activeQuickFilters.add(type);
     button.classList.add('active');
 }
+    
+    // Remove focus to prevent persistent highlight on mobile
+    if (button) {
+        button.blur();
+    }
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
