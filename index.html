@@ -2335,17 +2335,28 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     /* Remove persistent highlight on mobile tap */
     .tag-filter,
     .quick-filter-btn,
+    .hashtag-group-header,
     button {
         -webkit-tap-highlight-color: transparent;
     }
     
-    /* Only show opacity feedback on active press, not persistent */
-    .tag-filter:active:not(.active),
-    .quick-filter-btn:active:not(.active) {
-        opacity: 0.7;
+    /* Prevent focus from applying hover styles */
+    .tag-filter:focus,
+    .quick-filter-btn:focus,
+    .hashtag-group-header:focus {
+        outline: none;
     }
     
-    /* Don't interfere with active state styling */
+    /* Only apply hover on actual hover, not on focus */
+    @media (hover: hover) {
+        .tag-filter:hover,
+        .quick-filter-btn:hover,
+        .hashtag-group-header:hover {
+            opacity: 0.8;
+        }
+    }
+    
+    /* Active state should always work */
     .tag-filter.active,
     .quick-filter-btn.active {
         opacity: 1 !important;
@@ -2572,12 +2583,12 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     
     <!-- Primary Quick filters - 3x2 grid -->
 <div class="quick-filters" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px;">
-    <button class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month')">This Month</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year')">This Year</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images')">Images</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube')">Videos</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long')">Long</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links')">Links</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month'); this.blur();">This Month</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year'); this.blur();">This Year</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images'); this.blur();">Images</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube'); this.blur();">Videos</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long'); this.blur();">Long</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links'); this.blur();">Links</button>
 </div>
 
 <!-- Secondary filters dropdown -->
@@ -6930,11 +6941,11 @@ function trackLoadTime() {
     }
 
     container.innerHTML = `
-    <button class="tag-filter active" data-tag="">All Notes (${allNotes.length})</button>
-    <button class="tag-filter" data-tag="__original"><span class="emoji">📄</span> Original Notes (${originalNotesCount})</button>
-    <button class="tag-filter" data-tag="__replies"><span class="emoji">💬</span> Replies (${repliesCount})</button>
-    <button class="tag-filter" data-tag="__reposts"><span class="emoji">🔄</span> Reposts (${repostsCount})</button>
-    <button class="tag-filter" data-tag="__quotes"><span class="emoji">💭</span> Quotes (${quotesCount})</button>
+    <button type="button" class="tag-filter active" data-tag="" onclick="this.blur()">All Notes (${allNotes.length})</button>
+    <button type="button" class="tag-filter" data-tag="__original" onclick="this.blur()"><span class="emoji">📄</span> Original Notes (${originalNotesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__replies" onclick="this.blur()"><span class="emoji">💬</span> Replies (${repliesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__reposts" onclick="this.blur()"><span class="emoji">🔄</span> Reposts (${repostsCount})</button>
+    <button type="button" class="tag-filter" data-tag="__quotes" onclick="this.blur()"><span class="emoji">💭</span> Quotes (${quotesCount})</button>
 `;
 
     // Group hashtags alphabetically
@@ -6953,6 +6964,7 @@ function trackLoadTime() {
         
         // Add clickable letter header
         const letterHeader = document.createElement('button');
+        letterHeader.type = 'button';
         letterHeader.className = 'hashtag-group-header';
         letterHeader.style.cssText = `
             width: 100%;
@@ -6969,11 +6981,14 @@ function trackLoadTime() {
             transition: background-color 0.2s ease;
         `;
         letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
-        letterHeader.onclick = (event) => {
+        
+        // Handle click with immediate blur
+        letterHeader.addEventListener('click', function(event) {
+            event.preventDefault();
+            this.blur();
             toggleHashtagGroup(letter);
-            // Remove focus to prevent persistent highlight on mobile
-            event.target.blur();
-        };
+        });
+        
         container.appendChild(letterHeader);
         
         // Add container for hashtags (initially hidden)
@@ -7059,8 +7074,6 @@ function trackLoadTime() {
                 if (btn.dataset.tag === tag) {
                     btn.classList.add('active');
                 }
-                // Remove focus to prevent persistent highlight on mobile (use setTimeout)
-                setTimeout(() => btn.blur(), 0);
             });
             
             applyFilters();
@@ -9356,11 +9369,6 @@ function toggleQuickFilter(type) {
     activeQuickFilters.add(type);
     button.classList.add('active');
 }
-    
-    // Remove focus to prevent persistent highlight on mobile (use setTimeout to ensure it happens after click processing)
-    if (button) {
-        setTimeout(() => button.blur(), 0);
-    }
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
