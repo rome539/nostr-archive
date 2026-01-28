@@ -2248,6 +2248,47 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         margin-right: 0 !important;
     }
     
+    /* Fix bulk controls layout on mobile */
+    .bulk-controls {
+        padding: 12px;
+    }
+    
+    .bulk-controls > div:first-child {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+    
+    .bulk-controls #selected-count {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .bulk-controls button {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+        min-height: 44px;
+    }
+    
+    .bulk-controls > div:last-child {
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100%;
+    }
+    
+    #bulk-archive-dropdown {
+        width: 100% !important;
+        min-width: unset !important;
+        font-size: 16px !important;
+        padding: 12px !important;
+        min-height: 44px;
+    }
+    
+    #bulk-add-to-archive,
+    #bulk-remove-from-archive {
+        width: 100% !important;
+    }
+    
     .search-container button {
         width: 100%;
     }
