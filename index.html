@@ -2351,16 +2351,15 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     .quick-filter-btn:focus,
     .hashtag-group-header:focus {
         outline: none;
+        background: var(--background-color) !important;
+        border-color: var(--border-color) !important;
     }
     
-    /* On mobile, completely disable hover/focus/active color changes for hashtag headers */
-    @media (max-width: 768px) {
-        .hashtag-group-header:hover,
-        .hashtag-group-header:focus,
-        .hashtag-group-header:active {
-            background: var(--background-color) !important;
-            border-color: var(--border-color) !important;
-        }
+    /* Hashtag group headers should never stay highlighted */
+    .hashtag-group-header:focus,
+    .hashtag-group-header:active {
+        background: var(--background-color) !important;
+        border: 1px solid var(--border-color) !important;
     }
     
     /* Only apply hover on actual hover, not on focus */
@@ -6797,7 +6796,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 2.1.1 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 2.2 • Open Source • No Tracking</p>
                 </div>
             </div>
         </div>
@@ -6994,15 +6993,23 @@ function trackLoadTime() {
             font-weight: bold;
             color: var(--text-color);
             font-size: 13px;
+            transition: background-color 0.2s ease;
         `;
         letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
         
-        // Simple click handler
-        letterHeader.onclick = function(e) {
-            e.preventDefault();
-            toggleHashtagGroup(letter);
+        // Handle click with immediate and repeated blur
+        const handleClick = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            // Blur multiple times to ensure it sticks on mobile
             this.blur();
+            toggleHashtagGroup(letter);
+            setTimeout(() => this.blur(), 0);
+            setTimeout(() => this.blur(), 10);
         };
+        
+        letterHeader.addEventListener('click', handleClick);
+        letterHeader.addEventListener('touchend', handleClick);
         
         container.appendChild(letterHeader);
         
