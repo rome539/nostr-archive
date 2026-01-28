@@ -1845,10 +1845,27 @@ border-color: var(--accent) !important;
     }
 }
 
+/* Mobile tap feedback using :active (shows only while pressing) */
+@media (hover: none) {
+    .hashtag-group-header:active {
+        background: var(--primary-color) !important;
+        color: white !important;
+        border-color: var(--primary-color) !important;
+    }
+}
+
 /* Fix text color for dark themes - only on hover-capable devices */
 @media (hover: hover) {
     [data-theme="dark-nostr"] .hashtag-group-header:hover,
     [data-theme="bitcoin-gold"] .hashtag-group-header:hover {
+        color: var(--card-background) !important;
+    }
+}
+
+/* Mobile tap feedback for dark themes */
+@media (hover: none) {
+    [data-theme="dark-nostr"] .hashtag-group-header:active,
+    [data-theme="bitcoin-gold"] .hashtag-group-header:active {
         color: var(--card-background) !important;
     }
 }
@@ -1871,6 +1888,16 @@ border-color: var(--accent) !important;
 /* Neon green theme hover - only on hover-capable devices */
 @media (hover: hover) {
     [data-theme="neon-green"] .hashtag-group-header:hover {
+        background: var(--accent-weak) !important;
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+    }
+}
+
+/* Mobile tap feedback for neon green theme */
+@media (hover: none) {
+    [data-theme="neon-green"] .hashtag-group-header:active {
         background: var(--accent-weak) !important;
         border-color: var(--accent) !important;
         color: var(--accent) !important;
@@ -2355,12 +2382,23 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         -webkit-tap-highlight-color: transparent;
         /* Ensure immediate response to touches */
         touch-action: manipulation;
+        /* Prevent 300ms click delay on mobile */
+        cursor: pointer;
+    }
+    
+    /* Prevent focus styles on touch devices */
+    @media (hover: none) {
+        .quick-filter-btn:focus,
+        .tag-filter:focus,
+        .hashtag-group-header:focus {
+            outline: none;
+        }
     }
     
     /* Force immediate visual update for quick filter buttons on mobile */
     @media (max-width: 768px) {
         .quick-filter-btn {
-            transition: background-color 0s, color 0s, box-shadow 0s !important;
+            transition: none !important;
         }
         
         .quick-filter-btn.active {
@@ -10569,6 +10607,16 @@ document.addEventListener('DOMContentLoaded', function() {
     themeSelector.addEventListener('change', function(e) {
         document.body.setAttribute('data-theme', e.target.value);
         localStorage.setItem('nostr-theme', e.target.value);
+    });
+    
+    // Add touch handlers for quick filter buttons to eliminate double-tap delay
+    document.querySelectorAll('.quick-filter-btn').forEach(button => {
+        button.addEventListener('touchstart', function(e) {
+            // Prevent the default behavior which causes the delay
+            e.preventDefault();
+            // Trigger the click immediately
+            this.click();
+        }, { passive: false });
     });
 });
 
