@@ -3,7 +3,9 @@
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.4/dexie.min.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Nostr Notes Archive</title>
    <script type="module">
   import * as NostrTools from 'https://cdn.jsdelivr.net/npm/nostr-tools@2.7.1/+esm';
@@ -146,7 +148,9 @@
     background: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
-    font-size: 15px; /* Slightly larger base font */
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
         .container {
@@ -276,27 +280,42 @@ input:-ms-input-placeholder {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--card-background);
-    color: var(--text-color);
+    background: color-mix(in srgb, var(--primary-color) 20%, var(--card-background));
+    color: var(--primary-color);
     padding: 16px 20px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border-left: 4px solid var(--success-color);
+    border: 1px solid color-mix(in srgb, var(--primary-color) 40%, var(--card-background));
+    border-left: 4px solid var(--primary-color);
     z-index: 1001;
     transform: translateX(400px);
     transition: transform 0.3s ease;
+    font-weight: 500;
 }
 
 .toast.show {
     transform: translateX(0);
 }
 
+.toast.success {
+    background: color-mix(in srgb, var(--primary-color) 20%, var(--card-background));
+    color: var(--primary-color);
+    border-color: color-mix(in srgb, var(--primary-color) 40%, var(--card-background));
+    border-left-color: var(--primary-color);
+}
+
 .toast.error {
+    background: color-mix(in srgb, var(--danger-color) 20%, var(--card-background));
+    color: var(--danger-color);
+    border-color: color-mix(in srgb, var(--danger-color) 40%, var(--card-background));
     border-left-color: var(--danger-color);
 }
 
 .toast.warning {
-    border-left-color: #f39c12;
+    background: color-mix(in srgb, var(--primary-color) 20%, var(--card-background));
+    color: var(--primary-color);
+    border-color: color-mix(in srgb, var(--primary-color) 40%, var(--card-background));
+    border-left-color: var(--primary-color);
 }
 
 @keyframes slideUp {
@@ -408,8 +427,14 @@ input:-ms-input-placeholder {
 .quick-filter-btn.active {
     background: var(--primary-color) !important;
     color: white !important;
-    transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+}
+
+/* Remove raise effect on mobile */
+@media (max-width: 768px) {
+    .quick-filter-btn.active {
+        transform: none !important;
+    }
 }
 
 /* Theme-specific active states */
@@ -636,6 +661,7 @@ input:-ms-input-placeholder {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
+            margin-bottom: 10px;
         }
 
 /* Hashtag pills — follow current theme */
@@ -2068,6 +2094,435 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 [data-theme="neon-green"] .note-card.quote-card {
     border-left: 4px solid var(--secondary-color) !important;
 }
+
+/* ==================== MOBILE RESPONSIVE STYLES ==================== */
+
+/* Tablets and smaller laptops (1024px and below) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .controls-panel {
+        padding: 15px;
+    }
+}
+
+/* Tablets and large phones (768px and below) */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    .header {
+        margin-bottom: 20px;
+    }
+    
+    .header h1 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    
+    .connection-box {
+        padding: 25px 15px;
+        border-radius: 8px;
+    }
+    
+    /* Make inputs more touch-friendly and prevent iOS zoom */
+    .form-group input,
+    input[type="text"],
+    input[type="search"],
+    select,
+    textarea {
+        font-size: 16px !important;
+        padding: 14px 12px;
+    }
+    
+    /* Button improvements for touch */
+    .btn {
+        padding: 14px 20px;
+        font-size: 16px;
+        min-height: 48px;
+    }
+    
+    /* Controls panel - stack elements */
+    .controls-panel {
+        padding: 15px;
+    }
+    
+    /* Toast notifications - mobile positioning */
+    .toast {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .search-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-container input {
+        width: 100% !important;
+        margin-right: 0 !important;
+    }
+    
+    .search-container button {
+        width: 100%;
+    }
+    
+    /* Filter sections - improve spacing */
+    .filter-section {
+        margin-bottom: 15px;
+    }
+    
+    .quick-filters {
+        gap: 8px;
+    }
+    
+    .quick-filter-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    /* Note cards - reduce padding */
+    .note-card {
+        padding: 15px;
+        padding-bottom: 55px;
+        margin-bottom: 12px;
+    }
+    
+    .note-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .note-header > div:first-child {
+        flex-wrap: wrap;
+        max-width: 100%;
+    }
+    
+    .note-content {
+        font-size: 14px;
+    }
+    
+    /* Archive controls - stack on mobile */
+    .archive-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .archive-controls button {
+        width: 100%;
+    }
+    
+    /* Modals - improve mobile appearance */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 20px auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .archive-modal-content {
+        width: 95%;
+        max-width: 95%;
+        padding: 20px 15px;
+    }
+    
+    /* Thread view improvements */
+    .thread-view {
+        width: 100%;
+        padding: 15px;
+    }
+    
+    /* Image viewer - full screen on mobile */
+    .image-overlay {
+        padding: 10px;
+    }
+    
+    .image-overlay img {
+        max-width: 100%;
+        max-height: 90vh;
+    }
+    
+    /* Fix npub buttons - make them break text properly */
+    .reply-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        max-width: 100%;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    
+    .npub-copy-btn {
+        display: inline-block;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-break: break-all;
+        font-size: 10px;
+        padding: 2px 8px;
+        line-height: 1.2;
+        vertical-align: middle;
+        flex-shrink: 0;
+        height: auto;
+        min-height: 20px;
+    }
+    
+    /* Fix reactions box positioning on mobile */
+    .reactions-box {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        min-width: 100px;
+        max-width: 140px;
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+    
+    /* Reactions popup - flush right on mobile */
+    .reactions-popup {
+        position: fixed;
+        bottom: auto;
+        right: 10px;
+        left: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        min-width: 220px;
+        max-width: 280px;
+        z-index: 10000;
+    }
+    
+    .reactions-popup.show {
+        display: block;
+        animation: slideInRight 0.2s ease;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateY(-50%) translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+    }
+    
+    /* Stats and info display */
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    /* Make all clickable elements touch-friendly */
+    button,
+    .clickable,
+    .tag-badge,
+    .archive-option {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+    }
+    
+    /* Remove persistent highlight on mobile tap */
+    .tag-filter,
+    .quick-filter-btn,
+    .hashtag-group-header,
+    button {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Prevent focus from keeping buttons highlighted after tap on mobile */
+    @media (max-width: 768px) {
+        .hashtag-group-header:focus {
+            outline: none;
+        }
+    }
+    
+    /* Only apply hover on actual hover, not on focus */
+    @media (hover: hover) {
+        .tag-filter:hover,
+        .quick-filter-btn:hover,
+        .hashtag-group-header:hover {
+            opacity: 0.8;
+        }
+    }
+    
+    /* Active state should always work */
+    .tag-filter.active,
+    .quick-filter-btn.active {
+        opacity: 1 !important;
+    }
+    
+    /* Improve tag badges for touch */
+    .tag-badge {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Small phones (480px and below) */
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .header h1 {
+        font-size: 1.6em;
+        letter-spacing: -0.01em;
+    }
+    
+    .connection-box {
+        padding: 20px 12px;
+    }
+    
+    .container {
+        padding: 8px;
+    }
+    
+    .controls-panel {
+        padding: 12px;
+    }
+    
+    /* Further reduce button sizes */
+    .btn {
+        padding: 12px 16px;
+        font-size: 15px;
+    }
+    
+    .quick-filter-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    /* Note cards - more compact */
+    .note-card {
+        padding: 12px;
+        padding-bottom: 50px;
+        margin-bottom: 10px;
+    }
+    
+    .note-content {
+        font-size: 13px;
+    }
+    
+    /* Modal adjustments */
+    .modal-content,
+    .archive-modal-content {
+        width: 98%;
+        max-width: 98%;
+        padding: 15px 10px;
+    }
+    
+    /* Thread view */
+    .thread-view {
+        padding: 10px;
+    }
+    
+    /* Reduce spacing overall */
+    .filter-section {
+        margin-bottom: 12px;
+    }
+    
+    .quick-filters {
+        gap: 6px;
+    }
+    
+    /* Additional npub fixes for very small screens */
+    .npub-copy-btn {
+        max-width: 150px;
+        font-size: 9px;
+        padding: 2px 6px;
+        min-height: 18px;
+        line-height: 1.2;
+    }
+    
+    /* Reactions box - even more compact */
+    .reactions-box {
+        min-width: 90px;
+        max-width: 120px;
+        font-size: 10px;
+        padding: 4px 8px;
+        bottom: 6px;
+        right: 6px;
+    }
+    
+    /* Keep reactions popup flush right on small screens too */
+    .reactions-popup {
+        right: 10px;
+        left: auto;
+        transform: translateY(-50%);
+        max-width: 260px;
+    }
+}
+
+/* Very small devices (360px and below) */
+@media (max-width: 360px) {
+    .header h1 {
+        font-size: 1.4em;
+    }
+    
+    .quick-filter-btn {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+    
+    .tag-badge {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+/* Landscape mobile improvements */
+@media (max-width: 896px) and (orientation: landscape) {
+    .modal-content,
+    .archive-modal-content {
+        max-height: 85vh;
+        margin: 10px auto;
+    }
+    
+    .thread-view {
+        max-height: 85vh;
+    }
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+    /* Fix for iOS Safari button rendering */
+    button,
+    .btn {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    /* Prevent iOS text size adjustment */
+    body {
+        -webkit-text-size-adjust: 100%;
+    }
+}
+
+/* Improve scrolling on mobile */
+@media (max-width: 768px) {
+    .modal-content,
+    .archive-modal-content,
+    .thread-view {
+        -webkit-overflow-scrolling: touch;
+    }
+}
     </style>
 </head>
 <body>
@@ -2134,12 +2589,12 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     
     <!-- Primary Quick filters - 3x2 grid -->
 <div class="quick-filters" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px;">
-    <button class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month'); this.blur();">This Month</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year'); this.blur();">This Year</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images'); this.blur();">Images</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube'); this.blur();">Videos</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long'); this.blur();">Long</button>
-    <button class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links'); this.blur();">Links</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="month" onclick="toggleQuickFilter('month'); this.blur();">This Month</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="year" onclick="toggleQuickFilter('year'); this.blur();">This Year</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="images" onclick="toggleQuickFilter('images'); this.blur();">Images</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="youtube" onclick="toggleQuickFilter('youtube'); this.blur();">Videos</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="long" onclick="toggleQuickFilter('long'); this.blur();">Long</button>
+    <button type="button" class="btn btn-tiny quick-filter-btn" data-filter="links" onclick="toggleQuickFilter('links'); this.blur();">Links</button>
 </div>
 
 <!-- Secondary filters dropdown -->
@@ -6492,11 +6947,11 @@ function trackLoadTime() {
     }
 
     container.innerHTML = `
-    <button class="tag-filter active" data-tag="">All Notes (${allNotes.length})</button>
-    <button class="tag-filter" data-tag="__original"><span class="emoji">📄</span> Original Notes (${originalNotesCount})</button>
-    <button class="tag-filter" data-tag="__replies"><span class="emoji">💬</span> Replies (${repliesCount})</button>
-    <button class="tag-filter" data-tag="__reposts"><span class="emoji">🔄</span> Reposts (${repostsCount})</button>
-    <button class="tag-filter" data-tag="__quotes"><span class="emoji">💭</span> Quotes (${quotesCount})</button>
+    <button type="button" class="tag-filter active" data-tag="" onclick="this.blur()">All Notes (${allNotes.length})</button>
+    <button type="button" class="tag-filter" data-tag="__original" onclick="this.blur()"><span class="emoji">📄</span> Original Notes (${originalNotesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__replies" onclick="this.blur()"><span class="emoji">💬</span> Replies (${repliesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__reposts" onclick="this.blur()"><span class="emoji">🔄</span> Reposts (${repostsCount})</button>
+    <button type="button" class="tag-filter" data-tag="__quotes" onclick="this.blur()"><span class="emoji">💭</span> Quotes (${quotesCount})</button>
 `;
 
     // Group hashtags alphabetically
@@ -6515,8 +6970,10 @@ function trackLoadTime() {
         
         // Add clickable letter header
         const letterHeader = document.createElement('button');
+        letterHeader.type = 'button';
         letterHeader.className = 'hashtag-group-header';
         letterHeader.style.cssText = `
+            display: block;
             width: 100%;
             text-align: left;
             background: var(--background-color);
@@ -6531,10 +6988,14 @@ function trackLoadTime() {
             transition: background-color 0.2s ease;
         `;
         letterHeader.textContent = `${letter} (${groupCount} hashtags)`;
-        letterHeader.onclick = function() {
+        
+        // Click handler - the button should highlight while pressed, then return to normal
+        letterHeader.onclick = function(e) {
             toggleHashtagGroup(letter);
-            this.blur();
+            // Force remove focus immediately so the highlight doesn't persist
+            setTimeout(() => this.blur(), 100);
         };
+        
         container.appendChild(letterHeader);
         
         // Add container for hashtags (initially hidden)
@@ -7199,7 +7660,7 @@ function hideFilteringIndicator() {
                     const replyTargetNpub = getReplyTargetNpub(note);
                     if (replyTargetNpub) {
                         const shortNpub = shortenNpub(replyTargetNpub);
-                        noteIndicator = `<span class="emoji">💬</span> Replying to <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" title="Click to copy full npub">${shortNpub}</button> `;
+                        noteIndicator = `<span class="reply-indicator"><span class="emoji">💬</span> Replying to <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" title="Click to copy full npub">${shortNpub}</button></span> `;
                     } else {
                         noteIndicator = '<span class="emoji">💬</span> ';
                     }
