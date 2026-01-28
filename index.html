@@ -430,6 +430,15 @@ input:-ms-input-placeholder {
     box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
 }
 
+/* Mobile tap feedback - highlight while pressing */
+@media (hover: none) {
+    .quick-filter-btn:active {
+        background: var(--primary-color) !important;
+        color: white !important;
+        box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+    }
+}
+
 /* Remove raise effect on mobile */
 @media (max-width: 768px) {
     .quick-filter-btn.active {
@@ -443,9 +452,23 @@ input:-ms-input-placeholder {
     box-shadow: 0 3px 8px rgba(139, 92, 246, 0.4);
 }
 
+@media (hover: none) {
+    [data-theme="dark-nostr"] .quick-filter-btn:active {
+        background: var(--primary-color) !important;
+        box-shadow: 0 3px 8px rgba(139, 92, 246, 0.4);
+    }
+}
+
 [data-theme="bitcoin-gold"] .quick-filter-btn.active {
     background: var(--primary-color) !important;
     box-shadow: 0 3px 8px rgba(247, 147, 26, 0.4);
+}
+
+@media (hover: none) {
+    [data-theme="bitcoin-gold"] .quick-filter-btn:active {
+        background: var(--primary-color) !important;
+        box-shadow: 0 3px 8px rgba(247, 147, 26, 0.4);
+    }
 }
 
 [data-theme="nostr-purple"] .quick-filter-btn.active {
@@ -453,10 +476,25 @@ input:-ms-input-placeholder {
     box-shadow: 0 3px 8px rgba(124, 58, 237, 0.4);
 }
 
+@media (hover: none) {
+    [data-theme="nostr-purple"] .quick-filter-btn:active {
+        background: var(--primary-color) !important;
+        box-shadow: 0 3px 8px rgba(124, 58, 237, 0.4);
+    }
+}
+
 [data-theme="neon-green"] .quick-filter-btn.active {
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
     box-shadow: 0 0 12px rgba(0, 255, 0, 0.6) !important;
+}
+
+@media (hover: none) {
+    [data-theme="neon-green"] .quick-filter-btn:active {
+        background: var(--accent-weak) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 0 12px rgba(0, 255, 0, 0.6) !important;
+    }
 }
         
         /* Fix layout so tabs (Original Notes / Replies) don’t overflow */
