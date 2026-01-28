@@ -733,9 +733,12 @@ input:-ms-input-placeholder {
     color: white;
 }
 
-.tag-filter:hover {
-  background: color-mix(in srgb, var(--primary-color) 24%, #fff);
-  border-color: var(--primary-color);
+/* Only apply hover on devices with actual hover capability */
+@media (hover: hover) {
+    .tag-filter:hover {
+      background: color-mix(in srgb, var(--primary-color) 24%, #fff);
+      border-color: var(--primary-color);
+    }
 }
 
 /* Active state */
@@ -1657,7 +1660,16 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   border-color: var(--accent-border);
   color: var(--accent);
 }
-[data-theme="neon-green"] .tag-filter:hover,
+
+/* Only apply hover on devices with actual hover capability */
+@media (hover: hover) {
+    [data-theme="neon-green"] .tag-filter:hover {
+      background: var(--accent-weak);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+}
+
 [data-theme="neon-green"] .tag-filter.active {
   background: var(--accent-weak);
   border-color: var(--accent);
@@ -1922,15 +1934,17 @@ border-color: var(--accent) !important;
     box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
 }
 
-/* Fix hashtag hover colors for dark themes */
-[data-theme="dark-nostr"] .tag-filter:hover {
-    color: var(--text-color) !important;
-    background: color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
-}
+/* Fix hashtag hover colors for dark themes - only on hover-capable devices */
+@media (hover: hover) {
+    [data-theme="dark-nostr"] .tag-filter:hover {
+        color: var(--text-color) !important;
+        background: color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
+    }
 
-[data-theme="bitcoin-gold"] .tag-filter:hover {
-    color: var(--text-color) !important;
-    background: color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
+    [data-theme="bitcoin-gold"] .tag-filter:hover {
+        color: var(--text-color) !important;
+        background: color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
+    }
 }
 
 /* Hashtag drag selection styles */
