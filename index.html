@@ -323,11 +323,13 @@ input:-ms-input-placeholder {
     to { transform: translateY(0); opacity: 1; }
 }
 
-
-.btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+/* Only apply hover effects on devices with actual hover capability */
+@media (hover: hover) {
+    .btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
 }
 
         .btn:disabled {
