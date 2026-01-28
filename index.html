@@ -1836,23 +1836,29 @@ border-color: var(--accent) !important;
   box-shadow: 0 0 12px rgba(0,255,0,0.35);
 }
 
-/* Hashtag group header hover effects */
-.hashtag-group-header:hover {
-    background: var(--primary-color) !important;
-    color: white !important;
-    border-color: var(--primary-color) !important;
+/* Hashtag group header hover effects - only on devices with actual hover capability */
+@media (hover: hover) {
+    .hashtag-group-header:hover {
+        background: var(--primary-color) !important;
+        color: white !important;
+        border-color: var(--primary-color) !important;
+    }
 }
 
-/* Fix text color for dark themes */
-[data-theme="dark-nostr"] .hashtag-group-header:hover,
-[data-theme="bitcoin-gold"] .hashtag-group-header:hover {
-    color: var(--card-background) !important;
+/* Fix text color for dark themes - only on hover-capable devices */
+@media (hover: hover) {
+    [data-theme="dark-nostr"] .hashtag-group-header:hover,
+    [data-theme="bitcoin-gold"] .hashtag-group-header:hover {
+        color: var(--card-background) !important;
+    }
 }
 
-/* Fix hashtag button hover text color for dark themes */
-[data-theme="dark-nostr"] .tag-filter:hover,
-[data-theme="bitcoin-gold"] .tag-filter:hover {
-    color: var(--card-background) !important;
+/* Fix hashtag button hover text color for dark themes - only on hover-capable devices */
+@media (hover: hover) {
+    [data-theme="dark-nostr"] .tag-filter:hover,
+    [data-theme="bitcoin-gold"] .tag-filter:hover {
+        color: var(--card-background) !important;
+    }
 }
 
 /* Neon green theme stays the same */
@@ -1862,11 +1868,14 @@ border-color: var(--accent) !important;
     color: var(--accent) !important;
 }
 
-[data-theme="neon-green"] .hashtag-group-header:hover {
-    background: var(--accent-weak) !important;
-    border-color: var(--accent) !important;
-    color: var(--accent) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+/* Neon green theme hover - only on hover-capable devices */
+@media (hover: hover) {
+    [data-theme="neon-green"] .hashtag-group-header:hover {
+        background: var(--accent-weak) !important;
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+    }
 }
 
 /* Fix Clear All Filters button theming */
@@ -2344,6 +2353,21 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     .hashtag-group-header,
     button {
         -webkit-tap-highlight-color: transparent;
+        /* Ensure immediate response to touches */
+        touch-action: manipulation;
+    }
+    
+    /* Force immediate visual update for quick filter buttons on mobile */
+    @media (max-width: 768px) {
+        .quick-filter-btn {
+            transition: background-color 0s, color 0s, box-shadow 0s !important;
+        }
+        
+        .quick-filter-btn.active {
+            /* Ensure the active state is immediately visible */
+            background: var(--primary-color) !important;
+            color: white !important;
+        }
     }
     
     /* Prevent focus from keeping buttons highlighted after tap on mobile */
@@ -6787,7 +6811,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 2.1.1 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 2.2 • Open Source • No Tracking</p>
                 </div>
             </div>
         </div>
@@ -9313,6 +9337,8 @@ function toggleQuickFilter(type) {
     // Remove filter
     activeQuickFilters.delete(type);
     button.classList.remove('active');
+    // Force reflow for immediate visual update on mobile
+    void button.offsetHeight;
     
     // CHECK: After removing this filter, are there ANY content filters left?
     const hasContentFilters = 
@@ -9363,7 +9389,10 @@ function toggleQuickFilter(type) {
         dateFilters.forEach(dateFilter => {
             if (dateFilter !== type && activeQuickFilters.has(dateFilter)) {
                 activeQuickFilters.delete(dateFilter);
-                document.querySelector(`[data-filter="${dateFilter}"]`).classList.remove('active');
+                const otherBtn = document.querySelector(`[data-filter="${dateFilter}"]`);
+                otherBtn.classList.remove('active');
+                // Force reflow for immediate visual update on mobile
+                void otherBtn.offsetHeight;
             }
         });
         
@@ -9375,6 +9404,8 @@ function toggleQuickFilter(type) {
     // Add filter
     activeQuickFilters.add(type);
     button.classList.add('active');
+    // Force reflow for immediate visual update on mobile
+    void button.offsetHeight;
 }
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
