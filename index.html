@@ -7,6 +7,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>Nostr Notes Archive</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233498db'/><path d='M 10 6 L 20 6 L 24 10 L 24 26 L 10 26 Z' fill='white' stroke='white' stroke-width='0.5'/><path d='M 20 6 L 20 10 L 24 10' fill='%23e8f4f8' stroke='white' stroke-width='0.5'/><path d='M 18 12 L 14 18 L 16.5 18 L 15 22 L 19 16 L 16.5 16 Z' fill='%23f39c12' stroke='%23e67e22' stroke-width='0.5' stroke-linejoin='round'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233498db'/><path d='M 10 6 L 20 6 L 24 10 L 24 26 L 10 26 Z' fill='white' stroke='white' stroke-width='0.5'/><path d='M 20 6 L 20 10 L 24 10' fill='%23e8f4f8' stroke='white' stroke-width='0.5'/><path d='M 18 12 L 14 18 L 16.5 18 L 15 22 L 19 16 L 16.5 16 Z' fill='%23f39c12' stroke='%23e67e22' stroke-width='0.5' stroke-linejoin='round'/></svg>">
+    
    <script type="module">
   import * as NostrTools from 'https://cdn.jsdelivr.net/npm/nostr-tools@2.7.1/+esm';
   window.NostrTools = NostrTools;
@@ -2500,6 +2505,35 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         padding: 15px;
         padding-bottom: 55px;
         margin-bottom: 12px;
+    }
+    
+    /* Optimize note card buttons for mobile */
+    .note-card .btn-small {
+        font-size: 12px !important;
+        padding: 8px 12px !important;
+        min-height: 38px;
+    }
+    
+    .note-card .note-actions {
+        gap: 6px;
+    }
+    
+    /* Make note content more readable on mobile */
+    .note-card .note-content {
+        font-size: 15px !important;
+        line-height: 1.5;
+        margin-bottom: 20px !important; /* More space before buttons */
+    }
+    
+    /* Optimize timestamp on mobile */
+    .note-card .note-meta {
+        font-size: 12px !important;
+    }
+    
+    /* Optimize "Replying to" badge */
+    .note-card .reply-badge {
+        font-size: 11px !important;
+        padding: 3px 8px !important;
     }
     
     .note-header {
@@ -9060,9 +9094,11 @@ function showDismissibleBanner(message, type = 'warning') {
         const originalText = button.textContent;
         const originalBg = button.style.background;
         
-        // Show success state
+        // Show success state with the button's current theme color
         button.textContent = 'Copied!';
-        button.style.background = '#27ae60';
+        // Get the actual computed background color of the button (accounts for all themes)
+        const computedBg = window.getComputedStyle(button).backgroundColor;
+        button.style.background = computedBg;
         
         // Reset after 1 second (reduced from 1.5s for snappier feel)
         setTimeout(() => {
