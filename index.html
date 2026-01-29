@@ -337,6 +337,94 @@ input:-ms-input-placeholder {
             cursor: not-allowed;
         }
 
+/* Top header with action buttons */
+.top-header {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-left h2 {
+    margin: 0 0 6px 0;
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.npub-display {
+    color: var(--text-muted);
+    font-family: monospace;
+    font-size: 12px;
+    display: block;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-action .emoji {
+    font-size: 16px;
+}
+
+.btn-action-primary {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+.btn-action-secondary {
+    background: var(--background-color);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+/* Hover effects only for desktop */
+@media (hover: hover) {
+    .btn-action-primary:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn-action-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-color);
+    }
+}
+
+/* Active states for mobile */
+@media (hover: none) {
+    .btn-action:active {
+        transform: scale(0.97);
+    }
+}
+
         .btn-small {
     padding: 8px 14px;
     font-size: 13px;
@@ -429,44 +517,56 @@ input:-ms-input-placeholder {
 .quick-filter-btn.active {
     background: var(--primary-color) !important;
     color: white !important;
-    box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5) !important;
+    font-weight: 600 !important;
+    border: 2px solid var(--primary-color) !important;
+    transform: scale(1.02) !important;
 }
 
 /* Remove raise effect on mobile */
 @media (max-width: 768px) {
     .quick-filter-btn.active {
-        transform: none !important;
+        transform: scale(1.0) !important;
+        box-shadow: 0 3px 10px rgba(52, 152, 219, 0.6) !important;
     }
 }
 
 /* Theme-specific active states */
 [data-theme="dark-nostr"] .quick-filter-btn.active {
     background: var(--primary-color) !important;
-    box-shadow: 0 3px 8px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.6) !important;
+    border: 2px solid var(--primary-color) !important;
+    font-weight: 600 !important;
 }
 
 [data-theme="bitcoin-gold"] .quick-filter-btn.active {
     background: var(--primary-color) !important;
-    box-shadow: 0 3px 8px rgba(247, 147, 26, 0.4);
+    box-shadow: 0 4px 12px rgba(247, 147, 26, 0.6) !important;
+    border: 2px solid var(--primary-color) !important;
+    font-weight: 600 !important;
 }
 
 [data-theme="nostr-purple"] .quick-filter-btn.active {
     background: var(--primary-color) !important;
-    box-shadow: 0 3px 8px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.6) !important;
+    border: 2px solid var(--primary-color) !important;
+    font-weight: 600 !important;
 }
 
 [data-theme="neon-green"] .quick-filter-btn.active {
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.6) !important;
+    box-shadow: 0 0 16px rgba(0, 255, 0, 0.8) !important;
+    border: 2px solid var(--accent) !important;
+    font-weight: 600 !important;
+    text-shadow: 0 0 4px var(--accent) !important;
 }
 
 /* Clear All Filters button - mobile tap feedback */
-@media (hover: none) {
-    .clear-filters-btn:active {
-        background: #7f8c8d !important;
-        transform: scale(0.98);
-    }
+.clear-filters-btn:active {
+    background: #7f8c8d !important;
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
 }
         
         /* Fix layout so tabs (Original Notes / Replies) don’t overflow */
@@ -1662,6 +1762,38 @@ body[data-theme="neon-green"] .note-card .hashtag,
   border-color: var(--accent);
 }
 
+/* Theme-specific action button styles */
+[data-theme="dark-nostr"] .btn-action-primary {
+    background: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(138, 124, 255, 0.3);
+}
+
+[data-theme="bitcoin-gold"] .btn-action-primary {
+    background: var(--primary-color);
+    color: var(--card-background);
+    box-shadow: 0 2px 4px rgba(247, 147, 26, 0.3);
+}
+
+[data-theme="nostr-purple"] .btn-action-primary {
+    background: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(107, 78, 255, 0.3);
+}
+
+[data-theme="neon-green"] .btn-action-primary {
+    background: var(--accent-weak) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4) !important;
+    text-shadow: 0 0 2px var(--accent) !important;
+}
+
+[data-theme="neon-green"] .btn-action-secondary {
+    background: var(--accent-weak-2) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent-border) !important;
+}
+
+
 /* neon-green: hashtags inside notes */
 [data-theme="neon-green"] .hashtag {
   background: var(--accent-weak-2);
@@ -2207,6 +2339,40 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         border-radius: 8px;
     }
     
+    /* Top header responsive - stack on mobile */
+    .top-header {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .header-left h2 {
+        font-size: 1.3em;
+    }
+    
+    .npub-display {
+        font-size: 11px;
+    }
+    
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .btn-action {
+        flex: 1;
+        min-width: 100px;
+        justify-content: center;
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+    
     /* Make inputs more touch-friendly and prevent iOS zoom */
     .form-group input,
     input[type="text"],
@@ -2698,21 +2864,23 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 
         <!-- Main App -->
         <div id="main-app" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <div>
-        <h2><span class="emoji">📝</span> My Nostr Archive</h2>
-        <small id="pubkey-display" style="color: var(--text-muted); font-family: monospace;">
-    </div>
-    <div style="display: flex; gap: 8px;">
-        <button id="deep-scan-btn" class="btn btn-small">
-            <span class="emoji"></span> Deep Scan
-        </button>
-        <button id="refresh-btn" class="btn btn-small">
-            <span class="emoji"></span> Refresh
-        </button>
-        <button id="disconnect-btn" style="background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-            Disconnect
-        </button>
+            <div class="top-header">
+    <div class="header-content">
+        <div class="header-left">
+            <h2><span class="emoji">📝</span> My Nostr Archive</h2>
+            <small id="pubkey-display" class="npub-display">
+        </div>
+        <div class="header-actions">
+            <button id="deep-scan-btn" class="btn-action btn-action-primary">
+                <span class="emoji">🔍</span> Deep Scan
+            </button>
+            <button id="refresh-btn" class="btn-action btn-action-primary">
+                <span class="emoji">🔄</span> Refresh
+            </button>
+            <button id="disconnect-btn" class="btn-action btn-action-secondary">
+                <span class="emoji">🚪</span> Disconnect
+            </button>
+        </div>
     </div>
 </div>
 
@@ -8975,32 +9143,40 @@ function startHashtagSelection(tag, event) {
     event.preventDefault();
     event.stopPropagation();
     
-    // Store initial mouse position to detect if this is a drag or click
-    const startX = event.clientX;
-    const startY = event.clientY;
+    // Detect if this is a touch event or mouse event
+    const isTouchEvent = event.type === 'touchstart';
+    
+    // Store initial position to detect if this is a drag or click
+    const startX = isTouchEvent ? event.touches[0].clientX : event.clientX;
+    const startY = isTouchEvent ? event.touches[0].clientY : event.clientY;
     const startTime = Date.now();
     
-    // Set up temporary mouse move listener to detect drag
+    // Set up temporary move listener to detect drag
     let hasMoved = false;
-    const mouseMoveHandler = (moveEvent) => {
-        const deltaX = Math.abs(moveEvent.clientX - startX);
-        const deltaY = Math.abs(moveEvent.clientY - startY);
+    const moveHandler = (moveEvent) => {
+        const currentX = isTouchEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        const currentY = isTouchEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
+        const deltaX = Math.abs(currentX - startX);
+        const deltaY = Math.abs(currentY - startY);
         
-        // If mouse moved more than 5 pixels, consider it a drag
+        // If moved more than 5 pixels, consider it a drag
         if (deltaX > 5 || deltaY > 5) {
             hasMoved = true;
             startDragMode(tag);
         }
     };
     
-    // Set up temporary mouse up listener
-    const mouseUpHandler = (upEvent) => {
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
+    // Set up temporary end listener
+    const endHandler = (endEvent) => {
+        // Remove both touch and mouse listeners
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('touchend', endHandler);
+        document.removeEventListener('mouseup', endHandler);
         
         const timeDiff = Date.now() - startTime;
         
-        // If it was a quick click without movement, treat as single click
+        // If it was a quick tap/click without movement, treat as single click
         if (!hasMoved && timeDiff < 300) {
             handleSingleTagClick(tag);
         }
@@ -9009,8 +9185,14 @@ function startHashtagSelection(tag, event) {
         endHashtagSelection();
     };
     
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
+    // Add listeners for both touch and mouse events
+    if (isTouchEvent) {
+        document.addEventListener('touchmove', moveHandler);
+        document.addEventListener('touchend', endHandler);
+    } else {
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('mouseup', endHandler);
+    }
 }
 
 function startDragMode(tag) {
