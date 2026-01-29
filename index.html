@@ -2872,13 +2872,13 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         </div>
         <div class="header-actions">
             <button id="deep-scan-btn" class="btn-action btn-action-primary">
-                <span class="emoji">🔍</span> Deep Scan
+                Deep Scan
             </button>
             <button id="refresh-btn" class="btn-action btn-action-primary">
-                <span class="emoji">🔄</span> Refresh
+                Refresh
             </button>
             <button id="disconnect-btn" class="btn-action btn-action-secondary">
-                <span class="emoji">🚪</span> Disconnect
+                Disconnect
             </button>
         </div>
     </div>
@@ -2931,7 +2931,11 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     </div>
     
     <!-- Clear filters button -->
-    <button class="btn btn-tiny clear-filters-btn" onclick="clearAllFilters()" style="width: 100%; background: #95a5a6; color: white; border: none;">
+    <button class="btn btn-tiny clear-filters-btn" 
+            onclick="clearAllFilters()" 
+            ontouchstart="this.style.transform='scale(0.95)'; this.style.background='#7f8c8d';"
+            ontouchend="this.style.transform=''; this.style.background='#95a5a6';"
+            style="width: 100%; background: #95a5a6; color: white; border: none;">
         Clear All Filters
     </button>
 </div>
