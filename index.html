@@ -460,6 +460,14 @@ input:-ms-input-placeholder {
     color: var(--accent) !important;
     box-shadow: 0 0 12px rgba(0, 255, 0, 0.6) !important;
 }
+
+/* Clear All Filters button - mobile tap feedback */
+@media (hover: none) {
+    .clear-filters-btn:active {
+        background: #7f8c8d !important;
+        transform: scale(0.98);
+    }
+}
         
         /* Fix layout so tabs (Original Notes / Replies) don’t overflow */
 .app-layout {
@@ -680,11 +688,27 @@ input:-ms-input-placeholder {
   user-select: none;
 }
 
-.hashtag:hover {
-  background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background)) !important;
-  border-color: var(--primary-hover) !important;
-  color: #fff !important;
-  transform: translateY(-1px);
+/* Hashtag hover effects - only on devices with actual hover capability */
+@media (hover: hover) {
+    .hashtag:hover {
+      background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background)) !important;
+      border-color: var(--primary-hover) !important;
+      color: #fff !important;
+      transform: translateY(-1px);
+    }
+    
+    .note-card.reply-card .hashtag:hover,
+    .note-card.archived .hashtag:hover {
+      background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background)) !important;
+      border-color: var(--primary-hover) !important;
+      color: #fff !important;
+    }
+    
+    .note-card.archived .hashtag:hover {
+      background: color-mix(in srgb, var(--success-color) 32%, var(--card-background));
+      border-color: var(--success-color);
+      color: #fff;
+    }
 }
 
 /* Remove ALL the old reply/archived specific rules */
@@ -695,23 +719,11 @@ input:-ms-input-placeholder {
   color: var(--primary-color) !important;
 }
 
-.note-card.reply-card .hashtag:hover,
-.note-card.archived .hashtag:hover {
-  background: color-mix(in srgb, var(--primary-color) 32%, var(--card-background)) !important;
-  border-color: var(--primary-hover) !important;
-  color: #fff !important;
-}
-
 /* Hashtags in archived cards = success theme */
 .note-card.archived .hashtag {
   background: color-mix(in srgb, var(--success-color) 18%, var(--card-background));
   border-color: color-mix(in srgb, var(--success-color) 40%, var(--card-background));
   color: var(--success-color);
-}
-.note-card.archived .hashtag:hover {
-  background: color-mix(in srgb, var(--success-color) 32%, var(--card-background));
-  border-color: var(--success-color);
-  color: #fff;
 }
 
        .tag-filter {
@@ -1611,9 +1623,12 @@ input[type="date"]:focus {
     box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3) !important;
 }
 
-body[data-theme="nostr-purple"] .note-card .hashtag:hover,
-[data-theme="nostr-purple"] .note-card .hashtag:hover {
-  background: color-mix(in srgb, var(--purple-color) 28%, #fff) !important;
+/* Nostr purple hashtag hover - only on hover-capable devices */
+@media (hover: hover) {
+    body[data-theme="nostr-purple"] .note-card .hashtag:hover,
+    [data-theme="nostr-purple"] .note-card .hashtag:hover {
+      background: color-mix(in srgb, var(--purple-color) 28%, #fff) !important;
+    }
 }
 
 /* FINAL OVERRIDES — Neon Green hashtag pills (wins everywhere) */
@@ -1625,10 +1640,14 @@ body[data-theme="neon-green"] .note-card .hashtag,
   color: var(--accent) !important;
   border-radius: 12px; /* keep pill shape */
 }
-body[data-theme="neon-green"] .note-card .hashtag:hover,
-[data-theme="neon-green"] .note-card.reply-card .hashtag:hover,
-[data-theme="neon-green"] .note-card.archived .hashtag:hover {
-  background: var(--accent-weak) !important;
+
+/* Neon green hashtag hover - only on hover-capable devices */
+@media (hover: hover) {
+    body[data-theme="neon-green"] .note-card .hashtag:hover,
+    [data-theme="neon-green"] .note-card.reply-card .hashtag:hover,
+    [data-theme="neon-green"] .note-card.archived .hashtag:hover {
+      background: var(--accent-weak) !important;
+    }
 }
 
 /* neon-green: buttons */
@@ -1650,8 +1669,12 @@ body[data-theme="neon-green"] .note-card .hashtag:hover,
   color: var(--accent);
   border-radius: 12px;
 }
-[data-theme="neon-green"] .hashtag:hover {
-  background: var(--accent-weak);
+
+/* Neon green general hashtag hover - only on hover-capable devices */
+@media (hover: hover) {
+    [data-theme="neon-green"] .hashtag:hover {
+      background: var(--accent-weak);
+    }
 }
 
 /* neon-green: tag filters in sidebar */
@@ -2740,7 +2763,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     </div>
     
     <!-- Clear filters button -->
-    <button class="btn btn-tiny" onclick="clearAllFilters()" style="width: 100%; background: #95a5a6; color: white; border: none;">
+    <button class="btn btn-tiny clear-filters-btn" onclick="clearAllFilters()" style="width: 100%; background: #95a5a6; color: white; border: none;">
         Clear All Filters
     </button>
 </div>
