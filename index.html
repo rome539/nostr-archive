@@ -503,7 +503,7 @@ input:-ms-input-placeholder {
 
 .btn:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    border: 2px solid var(--primary-color);
 }
 
 .btn-small:hover {
@@ -560,6 +560,27 @@ input:-ms-input-placeholder {
     border: 2px solid var(--accent) !important;
     font-weight: 600 !important;
     text-shadow: 0 0 4px var(--accent) !important;
+}
+
+/* Theme-specific focus styles for quick filter buttons - no glow */
+[data-theme="dark-nostr"] .quick-filter-btn:focus {
+    border: 2px solid var(--primary-color) !important;
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
+}
+
+[data-theme="bitcoin-gold"] .quick-filter-btn:focus {
+    border: 2px solid var(--primary-color) !important;
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
+}
+
+[data-theme="nostr-purple"] .quick-filter-btn:focus {
+    border: 2px solid var(--primary-color) !important;
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
+}
+
+[data-theme="neon-green"] .quick-filter-btn:focus {
+    border: 2px solid var(--accent) !important;
+    background: var(--accent-weak-2) !important;
 }
 
 /* Clear All Filters button - mobile tap feedback */
@@ -2632,8 +2653,13 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         cursor: pointer;
     }
     
-    /* Completely disable focus on quick filter buttons */
-    .quick-filter-btn:focus,
+    /* Better focus feedback for quick filter buttons - no glow, just subtle visual change */
+    .quick-filter-btn:focus {
+        outline: none !important;
+        border: 2px solid var(--primary-color) !important;
+        background: color-mix(in srgb, var(--primary-color) 10%, white) !important;
+    }
+    
     .tag-filter:focus,
     .hashtag-group-header:focus {
         outline: none !important;
@@ -4096,6 +4122,7 @@ updateStatus(`${checkmark}Successfully loaded ${allNotes.length} notes!`);
 let isLoadingCancelled = false;
 let activeWebSockets = new Set();
 let backgroundLoadingTimeout = null;
+let autoRefreshInterval = null; // Auto-refresh every hour
 
 // Update the disconnect function to cancel ongoing operations
 function disconnect() {
@@ -4106,6 +4133,13 @@ function disconnect() {
     if (backgroundLoadingTimeout) {
         clearTimeout(backgroundLoadingTimeout);
         backgroundLoadingTimeout = null;
+    }
+    
+    // Stop auto-refresh interval
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+        console.log('Auto-refresh stopped');
     }
     
     // Close all active WebSocket connections
@@ -6216,6 +6250,11 @@ async function loadNotes(silent = false, isRefresh = false) {
             scheduleBackgroundLoading(currentPubkey, { estimatedTotal });
         }
         
+        // Start auto-refresh: check for new notes every hour
+        if (!silent && !isRefresh) {
+            startAutoRefresh(currentPubkey);
+        }
+        
         // Check if neon-green theme is active
 const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
 const checkmark = isNeonGreen ? '' : '✅ ';
@@ -6735,6 +6774,39 @@ if (fullNotes.length > currentNoteCount) {
     }, 2000);
 }
 
+// Auto-refresh: Check for new notes every hour
+function startAutoRefresh(pubkey) {
+    // Clear any existing interval
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Set up 1-hour interval (3600000 milliseconds)
+    autoRefreshInterval = setInterval(async () => {
+        // Only refresh if still connected to same pubkey
+        if (!currentPubkey || currentPubkey !== pubkey) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+            return;
+        }
+        
+        console.log('Auto-refresh: Checking for new notes...');
+        
+        try {
+            // Silently refresh in background
+            await loadNotes(true, true); // silent=true, isRefresh=true
+            
+            const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+            const checkmark = isNeonGreen ? '' : '🔄 ';
+            updateStatus(`${checkmark}Auto-refreshed: ${allNotes.length} total notes`);
+        } catch (error) {
+            console.error('Auto-refresh failed:', error);
+        }
+    }, 3600000); // 1 hour in milliseconds
+    
+    console.log('Auto-refresh enabled: will check for new notes every hour');
+}
+
 function showBackgroundLoadingIndicator() {
     const indicator = document.createElement('div');
     indicator.id = 'bg-loading-indicator';
@@ -7097,7 +7169,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 2.2 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 2.3 • Open Source • No Tracking</p>
                 </div>
             </div>
         </div>
@@ -7988,7 +8060,7 @@ function hideFilteringIndicator() {
                     archiveButtonHtml = `
                         <button class="btn btn-small" style="background: #e74c3c; color: white;" 
                                 onclick="removeFromSpecificArchive('${note.id}', '${currentArchiveName}')">
-                            <span class="emoji">🗑️</span> Remove
+                            Remove
                         </button>`;
                 } else {
                     // Normal archive/unarchive button
@@ -8014,9 +8086,9 @@ function hideFilteringIndicator() {
             </div>
             <div class="note-actions">
                 ${archiveButtonHtml}
-                <button class="btn btn-small" style="background: #95a5a6;" 
+                <button class="btn btn-small btn-action-secondary" 
                         onclick="showNoteInfo('${note.id}')">
-                    <span class="emoji">ℹ️</span> Info
+                    Info
                 </button>
             </div>
         </div>
@@ -8478,9 +8550,8 @@ function setupLazyLoading() {
     const threadNotes = getThreadNotes(noteId);
     const isThreaded = threadNotes.length > 1;
     
-    // Check for neon-green theme
-    const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-    const threadIcon = isNeonGreen ? '' : '🧵 ';
+    // Thread icon removed - no emoji
+    const threadIcon = '';
     
     // Thread info section (only show if part of thread)
     const threadSection = isThreaded ? `
@@ -8563,9 +8634,11 @@ function showThreadView(noteId) {
         return;
     }
     
-    // Check for neon-green theme
+    // Check for neon-green theme (needed for note type emojis)
     const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-    const threadIcon = isNeonGreen ? '' : '🧵 ';
+    
+    // Thread icon removed - no emoji
+    const threadIcon = '';
     
     // Build the thread display
     const threadHtml = threadNotes.map(note => {
