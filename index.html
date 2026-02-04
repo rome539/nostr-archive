@@ -2969,6 +2969,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 <option value="">More Filters...</option>
 <option value="week">This Week</option>
 <option value="6months">6 Months</option>
+<option value="music">Music</option>
 <option value="most-liked">Most Liked</option>
 <option value="most-zapped">Most Zapped</option>
 <option value="most-reposted">Most Reposted</option>
@@ -5863,6 +5864,14 @@ applyDetailedFilters(notes, filters) {
                 if (!hasNonMediaLink) {
                     return false;
                 }
+            }
+        }
+        
+        // Music filter
+        if (filters.hasMusic) {
+            const musicRegex = /(song\.link\/|open\.spotify\.com\/(track|album|playlist)\/|music\.youtube\.com\/watch|music\.apple\.com\/)/i;
+            if (!musicRegex.test(note.content)) {
+                return false;
             }
         }
         
@@ -9679,6 +9688,7 @@ async function performAdvancedSearch(query, filters = {}) {
             hasImages: filters.hasImages,
             hasYouTube: filters.hasYouTube,
             hasLinks: filters.hasLinks,
+            hasMusic: filters.hasMusic,
             minLength: filters.minLength,
             maxLength: filters.maxLength
         };
@@ -9778,6 +9788,12 @@ function performInMemorySearch(query, filters) {
             // Check if there's at least one link that's NOT just an image or video
             return allUrls.some(url => !imageRegex.test(url) && !youtubeRegex.test(url));
         });
+    }
+    
+    // Apply music filter
+    if (filters.hasMusic) {
+        const musicRegex = /(song\.link\/|open\.spotify\.com\/(track|album|playlist)\/|music\.youtube\.com\/watch|music\.apple\.com\/)/i;
+        results = results.filter(note => musicRegex.test(note.content));
     }
     
     // Apply text search
@@ -9995,6 +10011,10 @@ async function applyAllFilters() {
             case 'links':
                 filters.hasLinks = true;
                 break;
+                
+            case 'music':
+                filters.hasMusic = true;
+                break;
         }
     });
     
@@ -10128,6 +10148,9 @@ console.log(`Fetching engagement for ${visibleNoteIds.length} notes...`);
                         break;
                     case 'links':
                         filters.hasLinks = true;
+                        break;
+                    case 'music':
+                        filters.hasMusic = true;
                         break;
                 }
             });
@@ -10471,6 +10494,7 @@ if (currentSortMode && currentSortMode.startsWith('most-')) {
     if (activeQuickFilters.has('youtube')) activeFilters.push('Has Videos');
     if (activeQuickFilters.has('long')) activeFilters.push('Long Notes');
     if (activeQuickFilters.has('links')) activeFilters.push('Has Links');
+    if (activeQuickFilters.has('music')) activeFilters.push('Has Music');
     
     // Add sorting mode if active
     if (currentSortMode === 'most-liked') activeFilters.push('Most Reactions');
