@@ -31,7 +31,7 @@ A powerful browser-based app to view, search, filter, and archive your Nostr not
 - **Phrase matching** with quotes: `"exact phrase"`
 - **Exclude terms** with minus: `-unwanted`
 - **Hashtag search**: `#bitcoin`
-- **Media filters**: `has:image`, `has:video`, `has:link`
+- **Media filters**: `has:image`, `has:video`, `has:link`, `has:music`
 - **Date range filtering**: Custom date pickers + quick filters
 - **Sort by engagement**: Most liked, most zapped, most reposted, most quoted
 
@@ -91,6 +91,7 @@ A powerful browser-based app to view, search, filter, and archive your Nostr not
 
 - **Search with operators**: `bitcoin AND lightning` or `"exact phrase" -spam`
 - **Filter by media**: Use `has:image` to find all notes with images
+- **Filter by music**: Use the Music filter to find all shared songs
 - **Create themed archives**: Make collections like "Tech Posts" or "Personal Notes"
 - **Sort by zaps**: See which of your notes got zapped the most
 - **Play shared music**: Click any song link to load the player
@@ -102,6 +103,7 @@ A powerful browser-based app to view, search, filter, and archive your Nostr not
 - Embedded music players for Spotify, Apple Music, YouTube Music, and song.link
 - Players load directly in note cards
 - No more opening new tabs for music
+- New "Music" filter to find all notes with music links
 
 - Enhanced engagement tracking system
 - Sort by reactions, zaps, reposts, and quotes
@@ -129,6 +131,7 @@ A powerful browser-based app to view, search, filter, and archive your Nostr not
 ## Known Limitations
 
 - Relays are hardcoded; custom relay configuration coming soon
+- Import currently supports JSON
 
 ## Feedback & Support
 
