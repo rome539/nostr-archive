@@ -7203,7 +7203,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 2.3 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 2.4 • Open Source • No Tracking</p>
                 </div>
             </div>
         </div>
@@ -8126,7 +8126,7 @@ function hideFilteringIndicator() {
                 </button>
             </div>
         </div>
-        <div class="note-content">${processYouTubeLinks(processImageLinks(makeLinksClickable(escapeHtml(note.content))))}</div>
+        <div class="note-content">${processMusicLinks(processYouTubeLinks(processImageLinks(makeLinksClickable(escapeHtml(note.content)))))}</div>
         ${hashtagsHtml ? `<div class="hashtags">${hashtagsHtml}</div>` : ''}
         ${createReactionsBoxHTML(note.id)}
     </div>
@@ -9479,6 +9479,62 @@ function processYouTubeLinks(content) {
     });
 }
 
+function processMusicLinks(content) {
+    // Match song.link, Spotify (track/album/playlist), YouTube Music, and Apple Music URLs
+    const musicRegex = /(https?:\/\/(?:song\.link\/[^\s"<>]+|open\.spotify\.com\/(?:track|album|playlist)\/[^\s"<>]+|music\.youtube\.com\/watch\?v=[^\s"<>]+|music\.apple\.com\/[^\s"<>]+))/g;
+    
+    return content.replace(musicRegex, (url) => {
+        let serviceName = 'Music';
+        let embedUrl = '';
+        
+        if (url.includes('song.link/')) {
+            serviceName = 'Song';
+            // song.link embeds work with odesli.co
+            const songId = url.split('song.link/')[1].split(/[?#]/)[0];
+            embedUrl = `https://odesli.co/embed/?url=${encodeURIComponent(url)}&theme=dark`;
+        } else if (url.includes('open.spotify.com/')) {
+            serviceName = 'Spotify';
+            // Handle track, album, or playlist
+            const typeMatch = url.match(/spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
+            if (typeMatch) {
+                const [, type, id] = typeMatch;
+                embedUrl = `https://open.spotify.com/embed/${type}/${id}`;
+            }
+        } else if (url.includes('music.youtube.com/watch')) {
+            serviceName = 'YouTube Music';
+            const videoId = url.match(/[?&]v=([^&]+)/)?.[1];
+            if (videoId) {
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            }
+        } else if (url.includes('music.apple.com/')) {
+            serviceName = 'Apple Music';
+            embedUrl = url.replace('music.apple.com', 'embed.music.apple.com');
+        }
+        
+        if (!embedUrl) return url;
+        
+        return `<div class="music-preview" onclick="loadMusicEmbed(this, '${embedUrl}', '${serviceName}')" style="
+            border: 1px dashed var(--border-color);
+            padding: 20px;
+            margin: 8px 0;
+            border-radius: 6px;
+            background: var(--background-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        " onmouseover="this.style.borderColor='var(--primary-color)'; this.style.color='var(--primary-color)'" 
+           onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'">
+            🎵 Click to load ${serviceName} player
+        </div>`;
+    });
+}
+
 function processImageLinks(content) {
     // Match <a> tags that link to images
     const imageRegex = /<a href="(https?:\/\/[^"]+\.(?:jpg|jpeg|png|gif|webp)(?:\?[^"]*)?)"[^>]*>.*?<\/a>/gi;
@@ -9548,6 +9604,26 @@ function closeYouTube(element, url, videoId) {
   element.setAttribute('onclick', `loadYouTubeThumbnail(this, '${url}', '${videoId}')`);
 }
 
+function loadMusicEmbed(element, embedUrl, serviceName) {
+  element.innerHTML = `
+    <div style="position: relative; width: 100%; max-width: 100%;">
+      <iframe src="${embedUrl}"
+              width="100%"
+              height="152"
+              frameborder="0"
+              allow="encrypted-media; autoplay; clipboard-write; picture-in-picture"
+              loading="lazy"
+              style="border-radius: 8px; max-width: 100%;">
+      </iframe>
+    </div>`;
+  element.setAttribute('onclick', `closeMusicEmbed(this, '${embedUrl}', '${serviceName}')`);
+}
+
+function closeMusicEmbed(element, embedUrl, serviceName) {
+  element.innerHTML = `🎵 Click to load ${serviceName} player`;
+  element.setAttribute('onclick', `loadMusicEmbed(this, '${embedUrl}', '${serviceName}')`);
+}
+
 function makeLinksClickable(content) {
     // Match all URLs (http, https)
     const urlRegex = /(https?:\/\/[^\s<>"]+)/gi;
@@ -9559,8 +9635,18 @@ function makeLinksClickable(content) {
             return url;
         }
         
+        // Skip music URLs - they'll be handled by processMusicLinks
+        if (url.includes('song.link/') || 
+            url.includes('open.spotify.com/track/') ||
+            url.includes('open.spotify.com/album/') ||
+            url.includes('open.spotify.com/playlist/') ||
+            url.includes('music.youtube.com/watch') || 
+            url.includes('music.apple.com/')) {
+            return url;
+        }
+        
         // Make ALL URLs clickable (INCLUDING images - processImageLinks will handle them later)
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
+        return `<a href="${url}" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
     });
 }
 
@@ -10469,7 +10555,8 @@ function debugRepostContent(noteId) {
     console.log('After escapeHtml:', escapeHtml(note.content));
     console.log('After processImageLinks:', processImageLinks(escapeHtml(note.content)));
     console.log('After processYouTubeLinks:', processYouTubeLinks(processImageLinks(escapeHtml(note.content))));
-    console.log('Final result:', makeLinksClickable(processYouTubeLinks(processImageLinks(escapeHtml(note.content)))));
+    console.log('After processMusicLinks:', processMusicLinks(processYouTubeLinks(processImageLinks(escapeHtml(note.content)))));
+    console.log('Final result:', makeLinksClickable(processMusicLinks(processYouTubeLinks(processImageLinks(escapeHtml(note.content))))));
 }
 
 window.debugRepostContent = debugRepostContent;
@@ -10952,6 +11039,8 @@ window.loadYouTubeThumbnail = loadYouTubeThumbnail;
 window.loadImage = loadImage;
 window.closeImage = closeImage;
 window.closeYouTube = closeYouTube;
+window.loadMusicEmbed = loadMusicEmbed;
+window.closeMusicEmbed = closeMusicEmbed;
 
 // Utilities
 window.copyToClipboard = copyToClipboard;
