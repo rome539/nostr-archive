@@ -9544,7 +9544,7 @@ function processMusicLinks(content) {
             gap: 8px;
         " onmouseover="this.style.borderColor='var(--primary-color)'; this.style.color='var(--primary-color)'" 
            onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'">
-             Click to load ${serviceName} player
+            Click to load ${serviceName} player
         </div>`;
     });
 }
@@ -9634,7 +9634,7 @@ function loadMusicEmbed(element, embedUrl, serviceName) {
 }
 
 function closeMusicEmbed(element, embedUrl, serviceName) {
-  element.innerHTML = ` Click to load ${serviceName} player`;
+  element.innerHTML = `Click to load ${serviceName} player`;
   element.setAttribute('onclick', `loadMusicEmbed(this, '${embedUrl}', '${serviceName}')`);
 }
 
@@ -9660,7 +9660,7 @@ function makeLinksClickable(content) {
         }
         
         // Make ALL URLs clickable (INCLUDING images - processImageLinks will handle them later)
-        return `<a href="${url}" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; word-break: break-all;">${url}</a>`;
     });
 }
 
