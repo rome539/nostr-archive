@@ -22,7 +22,7 @@
     /* Default Theme */
     --primary-color: #3498db;
     --primary-hover: #2980b9;
-    --secondary-color: #7fb3d3;  /* ADD THIS */
+    --secondary-color: #7fb3d3;
     --success-color: #27ae60;
     --danger-color: #e74c3c;
     --purple-color: #9b59b6;
@@ -837,9 +837,8 @@ input:-ms-input-placeholder {
     }
 }
 
-/* Remove ALL the old reply/archived specific rules */
-.note-card.reply-card .hashtag,
-.note-card.archived .hashtag {
+/* Reply card hashtags follow primary theme */
+.note-card.reply-card .hashtag {
   background: color-mix(in srgb, var(--primary-color) 18%, var(--card-background)) !important;
   border-color: color-mix(in srgb, var(--primary-color) 40%, var(--card-background)) !important;
   color: var(--primary-color) !important;
@@ -866,10 +865,6 @@ input:-ms-input-placeholder {
 }
 
 
-.tag-filter.active {
-    background: var(--primary-color);
-    color: white;
-}
 
 /* Only apply hover on devices with actual hover capability */
 @media (hover: hover) {
@@ -908,17 +903,6 @@ input:-ms-input-placeholder {
 }
 
 
- .archive-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-    background: var(--background-color);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
-}
 
 .archive-item:hover:not(.active) {
     background: var(--card-background);
@@ -930,23 +914,6 @@ input:-ms-input-placeholder {
     border-color: var(--success-color);
     color: white;
 }
-
-.archive-name {
-    cursor: pointer;
-    flex: 1;
-    font-size: 14px;
-}
-
-.archive-count {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-right: 8px;
-}
-
-        .archive-actions {
-            display: flex;
-            gap: 5px;
-        }
 
       .loading {
     text-align: center;
@@ -1048,10 +1015,6 @@ input:-ms-input-placeholder {
     border-color: var(--accent) !important;
 }
 
-        .note-checkbox {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
 
        .bulk-controls {
     background: var(--background-color);
@@ -1200,19 +1163,14 @@ kbd {
 }
 
 .copy-btn {
-  border: none;
+  border: 1px solid var(--primary-color);
   padding: 4px 8px;
   border-radius: 3px;
   cursor: pointer;
   font-size: 12px;
   transition: all 0.2s ease;
-}
-
-/* Default theme */
-.copy-btn {
   background: var(--primary-color);
   color: white;
-  border: 1px solid var(--primary-color);
 }
 
 .copy-btn:hover {
@@ -1313,24 +1271,10 @@ kbd {
     transform: translateY(-1px);
 }
 
-/* Neon Green Load More button */
-[data-theme="neon-green"] #load-more-btn {
-    background: var(--accent-weak) !important;
-    color: var(--accent) !important;
-    border: 1px solid var(--accent-border) !important;
-    text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
-}
-
-[data-theme="neon-green"] #load-more-btn:hover {
-    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
-}
-
 .youtube-thumbnail {
     position: relative;
     display: inline-block;
+    max-width: 100%;
     margin: 10px 0;
     border-radius: 8px;
     overflow: hidden;
@@ -1345,6 +1289,7 @@ kbd {
 
 .youtube-thumbnail img {
     width: 320px;
+    max-width: 100%;
     height: 180px;
     object-fit: cover;
     display: block;
@@ -1619,21 +1564,6 @@ kbd {
 }
 
 /* Date input theming */
-[data-theme="dark-nostr"] input[type="date"],
-[data-theme="bitcoin-gold"] input[type="date"],
-[data-theme="nostr-purple"] input[type="date"] {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-}
-
-[data-theme="neon-green"] input[type="date"] {
-    background: var(--accent-weak-2) !important;
-    color: var(--accent) !important;
-    border: 1px solid var(--accent-border) !important;
-}
-
-/* More comprehensive date input theming */
 input[type="date"] {
     background: var(--background-color) !important;
     color: var(--text-color) !important;
@@ -1643,12 +1573,11 @@ input[type="date"] {
     font-size: 12px;
 }
 
-/* Theme-specific date input styling */
 [data-theme="dark-nostr"] input[type="date"] {
     background: var(--background-color) !important;
     color: var(--text-color) !important;
     border: 1px solid var(--border-color) !important;
-    color-scheme: dark; /* This helps with native controls */
+    color-scheme: dark;
 }
 
 [data-theme="bitcoin-gold"] input[type="date"] {
@@ -1662,7 +1591,7 @@ input[type="date"] {
     background: var(--background-color) !important;
     color: var(--text-color) !important;
     border: 1px solid var(--border-color) !important;
-    color-scheme: dark;
+    color-scheme: light;
 }
 
 [data-theme="neon-green"] input[type="date"] {
@@ -1672,7 +1601,7 @@ input[type="date"] {
     color-scheme: dark;
 }
 
-/* Enhanced calendar picker indicator styling */
+/* Calendar picker indicator styling */
 input[type="date"]::-webkit-calendar-picker-indicator {
     background: transparent;
     bottom: 0;
@@ -1686,11 +1615,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0.8;
 }
 
-/* Theme-specific calendar indicators */
 [data-theme="dark-nostr"] input[type="date"]::-webkit-calendar-picker-indicator,
-[data-theme="bitcoin-gold"] input[type="date"]::-webkit-calendar-picker-indicator,
-[data-theme="nostr-purple"] input[type="date"]::-webkit-calendar-picker-indicator {
+[data-theme="bitcoin-gold"] input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1) brightness(0.8);
+}
+
+[data-theme="nostr-purple"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: none;
+    opacity: 0.7;
 }
 
 [data-theme="neon-green"] input[type="date"]::-webkit-calendar-picker-indicator {
@@ -1707,19 +1639,6 @@ input[type="date"]:focus {
 [data-theme="neon-green"] input[type="date"]:focus {
     border-color: var(--accent) !important;
     box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3);
-}
-
-/* Fix Nostr Purple theme - should use light color scheme */
-[data-theme="nostr-purple"] input[type="date"] {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-    color-scheme: light; /* Changed from dark to light */
-}
-
-[data-theme="nostr-purple"] input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: none; /* Remove the invert filter for light theme */
-    opacity: 0.7;
 }
 
 /* Neon green search input */
@@ -2003,20 +1922,6 @@ border-color: var(--accent) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.3) !important;
-}
-
-[data-theme="neon-green"] .modal-close {
-    background: var(--accent-weak) !important;
-    color: var(--accent) !important;
-    border: 1px solid var(--accent-border) !important;
-    text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
-}
-
-[data-theme="neon-green"] .modal-close:hover {
-    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
 }
 
 /* Neon green theme override for Import Archive */
@@ -2403,6 +2308,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     .form-group input,
     input[type="text"],
     input[type="search"],
+    input[type="date"],
     select,
     textarea {
         font-size: 16px !important;
@@ -2732,10 +2638,93 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         opacity: 1 !important;
     }
     
+    /* Hide keyboard shortcuts on mobile - not applicable */
+    .sidebar-section:has(kbd) {
+        display: none;
+    }
+
     /* Improve tag badges for touch */
     .tag-badge {
         padding: 6px 12px;
         font-size: 13px;
+    }
+
+    /* Hashtag pills - larger touch targets on mobile */
+    .hashtag {
+        padding: 6px 12px;
+        font-size: 13px;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Hashtags container - more gap for touch */
+    .hashtags {
+        gap: 8px;
+    }
+
+    /* Note actions - ensure buttons don't overflow */
+    .note-actions {
+        flex-wrap: wrap;
+    }
+
+    /* Smart loading overlay - don't overflow on narrow screens */
+    .smart-loading-overlay {
+        min-width: unset;
+        width: 85%;
+        max-width: 300px;
+        padding: 20px 16px;
+    }
+
+    /* Sidebar tag filter buttons - bigger touch targets */
+    .tag-filter {
+        min-height: 40px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    /* Sidebar - limit height and scroll on mobile so sidebar doesn't push content far down */
+    .sidebar {
+        max-height: none;
+    }
+
+    /* Date inputs - ensure proper sizing */
+    input[type="date"] {
+        min-height: 44px;
+        padding: 10px 8px !important;
+    }
+
+    /* Select dropdowns - proper touch size */
+    select {
+        min-height: 44px;
+    }
+
+    /* Note checkbox - larger touch target */
+    .note-checkbox {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+    }
+
+    /* Date copy button - larger touch area */
+    .date-copy-btn {
+        padding: 4px 8px;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Hashtag group headers - larger touch targets */
+    .hashtag-group-header {
+        min-height: 44px;
+        padding: 12px !important;
+        font-size: 14px !important;
+    }
+
+    /* Archive items - larger touch targets */
+    .archive-item {
+        min-height: 48px;
+        padding: 14px 16px;
     }
 }
 
@@ -2809,9 +2798,9 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     /* Additional npub fixes for very small screens */
     .npub-copy-btn {
         max-width: 150px;
-        font-size: 9px;
-        padding: 2px 6px;
-        min-height: 18px;
+        font-size: 10px;
+        padding: 4px 8px;
+        min-height: 28px;
         line-height: 1.2;
     }
     
@@ -3222,7 +3211,6 @@ function normalizeNpub(input) {
       document.addEventListener('DOMContentLoaded', function () {
     setupEventListeners();
     setupKeyboardShortcuts();
-    setupHashtagDragSelection();
 
   // Auto-login if we have a saved npub
   const savedNpub = localStorage.getItem('nostr-saved-npub');
@@ -3286,42 +3274,6 @@ document.getElementById('search-input').addEventListener('input', function(e) {
             document.getElementById('bulk-add-to-archive').addEventListener('click', bulkAddToArchive);
             document.getElementById('bulk-remove-from-archive').addEventListener('click', bulkRemoveFromArchive);
         }
-
-        function setupHashtagDragSelection() {
-    const tagFiltersEl = document.getElementById('tag-filters');
-    if (!tagFiltersEl) return;
-    
-    // Remove any existing listeners to prevent duplicates
-    if (tagFiltersEl.__dragSetup) return;
-    
-    // Handle mousedown on hashtag buttons only
-    tagFiltersEl.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return; // Left mouse button only
-        
-        const btn = e.target.closest('.tag-filter');
-        if (!btn) return;
-        
-        const tag = btn.dataset.tag;
-        if (!tag || !tag.startsWith('#')) return; // Only hashtags, not special buttons
-        
-        startHashtagSelection(tag, e);
-    });
-    
-    // Handle mouseover for dragging
-    tagFiltersEl.addEventListener('mouseover', (e) => {
-        if (!isSelecting) return;
-        
-        const btn = e.target.closest('.tag-filter');
-        if (!btn) return;
-        
-        const tag = btn.dataset.tag;
-        if (!tag || !tag.startsWith('#')) return;
-        
-        continueHashtagSelection(tag, e);
-    });
-    
-    tagFiltersEl.__dragSetup = true; // Prevent duplicate setup
-}
 
         async function loadArchivedNotes() {
     if (!currentPubkey) return;
@@ -4401,6 +4353,7 @@ async function fetchAllNotesFromRelayEnhanced(relayUrl, pubkey, progressCallback
     let consecutiveEmptyBatches = 0;
     const MAX_EMPTY_BATCHES = 3;
     const MAX_RELAY_TIME = 0; // No timeout for deep scan - let it complete naturally
+    let consecutiveHighDuplicateBatches = 0;
     
     const startTime = Date.now();
     
@@ -4461,31 +4414,21 @@ if (globalSeenIds) {
         }
     });
     
-    // Stop if this batch is >95% duplicates after batch 10
-    // Track consecutive high-duplicate batches
-// Add this at the top of the function with other variables
-let consecutiveHighDuplicateBatches = 0;
+    // Stop if this batch is >95% duplicates after batch 20
 
-// Then use it without 'this.'
-consecutiveHighDuplicateBatches++;
-// and
-consecutiveHighDuplicateBatches = 0;
-
-if (batchNumber > 20 && batchEvents.length > 0) {  // Changed from 10 to 20
+if (batchNumber > 20 && batchEvents.length > 0) {
     const duplicateRate = ((batchEvents.length - newCount) / batchEvents.length) * 100;
     
-    if (duplicateRate > 95) {  // Changed from 98 to 95
-        this.consecutiveHighDuplicateBatches++;
-        console.log(`[${relayUrl}] High duplicate rate: ${duplicateRate.toFixed(1)}% (${newCount}/${batchEvents.length} new) - consecutive: ${this.consecutiveHighDuplicateBatches}/25`);  // Update display
+    if (duplicateRate > 95) {
+        consecutiveHighDuplicateBatches++;
+        console.log(`[${relayUrl}] High duplicate rate: ${duplicateRate.toFixed(1)}% (${newCount}/${batchEvents.length} new) - consecutive: ${consecutiveHighDuplicateBatches}/25`);
         
-        // Only stop after 25 consecutive high-duplicate batches
-        if (this.consecutiveHighDuplicateBatches >= 25) {  // Changed from 10 to 25
-            console.log(`[${relayUrl}] Stopping: 5 consecutive batches with >95% duplicates. Total fetched: ${allEvents.length}`);
+        if (consecutiveHighDuplicateBatches >= 25) {
+            console.log(`[${relayUrl}] Stopping: 25 consecutive batches with >95% duplicates. Total fetched: ${allEvents.length}`);
             break;
         }
     } else {
-        // Reset counter if we find a good batch
-        this.consecutiveHighDuplicateBatches = 0;
+        consecutiveHighDuplicateBatches = 0;
     }
 }
 } else {
@@ -4790,59 +4733,6 @@ async function verifyCompletenessQuick(pubkey) {
 // ==================== END DEEP SCAN SYSTEM ====================
 
 // NEW: Memory-efficient deduplication for image-heavy accounts
-async function memoryEfficientDeduplication(allEvents) {
-    console.log(`Starting deduplication of ${allEvents.length} events`);
-    
-    const uniqueEventsMap = new Map();
-    const chunkSize = 2000; // Process in smaller chunks for image-heavy accounts
-    let duplicatesFound = 0;
-    
-    for (let startIndex = 0; startIndex < allEvents.length; startIndex += chunkSize) {
-        const endIndex = Math.min(startIndex + chunkSize, allEvents.length);
-        const chunk = allEvents.slice(startIndex, endIndex);
-        
-        console.log(`Processing chunk ${Math.floor(startIndex/chunkSize) + 1}: events ${startIndex}-${endIndex}`);
-        
-        chunk.forEach(event => {
-            if (!event?.id) return;
-            
-            const existing = uniqueEventsMap.get(event.id);
-            if (!existing) {
-                uniqueEventsMap.set(event.id, event);
-            } else {
-                duplicatesFound++;
-                // Keep the event with more complete data
-                if ((event.tags?.length || 0) > (existing.tags?.length || 0) || 
-                    event.content.length > existing.content.length) {
-                    uniqueEventsMap.set(event.id, event);
-                }
-            }
-        });
-        
-        // Update progress and yield control
-        const progress = 80 + ((endIndex / allEvents.length) * 15);
-        updateProgress(progress, `Deduplicating: ${endIndex}/${allEvents.length} processed (${duplicatesFound} duplicates found)`);
-        
-        // Yield control to prevent browser freeze
-        await new Promise(resolve => setTimeout(resolve, 10));
-        
-        // Memory cleanup
-        if (startIndex % 10000 === 0 && performance.memory) {
-            const memoryMB = performance.memory.usedJSHeapSize / 1024 / 1024;
-            console.log(`Memory usage: ${memoryMB.toFixed(1)} MB`);
-            if (memoryMB > 500) {
-                console.log('High memory usage detected, forcing garbage collection pause');
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-        }
-    }
-    
-    const uniqueEvents = Array.from(uniqueEventsMap.values());
-console.log(`=== DEDUPLICATION COMPLETE: ${uniqueEvents.length} unique notes ===`);
-updateStatus(`✅ Found ${uniqueEvents.length} unique notes across all relays`);
-
-return uniqueEvents;
-}
 
 async function fetchNotesFromRelaysSince(pubkey, sinceTimestamp) {
     const allEvents = [];
@@ -5163,162 +5053,7 @@ async function loadNotesHybrid(pubkey, silent = false) {
 
 // PRODUCTION FAILSAFE SYSTEM
 
-async function checkDatabaseHealth(pubkey, silent = false) {
-    try {
-        if (!db || !db.isOpen()) {
-            if (!silent) updateStatus('Database connection failed');
-            return false;
-        }
-        
-        // Test basic database operations
-        const testCount = await db.notes.count();
-        const testSettings = await db.settings.toArray();
-        
-        // Check if we can read a sample note
-        if (testCount > 0) {
-            const sampleNote = await db.notes.limit(1).first();
-            
-            // Basic integrity checks
-            if (!sampleNote) {
-                if (!silent) updateStatus('Database count/data mismatch detected');
-                return false;
-            }
-            
-            if (!sampleNote.id || sampleNote.content === undefined || !sampleNote.created_at) {
-                if (!silent) updateStatus('Invalid note structure detected');
-                return false;
-            }
-        }
-        
-        // Test write capability
-        try {
-            await db.settings.put({ key: 'health_check', value: Date.now() });
-            await db.settings.delete('health_check');
-        } catch (writeError) {
-            if (!silent) updateStatus('Database write test failed');
-            return false;
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('Database health check failed:', error);
-        return false;
-    }
-}
-
-function validateNotesData(notes, expectedCount) {
-    // Check we got reasonable amount of data
-    const minExpected = Math.max(Math.min(expectedCount * 0.8, expectedCount - 100), 20);
-    if (notes.length < minExpected) {
-        return { 
-            isValid: false, 
-            reason: `Got ${notes.length} notes, expected at least ${minExpected}` 
-        };
-    }
-    
-    // Check data structure integrity
-    const validNotes = notes.filter(note => 
-        note && 
-        note.id && 
-        typeof note.id === 'string' &&
-        note.content !== undefined && 
-        note.created_at && 
-        typeof note.created_at === 'number' &&
-        Array.isArray(note.hashtags)
-    );
-    
-    const validRatio = validNotes.length / notes.length;
-    if (validRatio < 0.95) {
-        return { 
-            isValid: false, 
-            reason: `${Math.round((1-validRatio)*100)}% of notes have invalid structure` 
-        };
-    }
-    
-    // Check for duplicate IDs (corruption indicator)
-    const uniqueIds = new Set(validNotes.map(note => note.id));
-    if (uniqueIds.size < validNotes.length * 0.98) {
-        return { 
-            isValid: false, 
-            reason: 'Duplicate note IDs detected (data corruption)' 
-        };
-    }
-    
-    // Check timestamp sanity (notes can't be from the future)
-    const now = Math.floor(Date.now() / 1000);
-    const futureNotes = validNotes.filter(note => note.created_at > now + 3600);
-    if (futureNotes.length > validNotes.length * 0.01) {
-        return { 
-            isValid: false, 
-            reason: 'Invalid timestamps detected' 
-        };
-    }
-    
-    return { isValid: true, reason: 'Data validation passed' };
-}
-
 // Add this function to validate and fix note classifications when loading
-function validateNoteClassification(note) {
-    // Ensure classification fields exist and are boolean
-    const validatedNote = {
-        ...note,
-        isReply: Boolean(note.isReply),
-        isRepost: Boolean(note.isRepost),
-        isQuote: Boolean(note.isQuote),
-        kind: note.kind || 1
-    };
-    
-    // If classifications seem wrong, re-process the note
-    if (validatedNote.kind === 6 && !validatedNote.isRepost) {
-        validatedNote.isRepost = true;
-        validatedNote.isReply = false;
-        validatedNote.isQuote = false;
-    }
-    
-    return validatedNote;
-}
-
-async function repairDatabase(pubkey) {
-    try {
-        console.log('Repairing database for', pubkey.substring(0, 8) + '...');
-        
-        // Close current connection
-        if (db && db.isOpen()) {
-            await db.close();
-        }
-        
-        // Delete corrupted database
-        const dbName = `nostr-notes-${pubkey}`;
-        await new Promise((resolve) => {
-            const deleteReq = indexedDB.deleteDatabase(dbName);
-            deleteReq.onsuccess = () => {
-                console.log('Corrupted database deleted successfully');
-                resolve();
-            };
-            deleteReq.onerror = () => {
-                console.log('Database deletion failed, continuing anyway');
-                resolve();
-            };
-            deleteReq.onblocked = () => {
-                console.log('Database deletion blocked, forcing continuation');
-                setTimeout(resolve, 2000);
-            };
-            // Safety timeout
-            setTimeout(resolve, 5000);
-        });
-        
-        // Reinitialize fresh database
-        db = null;
-        await initDatabase(pubkey);
-        
-        console.log('Database repair completed successfully');
-        return true;
-    } catch (error) {
-        console.error('Database repair failed:', error);
-        disableIndexedDB(error);
-        return false;
-    }
-}
 
 // Chunked Storage System for Phase 2
 class ChunkedNoteStorage {
@@ -5630,14 +5365,6 @@ async getLastSyncTime() {
 
 
 // Chunk management utilities
-async function getChunkStorageInfo(pubkey) {
-    const chunkStorage = new ChunkedNoteStorage(pubkey);
-    const ready = await chunkStorage.init();
-    
-    if (!ready) return null;
-    
-    return await chunkStorage.getStats();
-}
 
 // Phase 3: Smart Filter-Aware Loading System
 class SmartFilterEngine {
@@ -5793,7 +5520,6 @@ class SmartFilterEngine {
     }
     
     // Apply detailed filters to loaded notes
-    // Apply detailed filters to loaded notes
 applyDetailedFilters(notes, filters) {
     return notes.filter(note => {
         // Text search
@@ -5830,7 +5556,7 @@ applyDetailedFilters(notes, filters) {
         
         // Image filter
         if (filters.hasImages) {
-            const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
+            const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/i;
             if (!imageRegex.test(note.content)) {
                 return false;
             }
@@ -5838,7 +5564,7 @@ applyDetailedFilters(notes, filters) {
         
         // YouTube filter
         if (filters.hasYouTube) {
-            const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
+            const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
             if (!youtubeRegex.test(note.content)) {
                 return false;
             }
@@ -5896,86 +5622,6 @@ applyDetailedFilters(notes, filters) {
 
 // Smart tag filtering using chunk awareness
 // Smart tag filtering using chunk awareness
-async function performSmartTagFilter(tag) {
-    console.log('=== SMART TAG FILTER DEBUG ===');
-    console.log('Filtering for tag:', tag);
-    
-    try {
-        const chunkStorage = new ChunkedNoteStorage(currentPubkey);
-        const ready = await chunkStorage.init();
-        
-        if (!ready) {
-            console.log('Chunk storage not ready, falling back to memory filtering');
-            const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
-            console.log('Memory filtering found:', memoryResults.length, 'results');
-            return memoryResults;
-        }
-        
-        console.log('Chunk storage ready, attempting smart filtering...');
-        
-        const filterEngine = new SmartFilterEngine(chunkStorage);
-        
-        // Convert tag to filter format
-        const filters = {};
-        
-        if (tag.startsWith('#')) {
-            filters.hashtags = [tag];
-            console.log('Set hashtag filter:', filters.hashtags);
-            
-            // DEBUG: Check if hashtag exists in indices
-            const hashtagIndex = await chunkStorage.db.indices.get('hashtags');
-            console.log('Hashtag index:', hashtagIndex);
-            
-            if (hashtagIndex && hashtagIndex.data[tag]) {
-                console.log('Found chunks for hashtag:', hashtagIndex.data[tag]);
-            } else {
-                console.log('No chunks found for hashtag in index, falling back to memory');
-                const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
-                console.log('Memory fallback found:', memoryResults.length, 'results');
-                return memoryResults;
-            }
-            
-        } else if (tag === '__original') {
-            filters.contentType = 'original';
-        } else if (tag === '__replies') {
-            filters.contentType = 'replies';
-        } else if (tag.startsWith('__archive_')) {
-            // Archive filtering still uses memory (archives are typically smaller)
-            const archiveName = tag.replace('__archive_', '');
-            if (namedArchives[archiveName]) {
-                return allNotes.filter(note => namedArchives[archiveName].has(note.id));
-            }
-            return [];
-        }
-        
-        // Get estimated count
-        const estimatedCount = await filterEngine.getEstimatedCount(filters);
-        console.log('Estimated count:', estimatedCount);
-        
-        if (estimatedCount > 0) {
-            updateStatus(`Loading ${estimatedCount} estimated notes for ${tag}...`);
-            
-            // Load filtered notes
-            const results = await filterEngine.loadFilteredNotes(filters);
-            
-            console.log('Smart filtering results:', results.length);
-            updateStatus(`Loaded ${results.length} notes for ${tag}`);
-            return results;
-        }
-        
-        console.log('No estimated results, falling back to memory');
-        const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
-        console.log('Memory fallback found:', memoryResults.length, 'results');
-        return memoryResults;
-        
-    } catch (error) {
-        console.error('Smart tag filter error:', error);
-        // Fallback to memory search
-        const memoryResults = allNotes.filter(note => noteMatchesTag(note, tag));
-        console.log('Error fallback found:', memoryResults.length, 'results');
-        return memoryResults;
-    }
-}
 
 async function clearChunkStorage(pubkey) {
     try {
@@ -6039,115 +5685,6 @@ async function debugChunkStorage() {
 
 // Make it globally available for testing
 window.debugChunkStorage = debugChunkStorage;
-
-async function fetchFreshAndStore(pubkey, silent = false) {
-    if (!silent) updateStatus('Fetching fresh data from relays...');
-    
-    const freshNotes = await fetchNotesFromRelays(pubkey);
-    
-    if (freshNotes.length > 0 && db && useIndexedDB) {
-        try {
-            if (!silent) updateStatus('Storing fresh data in IndexedDB...');
-            
-            await db.notes.clear();
-            await db.settings.clear();
-            
-            // IMPORTANT: Ensure all classification fields are explicitly stored
-            const notesToStore = freshNotes.map(note => ({
-                ...note,
-                isReply: Boolean(note.isReply),
-                isRepost: Boolean(note.isRepost),
-                isQuote: Boolean(note.isQuote),
-                kind: note.kind || 1
-            }));
-            
-            // Store in chunks to avoid memory issues
-            const chunkSize = 1000;
-            for (let i = 0; i < notesToStore.length; i += chunkSize) {
-                const chunk = notesToStore.slice(i, i + chunkSize);
-                await db.notes.bulkAdd(chunk);
-                
-                if (!silent && notesToStore.length > chunkSize) {
-                    updateStatus(`Stored ${Math.min(i + chunkSize, notesToStore.length)}/${notesToStore.length} notes...`);
-                }
-            }
-            
-            await db.settings.put({ key: 'last_sync_time', value: Date.now() });
-            await db.settings.put({ key: 'total_notes_stored', value: notesToStore.length });
-            
-            if (!silent) {
-                updateStatus(`Successfully stored ${notesToStore.length} notes in IndexedDB`);
-            }
-        } catch (storeError) {
-            console.error('Failed to store fresh data:', storeError);
-            if (!silent) updateStatus('Storage failed, continuing with memory-only mode');
-            disableIndexedDB(storeError);
-        }
-    }
-    
-    return freshNotes;
-}
-
-async function incrementalSync(pubkey, silent = true) {
-    if (!db || !useIndexedDB) {
-        return await fetchNotesFromRelays(pubkey); // Fallback to full fetch
-    }
-    
-    try {
-        // Get the newest note we have stored
-        const newestStoredNote = await db.notes
-            .orderBy('created_at')
-            .reverse()
-            .first();
-        
-        if (!newestStoredNote) {
-            // No stored notes, do full fetch
-            return await fetchNotesFromRelays(pubkey);
-        }
-        
-        const lastTimestamp = newestStoredNote.created_at;
-        
-        if (!silent) {
-            updateStatus(`Checking for notes newer than ${new Date(lastTimestamp * 1000).toLocaleString()}...`);
-        }
-        
-        // Fetch only newer notes from relays
-        const newNotes = await fetchNotesFromRelaysSince(pubkey, lastTimestamp);
-        
-        if (newNotes.length > 0) {
-            // Add new notes to IndexedDB
-            await db.notes.bulkAdd(newNotes);
-            await db.settings.put({ key: 'last_sync_time', value: Date.now() });
-            
-            if (!silent) {
-                updateStatus(`Found and stored ${newNotes.length} new notes`);
-            }
-            
-            // Return all notes (existing + new) for display
-            const allNotes = await db.notes
-                .orderBy('created_at')
-                .reverse()
-                .toArray();
-            
-            return allNotes;
-        } else {
-            if (!silent) {
-                updateStatus('No new notes found');
-            }
-            
-            // Return existing notes
-            return await db.notes
-                .orderBy('created_at')
-                .reverse()
-                .toArray();
-        }
-        
-    } catch (error) {
-        console.error('Incremental sync error:', error);
-        // Fallback to full fetch
-        return await fetchNotesFromRelays(pubkey);
-    }
-}
 
 async function loadNotes(silent = false, isRefresh = false) {
     const previousNotesCount = allNotes.length; // Track what we had before
@@ -7444,7 +6981,7 @@ function trackLoadTime() {
             button.className = 'tag-filter';
             button.dataset.tag = tag;
             button.textContent = `${tag} (${tagCounts[tag]})`;
-            button.addEventListener('click', () => toggleTag(tag));
+            // No click handler here - mousedown/mouseup via initTagDragOnce handles hashtag clicks
             hashtagContainer.appendChild(button);
         });
         
@@ -7482,6 +7019,15 @@ function trackLoadTime() {
             startHashtagSelection(tag, e);                      // decides add/remove mode
         });
 
+        // Touch support for mobile
+        tagFiltersEl.addEventListener('touchstart', (e) => {
+            const btn = e.target.closest('.tag-filter');
+            if (!btn) return;
+            const tag = btn.dataset.tag;
+            if (!tag || !tag.startsWith('#')) return;
+            startHashtagSelection(tag, e);
+        }, { passive: false });
+
         // Continue while holding the button, over real hashtags only
         tagFiltersEl.addEventListener('mouseover', (e) => {
             if (!isSelecting) return;                           // set by startHashtagSelection
@@ -7494,6 +7040,7 @@ function trackLoadTime() {
 
         // End drag anywhere
         document.addEventListener('mouseup', endHashtagSelection);
+        document.addEventListener('mouseleave', endHashtagSelection);
 
         tagFiltersEl.__dragInit = true;                       // guard against rebinding
     })();
@@ -7842,11 +7389,27 @@ function noteMatchesTag(note, tag) {
         }
         
         // OPTIMIZATION: Apply content type filters early (fast)
+        // Split into note-type and hashtag groups, AND them together
         if (selectedTags.size > 0) {
-            const tags = Array.from(selectedTags);
-            workingSet = workingSet.filter(note =>
-                tags.some(tag => noteMatchesTag(note, tag))
-            );
+            const noteTypeTags = [];
+            const hashtagTags = [];
+            selectedTags.forEach(tag => {
+                if (tag === '__original' || tag === '__replies' || tag === '__reposts' || tag === '__quotes' || tag === '__archived') {
+                    noteTypeTags.push(tag);
+                } else {
+                    hashtagTags.push(tag);
+                }
+            });
+            if (noteTypeTags.length > 0) {
+                workingSet = workingSet.filter(note =>
+                    noteTypeTags.some(tag => noteMatchesTag(note, tag))
+                );
+            }
+            if (hashtagTags.length > 0) {
+                workingSet = workingSet.filter(note =>
+                    hashtagTags.some(tag => noteMatchesTag(note, tag))
+                );
+            }
         } else if (currentTag && currentTag !== '' && !currentTag.startsWith('__archive_')) {
             // Fall back to old single-select behavior
             if (currentTag === '__archived') {
@@ -7909,14 +7472,6 @@ function showFilteringIndicator() {
     if (title && !title.textContent.includes('⏳')) {
         title.dataset.originalText = title.textContent;
         title.textContent = '⏳ Filtering...';
-    }
-}
-
-function hideFilteringIndicator() {
-    const title = document.getElementById('notes-title');
-    if (title && title.dataset.originalText) {
-        title.textContent = title.dataset.originalText;
-        delete title.dataset.originalText;
     }
 }
 
@@ -8156,7 +7711,6 @@ function hideFilteringIndicator() {
         container.innerHTML = html;
     setupLazyLoading();
     updateSelectionUI();
-    setupHashtagDragSelection();
     
     // Fetch engagement stats for visible notes
     setTimeout(() => {
@@ -8305,147 +7859,6 @@ async function refreshNotes() {
         if (refreshBtn) {
             refreshBtn.disabled = false;
             refreshBtn.textContent = 'Refresh Notes';
-        }
-    }
-}
-
-async function loadNotesIncremental(isRefresh = false) {
-    const previousNotesCount = allNotes.length;
-    
-    try {
-        if (isRefresh) {
-            updateStatus('Checking for new notes...');
-        } else {
-            showLoading(true);
-            updateStatus('Loading notes...', true);
-        }
-        
-        // Get the timestamp of our newest note
-        const newestNote = allNotes.length > 0 ? allNotes[0] : null;
-        const sinceTimestamp = newestNote ? newestNote.created_at : 0;
-        
-        updateStatus(`Looking for notes newer than ${newestNote ? new Date(sinceTimestamp * 1000).toLocaleString() : 'beginning'}...`);
-        
-        // Fetch only newer notes
-        const newNotes = await fetchNotesFromRelaysSince(currentPubkey, sinceTimestamp);
-        
-        if (newNotes.length > 0) {
-            // Add new notes to the beginning of our array
-            allNotes.unshift(...newNotes);
-            allNotes.sort((a, b) => b.created_at - a.created_at);
-            
-            // Update chunked storage with new notes
-            const chunkStorage = new ChunkedNoteStorage(currentPubkey);
-            const chunkReady = await chunkStorage.init();
-            
-            if (chunkReady) {
-                await chunkStorage.storeNotesInChunks(allNotes);
-                updateStatus(`Updated chunked storage with ${newNotes.length} new notes`);
-            }
-            
-            updateArchiveList();
-            updateTargetArchiveDropdown();
-            updateTagFilters();
-            applyFilters();
-            renderNotes();
-            
-            showToast(`Found ${newNotes.length} new notes!`, 'success');
-        } else {
-            showToast('No new notes found', 'success');
-        }
-        
-        updateStatus(`✅ Refresh complete: ${newNotes.length} new notes (${allNotes.length} total)`);
-        
-    } catch (error) {
-        console.error('Refresh failed:', error);
-        showToast('Refresh failed: ' + error.message, 'error');
-    } finally {
-        if (!isRefresh) {
-            showLoading(false);
-        }
-    }
-}
-
-async function loadNotesForced(isRefresh = false) {
-    const previousNotesCount = allNotes.length;
-    
-    if (!isRefresh) {
-        showLoading(true);
-        updateProgress(0, 'Connecting to relays.');
-        updateStatus('Starting fresh load...', true);
-    } else {
-        updateStatus('Refreshing notes from relays...');
-    }
-    
-    try {
-        let notes;
-        
-        if (isRefresh) {
-            // Force fresh fetch from relays for refresh
-            updateProgress(20, 'Fetching fresh notes from relays...');
-            notes = await fetchNotesFromRelays(currentPubkey);
-            
-            // Store in chunked format after successful refresh
-            const chunkStorage = new ChunkedNoteStorage(currentPubkey);
-            const chunkReady = await chunkStorage.init();
-            
-            if (chunkReady && notes.length > 0) {
-                await chunkStorage.storeNotesInChunks(notes);
-                updateStatus(`Stored ${notes.length} notes in chunks after refresh`);
-            }
-        } else {
-            // Original loading logic for non-refresh loads
-            notes = await loadNotesHybrid(currentPubkey, false);
-        }
-
-        updateStatus(`Sorting ${notes.length} notes by date...`);
-        await new Promise(resolve => setTimeout(resolve, 10));
-        
-        allNotes = notes.sort((a, b) => b.created_at - a.created_at);
-        
-        updateStatus('Updating archives list...');
-        await new Promise(resolve => setTimeout(resolve, 10));
-        
-        updateArchiveList();
-        updateTargetArchiveDropdown();
-        
-        updateStatus('Updating tag filters...');
-        await new Promise(resolve => setTimeout(resolve, 10));
-        
-        updateTagFilters();
-        
-        updateStatus('Applying filters...');
-        await new Promise(resolve => setTimeout(resolve, 10));
-        
-        applyFilters();
-        
-        updateStatus('Rendering notes...');
-        await new Promise(resolve => setTimeout(resolve, 10));
-        
-        renderNotes();
-        
-       // Check if neon-green theme is active
-const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-const checkmark = isNeonGreen ? '' : '✅ ';
-
-const newNotesCount = allNotes.length - previousNotesCount;
-updateStatus(`${checkmark}Successfully loaded ${allNotes.length} notes!`);
-
-if (isRefresh) {
-    if (newNotesCount > 0) {
-        showToast(`Refresh complete - ${newNotesCount} new notes loaded (${allNotes.length} total)`, 'success');
-    } else {
-        showToast(`Refresh complete - no new notes found (${allNotes.length} total)`, 'success');
-    }
-}
-        
-    } catch (error) {
-        console.error('Error loading notes:', error);
-        showError('Failed to load notes: ' + error.message);
-    } finally {
-        if (!isRefresh) {
-            showLoading(false);
-            trackLoadTime();
         }
     }
 }
@@ -8936,16 +8349,6 @@ async function clearIndexedDBCompletely() {
 }
 
 // OPTIONAL: Add a separate "Clear IndexedDB Only" function for debugging
-async function clearIndexedDBOnly() {
-    if (confirm('Clear IndexedDB cache only? (Archives and settings will be preserved)')) {
-        try {
-            await clearIndexedDB();
-            showToast('IndexedDB cleared. Notes will be refetched from relays on next load.', 'success');
-        } catch (error) {
-            showToast('Error clearing IndexedDB: ' + error.message, 'error');
-        }
-    }
-}
 
                 function loadMoreNotes() {
             currentPage++;
@@ -9280,14 +8683,16 @@ function startHashtagSelection(tag, event) {
     
     // Set up temporary move listener to detect drag
     let hasMoved = false;
+    const dragThreshold = isTouchEvent ? 10 : 5; // Higher threshold for touch to avoid accidental drags
     const moveHandler = (moveEvent) => {
+        if (isTouchEvent && (!moveEvent.touches || !moveEvent.touches[0])) return;
         const currentX = isTouchEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
         const currentY = isTouchEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
         const deltaX = Math.abs(currentX - startX);
         const deltaY = Math.abs(currentY - startY);
         
-        // If moved more than 5 pixels, consider it a drag
-        if (deltaX > 5 || deltaY > 5) {
+        // If moved more than threshold, consider it a drag
+        if (deltaX > dragThreshold || deltaY > dragThreshold) {
             hasMoved = true;
             startDragMode(tag);
         }
@@ -9410,8 +8815,13 @@ function endHashtagSelection() {
         document.body.classList.remove('hashtag-selecting');
         
         // Now do the full render and filter update
-        applyFilters();
-        renderNotes();
+        const hasManualDates = document.getElementById('date-from').value || document.getElementById('date-to').value;
+        if (activeQuickFilters.size > 0 || hasManualDates) {
+            applyAllFilters();
+        } else {
+            applyFilters();
+            renderNotes();
+        }
     }
 }
 
@@ -9437,13 +8847,29 @@ function updateHashtagVisualsOnly() {
 
 // Helper function to update count without full render
 function updateCountOnly() {
-    // Quick filter update without full processing
     let quickCount = 0;
     if (selectedTags.size > 0) {
-        const tags = Array.from(selectedTags);
-        quickCount = allNotes.filter(note =>
-            tags.some(tag => noteMatchesTag(note, tag))
-        ).length;
+        const noteTypeTags = [];
+        const hashtagTags = [];
+        selectedTags.forEach(tag => {
+            if (tag === '__original' || tag === '__replies' || tag === '__reposts' || tag === '__quotes' || tag === '__archived') {
+                noteTypeTags.push(tag);
+            } else {
+                hashtagTags.push(tag);
+            }
+        });
+        let workingSet = allNotes;
+        if (noteTypeTags.length > 0) {
+            workingSet = workingSet.filter(note =>
+                noteTypeTags.some(tag => noteMatchesTag(note, tag))
+            );
+        }
+        if (hashtagTags.length > 0) {
+            workingSet = workingSet.filter(note =>
+                hashtagTags.some(tag => noteMatchesTag(note, tag))
+            );
+        }
+        quickCount = workingSet.length;
     } else {
         quickCount = allNotes.length;
     }
@@ -9702,6 +9128,10 @@ async function performAdvancedSearch(query, filters = {}) {
                     smartFilters.contentType = 'original';
                 } else if (tag === '__replies') {
                     smartFilters.contentType = 'replies';
+                } else if (tag === '__reposts') {
+                    smartFilters.contentType = 'reposts';
+                } else if (tag === '__quotes') {
+                    smartFilters.contentType = 'quotes';
                 }
             });
         }
@@ -9758,13 +9188,13 @@ function performInMemorySearch(query, filters) {
     
     // Apply image filter
     if (filters.hasImages) {
-        const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/gi;
+        const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/i;
         results = results.filter(note => imageRegex.test(note.content));
     }
     
     // Apply YouTube filter
     if (filters.hasYouTube) {
-        const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/gi;
+        const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
         results = results.filter(note => youtubeRegex.test(note.content));
     }
     
@@ -9837,7 +9267,6 @@ function performInMemorySearch(query, filters) {
 }
 
 // Track active quick filters
-// Track active quick filters
 let activeQuickFilters = new Set();
 
 function toggleQuickFilter(type, buttonElement) {
@@ -9888,6 +9317,15 @@ function toggleQuickFilter(type, buttonElement) {
             renderNotes();
             document.getElementById('notes-title').textContent = 'All Notes';
             document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+            
+            // Re-highlight "All Notes" button
+            document.querySelectorAll('.tag-filter').forEach(btn => {
+                if (btn.dataset.tag === '') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
             return;
         }
     } else {
@@ -10392,59 +9830,6 @@ function clearAllFilters() {
     document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
 }
 
-// TEMPORARY: Add this function to debug the cache issue
-async function forceResetUserCache() {
-    if (!currentPubkey) {
-        console.log('No user connected');
-        return;
-    }
-    
-    try {
-        console.log(`Force resetting cache for user: ${currentPubkey.substring(0, 8)}...`);
-        
-        // Close database
-        if (db && db.isOpen()) {
-            await db.close();
-        }
-        
-        // Delete the specific IndexedDB for this user
-        const dbName = `nostr-notes-${currentPubkey}`;
-        await new Promise((resolve) => {
-            const deleteReq = indexedDB.deleteDatabase(dbName);
-            deleteReq.onsuccess = () => {
-                console.log(`Deleted IndexedDB: ${dbName}`);
-                resolve();
-            };
-            deleteReq.onerror = () => {
-                console.log(`Failed to delete IndexedDB: ${dbName}`);
-                resolve();
-            };
-            deleteReq.onblocked = () => {
-                console.log(`IndexedDB deletion blocked: ${dbName}`);
-                setTimeout(resolve, 2000);
-            };
-        });
-        
-        // Clear localStorage entries for this user
-        localStorage.removeItem(`nostr-archived-notes-${currentPubkey}`);
-        localStorage.removeItem(`nostr-named-archives-${currentPubkey}`);
-        localStorage.removeItem(`nostr-cached-notes-${currentPubkey}`);
-        localStorage.removeItem(`nostr-cache-updated-at-${currentPubkey}`);
-        localStorage.removeItem(`nostr-last-pubkey-${currentPubkey}`);
-        
-        // Reset database connection
-        db = null;
-        
-        console.log('Cache reset complete - reconnect to fetch fresh data');
-        showToast('User cache cleared - please reconnect', 'success');
-        
-        // Disconnect user to force fresh connection
-        disconnect();
-        
-    } catch (error) {
-        console.error('Error resetting cache:', error);
-    }
-}
 
 async function performSearchWithFilters(query, filters) {
     const results = await performAdvancedSearch(query, filters);
@@ -10461,11 +9846,27 @@ async function performSearchWithFilters(query, filters) {
     }
     
     // SECOND: Apply hashtag/tag filtering if any tags are selected
+    // Split into note-type and hashtag groups, AND them together
     if (selectedTags.size > 0) {
-        const tags = Array.from(selectedTags);
-        finalResults = finalResults.filter(note =>
-            tags.some(tag => noteMatchesTag(note, tag))
-        );
+        const noteTypeTags = [];
+        const hashtagTags = [];
+        selectedTags.forEach(tag => {
+            if (tag === '__original' || tag === '__replies' || tag === '__reposts' || tag === '__quotes' || tag === '__archived') {
+                noteTypeTags.push(tag);
+            } else {
+                hashtagTags.push(tag);
+            }
+        });
+        if (noteTypeTags.length > 0) {
+            finalResults = finalResults.filter(note =>
+                noteTypeTags.some(tag => noteMatchesTag(note, tag))
+            );
+        }
+        if (hashtagTags.length > 0) {
+            finalResults = finalResults.filter(note =>
+                hashtagTags.some(tag => noteMatchesTag(note, tag))
+            );
+        }
     }
     
     // CRITICAL FIX: If we're in engagement sort mode, filter but preserve sort order
@@ -11009,15 +10410,6 @@ function sortNotesByEngagement(notes, sortMode) {
     }
 }
 
-function fetchEngagementForVisibleNotes() {
-    if (engagementFetchQueue.size === 0) return;
-    
-    const noteIds = Array.from(engagementFetchQueue);
-    engagementFetchQueue.clear();
-    
-    fetchEngagementStats(noteIds);
-}
-
 
 // Make it globally available
 window.copyNeventToClipboard = copyNeventToClipboard;
@@ -11036,10 +10428,6 @@ window.handleSecondaryFilter = handleSecondaryFilter;
 window.toggleReactionsPopup = toggleReactionsPopup;
 window.getEngagementStats = getEngagementStats;
 window.fetchEngagementStats = fetchEngagementStats;
-
-// Add global event listeners for hashtag selection
-document.addEventListener('mouseup', endHashtagSelection);
-document.addEventListener('mouseleave', endHashtagSelection);
 
 // Make functions globally available for onclick handlers
 // Core functionality
