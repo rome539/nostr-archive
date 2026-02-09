@@ -8,9 +8,23 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>Nostr Notes Archive</title>
     
-    <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233498db'/><path d='M 10 6 L 20 6 L 24 10 L 24 26 L 10 26 Z' fill='white' stroke='white' stroke-width='0.5'/><path d='M 20 6 L 20 10 L 24 10' fill='%23e8f4f8' stroke='white' stroke-width='0.5'/><path d='M 18 12 L 14 18 L 16.5 18 L 15 22 L 19 16 L 16.5 16 Z' fill='%23f39c12' stroke='%23e67e22' stroke-width='0.5' stroke-linejoin='round'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233498db'/><path d='M 10 6 L 20 6 L 24 10 L 24 26 L 10 26 Z' fill='white' stroke='white' stroke-width='0.5'/><path d='M 20 6 L 20 10 L 24 10' fill='%23e8f4f8' stroke='white' stroke-width='0.5'/><path d='M 18 12 L 14 18 L 16.5 18 L 15 22 L 19 16 L 16.5 16 Z' fill='%23f39c12' stroke='%23e67e22' stroke-width='0.5' stroke-linejoin='round'/></svg>">
+    <!-- Open Graph / Link Preview (update URL to your GitHub Pages) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Nostr Notes Archive">
+    <meta property="og:description" content="View, search & organize your Nostr notes. Filter by hashtags, archive favorites, track engagement — all in a single HTML file.">
+    <meta property="og:image" content="https://nostrarchive.app/og-preview.png">
+    <meta property="og:url" content="https://nostrarchive.app/">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card (also used by many Nostr clients) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nostr Notes Archive">
+    <meta name="twitter:description" content="View, search & organize your Nostr notes. Filter, archive, export — single HTML file, no server needed.">
+    <meta name="twitter:image" content="https://nostrarchive.app/og-preview.png">
+    
+    <!-- General meta -->
+    <meta name="description" content="View, search & organize your Nostr notes. Filter by hashtags, archive favorites, track engagement stats. Free, open source, single HTML file.">
     
    <script type="module">
   import * as NostrTools from 'https://cdn.jsdelivr.net/npm/nostr-tools@2.7.1/+esm';
@@ -6749,7 +6763,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 2.4 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.0 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -7077,31 +7091,21 @@ function trackLoadTime() {
 
 function setActiveTagButtons() {
   const buttons = document.querySelectorAll('#tag-filters .tag-filter');
+  const hasManualDates = document.getElementById('date-from').value || document.getElementById('date-to').value;
+  const hasActiveFilters = activeQuickFilters.size > 0 || hasManualDates || (currentArchive !== 'default' && currentTag.startsWith('__archive_'));
+  
   buttons.forEach(btn => {
     const t = btn.dataset.tag || '';
     
     // Clear existing active state
     btn.classList.remove('active');
     
-    // "All Notes" is active only when nothing is selected AND we're not in archive view
-    if (t === '' && selectedTags.size === 0 && !currentTag.startsWith('__archive_')) {
+    // "All Notes" is active only when nothing is selected AND no quick filters/dates AND not in archive view
+    if (t === '' && selectedTags.size === 0 && !hasActiveFilters && !currentTag.startsWith('__archive_')) {
       btn.classList.add('active');
     } 
-    // Hashtag buttons are active when they're in selectedTags (regardless of archive view)
+    // Hashtag/type buttons are active when they're in selectedTags
     else if (t !== '' && selectedTags.has(t)) {
-      btn.classList.add('active');
-    }
-    // Special buttons (Original Notes, Replies) are active when selected
-    else if (t === '__original' && selectedTags.has('__original')) {
-      btn.classList.add('active');
-    }
-    else if (t === '__replies' && selectedTags.has('__replies')) {
-      btn.classList.add('active');
-    }
-    else if (t === '__reposts' && selectedTags.has('__reposts')) {
-      btn.classList.add('active');
-    }
-    else if (t === '__quotes' && selectedTags.has('__quotes')) {
       btn.classList.add('active');
     }
   });
@@ -7186,11 +7190,14 @@ function toggleTag(tag) {
                 currentTag = '__archive_' + currentArchive;
                 applyFilters();
                 renderNotes();
+            } else if (searchQuery || document.getElementById('search-input').value.trim()) {
+                // Search is active - preserve it and reapply
+                searchQuery = document.getElementById('search-input').value.trim();
+                applyAllFilters();
             } else {
                 // Nothing active, go to "All Notes"
                 currentTag = '';
                 currentArchive = 'default';
-                searchQuery = '';
                 
                 document.querySelectorAll('.tag-filter').forEach(btn => {
                     btn.classList.remove('active');
@@ -9304,7 +9311,9 @@ function toggleQuickFilter(type, buttonElement) {
     }
     
     // Check what's still active
-    if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !searchQuery) {
+    const hasSearchText = searchQuery || document.getElementById('search-input').value.trim();
+    const hasManualDatesActive = document.getElementById('date-from').value || document.getElementById('date-to').value;
+    if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !hasSearchText && !hasManualDatesActive) {
         if (currentSortMode) {
             // Only sort mode is active - apply it to ALL notes
             applyAllFilters();
@@ -9319,13 +9328,7 @@ function toggleQuickFilter(type, buttonElement) {
             document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
             
             // Re-highlight "All Notes" button
-            document.querySelectorAll('.tag-filter').forEach(btn => {
-                if (btn.dataset.tag === '') {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+            setActiveTagButtons();
             return;
         }
     } else {
@@ -9364,16 +9367,8 @@ function toggleQuickFilter(type, buttonElement) {
     
     console.log('activeQuickFilters after toggle:', Array.from(activeQuickFilters));
     
-    // Update "All Notes" button state
-    document.querySelectorAll('.tag-filter').forEach(btn => {
-        if (btn.dataset.tag === '') {
-            if (selectedTags.size === 0 && activeQuickFilters.size === 0 && !currentSortMode) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
-    });
+    // Update tag button states (handles All Notes highlighting correctly)
+    setActiveTagButtons();
     
     // Apply combined filters with debouncing
     clearTimeout(filterDebounceTimeout);
