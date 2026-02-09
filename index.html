@@ -26,6 +26,11 @@
     <!-- General meta -->
     <meta name="description" content="View, search & organize your Nostr notes. Filter by hashtags, archive favorites, track engagement stats. Free, open source, single HTML file.">
     
+    <!-- Google Fonts - loaded dynamically based on selection -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link id="google-font-link" rel="stylesheet" href="">
+    
    <script type="module">
   import * as NostrTools from 'https://cdn.jsdelivr.net/npm/nostr-tools@2.7.1/+esm';
   window.NostrTools = NostrTools;
@@ -45,6 +50,29 @@
     --text-color: #333;
     --text-muted: #666;
     --border-color: #ddd;
+    --app-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Font families */
+body[data-font="system"], body:not([data-font]) {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+body[data-font="nunito"] {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+body[data-font="crimson-pro"] {
+    font-family: 'Crimson Pro', Georgia, serif !important;
+}
+body[data-font="merriweather"] {
+    font-family: 'Merriweather', Georgia, serif !important;
+}
+body[data-font="jetbrains-mono"] {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+}
+
+/* Force font inheritance on all elements except explicit monospace */
+body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npub-copy-btn):not(#pubkey-input) {
+    font-family: inherit !important;
 }
 
 /* Nostr Purple – stronger + primary=purple */
@@ -163,7 +191,6 @@
         }
 
      body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
@@ -3071,6 +3098,14 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                 <option value="dark-nostr">Dark Nostr</option>
                 <option value="bitcoin-gold">Bitcoin Gold</option>
                 <option value="neon-green">Neon Green</option>
+            </select>
+            <label style="font-size: 11px; color: var(--text-muted); margin: 10px 0 4px 0; display: block;">Font</label>
+            <select id="font-selector" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color);">
+                <option value="system" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">System Default</option>
+                <option value="nunito" style="font-family: 'Nunito', sans-serif;">Nunito</option>
+                <option value="crimson-pro" style="font-family: 'Crimson Pro', serif;">Crimson Pro</option>
+                <option value="merriweather" style="font-family: 'Merriweather', serif;">Merriweather</option>
+                <option value="jetbrains-mono" style="font-family: 'JetBrains Mono', monospace;">JetBrains Mono</option>
             </select>
     </div>
 </div>
@@ -10464,15 +10499,14 @@ window.startHashtagSelection = startHashtagSelection;
 window.continueHashtagSelection = continueHashtagSelection;
 window.endHashtagSelection = endHashtagSelection;
 
-// Theme functionality - immediate execution when DOM is ready
+// Theme & Font functionality - immediate execution when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     const themeSelector = document.getElementById('theme-selector');
-    if (!themeSelector) return; // Exit if element doesn't exist yet
+    const fontSelector = document.getElementById('font-selector');
+    if (!themeSelector) return;
     
     // Load saved theme on startup
     const savedTheme = localStorage.getItem('nostr-theme') || 'default';
-    
-    // IMPORTANT: Always set the data-theme attribute, even for default
     document.body.setAttribute('data-theme', savedTheme);
     themeSelector.value = savedTheme;
     
@@ -10480,6 +10514,83 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.setAttribute('data-theme', e.target.value);
         localStorage.setItem('nostr-theme', e.target.value);
     });
+
+    // Font URL map
+    const fontUrls = {
+        'system': '',
+        'nunito': 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap',
+        'crimson-pro': 'https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap',
+        'merriweather': 'https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap',
+        'jetbrains-mono': 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'
+    };
+
+    function loadFont(fontKey) {
+        const link = document.getElementById('google-font-link');
+        if (link) link.href = fontUrls[fontKey] || '';
+        applyFontScale(fontKey);
+    }
+
+    // Inject a <style> that scales the root font-size to compensate for x-height differences.
+    // This makes every em/rem/%-based size scale up, and for the remaining px-based sizes
+    // we override the key ones directly.
+    function applyFontScale(fontKey) {
+        let scaleStyle = document.getElementById('font-scale-style');
+        if (!scaleStyle) {
+            scaleStyle = document.createElement('style');
+            scaleStyle.id = 'font-scale-style';
+            document.head.appendChild(scaleStyle);
+        }
+        
+        // Scale factors based on x-height comparison to system font
+        const scales = {
+            'system': null,
+            'nunito': null,
+            'crimson-pro': 1.08,    // Crimson Pro x-height is ~17% smaller, bump sizes
+            'merriweather': null,    // Merriweather is close to system
+            'jetbrains-mono': null   // JetBrains Mono is close to system
+        };
+        
+        const scale = scales[fontKey];
+        if (!scale) {
+            scaleStyle.textContent = '';
+            return;
+        }
+        
+        // Scale the html font-size so all relative units scale up.
+        // Then override common hardcoded px sizes on key elements.
+        scaleStyle.textContent = `
+            html[style] { font-size: ${scale * 100}% !important; }
+            body[data-font="${fontKey}"] { font-size: ${Math.round(15 * scale)}px !important; }
+            body[data-font="${fontKey}"] .note-content { font-size: ${Math.round(14 * scale)}px !important; }
+            body[data-font="${fontKey}"] .note-header { font-size: ${Math.round(12 * scale)}px !important; }
+            body[data-font="${fontKey}"] .tag-filter { font-size: ${Math.round(13 * scale)}px !important; }
+            body[data-font="${fontKey}"] .hashtag { font-size: ${Math.round(12 * scale)}px !important; }
+            body[data-font="${fontKey}"] .btn { font-size: ${Math.round(14 * scale)}px !important; }
+            body[data-font="${fontKey}"] .btn-small { font-size: ${Math.round(13 * scale)}px !important; }
+            body[data-font="${fontKey}"] .quick-filter-btn { font-size: ${Math.round(13 * scale)}px !important; }
+            body[data-font="${fontKey}"] .toast { font-size: ${Math.round(15 * scale)}px !important; }
+            body[data-font="${fontKey}"] .reactions-box { font-size: ${Math.round(12 * scale)}px !important; }
+            body[data-font="${fontKey}"] .modal-content { font-size: ${Math.round(14 * scale)}px !important; }
+            body[data-font="${fontKey}"] select { font-size: ${Math.round(13 * scale)}px !important; }
+            body[data-font="${fontKey}"] .sidebar h4 { font-size: ${Math.round(14 * scale)}px !important; }
+            body[data-font="${fontKey}"] .note-card .note-meta { font-size: ${Math.round(12 * scale)}px !important; }
+            body[data-font="${fontKey}"] .archive-item { font-size: ${Math.round(14 * scale)}px !important; }
+        `;
+    }
+
+    // Load saved font on startup
+    const savedFont = localStorage.getItem('nostr-font') || 'system';
+    document.body.setAttribute('data-font', savedFont);
+    loadFont(savedFont);
+    if (fontSelector) {
+        fontSelector.value = savedFont;
+        
+        fontSelector.addEventListener('change', function(e) {
+            document.body.setAttribute('data-font', e.target.value);
+            localStorage.setItem('nostr-font', e.target.value);
+            loadFont(e.target.value);
+        });
+    }
 });
 
 // One-time cleanup of old global archives - remove after running once
