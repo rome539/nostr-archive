@@ -3000,6 +3000,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 <option value="week">This Week</option>
 <option value="6months">6 Months</option>
 <option value="music">Music</option>
+<option value="gifs">GIFs Only</option>
 <option value="most-liked">Most Liked</option>
 <option value="most-zapped">Most Zapped</option>
 <option value="most-reposted">Most Reposted</option>
@@ -5603,10 +5604,19 @@ applyDetailedFilters(notes, filters) {
             return false;
         }
         
-        // Image filter
+        // Image filter (excludes GIFs - use GIFs Only filter for those)
         if (filters.hasImages) {
-            const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/i;
+            const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|webp))/i;
             if (!imageRegex.test(note.content)) {
+                return false;
+            }
+        }
+        
+        // GIFs-only filter
+        if (filters.hasGifs) {
+            const urls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+            const hasGif = urls.some(url => /\.gif(\?[^\s"<>]*)?$/i.test(url));
+            if (!hasGif) {
                 return false;
             }
         }
@@ -5626,8 +5636,8 @@ applyDetailedFilters(notes, filters) {
             
             if (allUrls.length === 0) return false; // No links at all
             
-            // If we're ALSO filtering for images or videos, allow those
-            if (filters.hasImages || filters.hasYouTube) {
+            // If we're ALSO filtering for images, videos, or gifs, allow those
+            if (filters.hasImages || filters.hasYouTube || filters.hasGifs) {
                 // Already has links, and we want images/videos - this is fine
             } else {
                 // Links-only filter: exclude notes that ONLY have images/videos
@@ -6798,7 +6808,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.0 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.1 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -8197,11 +8207,27 @@ function closeModal(event) {
             return 'NostrTools not available';
         }
         
+        let targetId = note.id;
+        let targetAuthor = note.pubkey;
+        
+        // For kind 6 reposts, use the original note's ID from the e tag
+        if (note.kind === 6 && note.tags) {
+            const eTag = note.tags.find(tag => tag[0] === 'e');
+            if (eTag && eTag[1]) {
+                targetId = eTag[1];
+                // Use original author from p tag if available
+                const pTag = note.tags.find(tag => tag[0] === 'p');
+                if (pTag && pTag[1]) {
+                    targetAuthor = pTag[1];
+                }
+            }
+        }
+        
         // Create nevent data
         const neventData = {
-            id: note.id,
+            id: targetId,
             relays: RELAYS.slice(0, 2), // Include first 2 relays
-            author: note.pubkey
+            author: targetAuthor
         };
         
         return window.NostrTools.nip19.neventEncode(neventData);
@@ -9157,6 +9183,7 @@ async function performAdvancedSearch(query, filters = {}) {
             hasYouTube: filters.hasYouTube,
             hasLinks: filters.hasLinks,
             hasMusic: filters.hasMusic,
+            hasGifs: filters.hasGifs,
             minLength: filters.minLength,
             maxLength: filters.maxLength
         };
@@ -9228,10 +9255,18 @@ function performInMemorySearch(query, filters) {
         results = results.filter(note => note.content.length <= filters.maxLength);
     }
     
-    // Apply image filter
+    // Apply image filter (excludes GIFs - use GIFs Only filter for those)
     if (filters.hasImages) {
-        const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/i;
+        const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|webp))/i;
         results = results.filter(note => imageRegex.test(note.content));
+    }
+    
+    // Apply GIFs-only filter
+    if (filters.hasGifs) {
+        results = results.filter(note => {
+            const urls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+            return urls.some(url => /\.gif(\?[^\s"<>]*)?$/i.test(url));
+        });
     }
     
     // Apply YouTube filter
@@ -9248,9 +9283,9 @@ function performInMemorySearch(query, filters) {
             
             if (allUrls.length === 0) return false; // No links at all
             
-            // If we're ALSO filtering for images or videos, allow those
-            if (filters.hasImages || filters.hasYouTube) {
-                return true; // Already has links, and we want images/videos
+            // If we're ALSO filtering for images, videos, or gifs, allow those
+            if (filters.hasImages || filters.hasYouTube || filters.hasGifs) {
+                return true; // Already has links, and we want images/videos/gifs
             }
             
             // If links-only filter, exclude notes that ONLY have images/videos
@@ -9483,6 +9518,10 @@ async function applyAllFilters() {
             case 'music':
                 filters.hasMusic = true;
                 break;
+
+            case 'gifs':
+                filters.hasGifs = true;
+                break;
         }
     });
     
@@ -9619,6 +9658,9 @@ console.log(`Fetching engagement for ${visibleNoteIds.length} notes...`);
                         break;
                     case 'music':
                         filters.hasMusic = true;
+                        break;
+                    case 'gifs':
+                        filters.hasGifs = true;
                         break;
                 }
             });
@@ -9926,6 +9968,7 @@ if (currentSortMode && currentSortMode.startsWith('most-')) {
     if (activeQuickFilters.has('long')) activeFilters.push('Long Notes');
     if (activeQuickFilters.has('links')) activeFilters.push('Has Links');
     if (activeQuickFilters.has('music')) activeFilters.push('Has Music');
+    if (activeQuickFilters.has('gifs')) activeFilters.push('GIFs Only');
     
     // Add sorting mode if active
     if (currentSortMode === 'most-liked') activeFilters.push('Most Reactions');
