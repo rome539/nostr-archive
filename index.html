@@ -169,6 +169,14 @@ body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npu
     border-color: #f7931a !important;
 }
 
+/* Bulk control buttons have dark backgrounds - need white text */
+[data-theme="bitcoin-gold"] #select-all-visible,
+[data-theme="bitcoin-gold"] #deselect-all,
+[data-theme="bitcoin-gold"] #bulk-add-to-archive,
+[data-theme="bitcoin-gold"] #bulk-remove-from-archive {
+    color: #ffffff !important;
+}
+
 /* Tag filters: dark text when active or special */
 [data-theme="bitcoin-gold"] .tag-filter.active,
 [data-theme="bitcoin-gold"] .tag-filter[data-tag="__original"],
@@ -179,7 +187,15 @@ body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npu
 }
 
 /* Active archive item: dark text on orange */
+.archive-item.active .archive-count {
+    color: white;
+}
+
 [data-theme="bitcoin-gold"] .archive-item.active {
+    color: #1a0a00 !important;
+}
+
+[data-theme="bitcoin-gold"] .archive-item.active .archive-count {
     color: #1a0a00 !important;
 }
 
@@ -631,24 +647,12 @@ input:-ms-input-placeholder {
     }
 }
 
-/* Theme-specific active states */
-[data-theme="dark-nostr"] .quick-filter-btn.active {
-    background: var(--primary-color) !important;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.6) !important;
-    border: 2px solid var(--primary-color) !important;
-    font-weight: 600 !important;
-}
-
-[data-theme="bitcoin-gold"] .quick-filter-btn.active {
-    background: var(--primary-color) !important;
-    box-shadow: 0 4px 12px rgba(247, 147, 26, 0.6) !important;
-    border: 2px solid var(--primary-color) !important;
-    font-weight: 600 !important;
-}
-
+/* Theme-specific active states - use CSS vars for box-shadow color */
+[data-theme="dark-nostr"] .quick-filter-btn.active,
+[data-theme="bitcoin-gold"] .quick-filter-btn.active,
 [data-theme="nostr-purple"] .quick-filter-btn.active {
     background: var(--primary-color) !important;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.6) !important;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 60%, transparent) !important;
     border: 2px solid var(--primary-color) !important;
     font-weight: 600 !important;
 }
@@ -663,16 +667,8 @@ input:-ms-input-placeholder {
 }
 
 /* Theme-specific focus styles for quick filter buttons - no glow */
-[data-theme="dark-nostr"] .quick-filter-btn:focus {
-    border: 2px solid var(--primary-color) !important;
-    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
-}
-
-[data-theme="bitcoin-gold"] .quick-filter-btn:focus {
-    border: 2px solid var(--primary-color) !important;
-    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
-}
-
+[data-theme="dark-nostr"] .quick-filter-btn:focus,
+[data-theme="bitcoin-gold"] .quick-filter-btn:focus,
 [data-theme="nostr-purple"] .quick-filter-btn:focus {
     border: 2px solid var(--primary-color) !important;
     background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
@@ -1005,8 +1001,8 @@ input:-ms-input-placeholder {
 }
 
 .archive-item.active {
-    background: var(--success-color);
-    border-color: var(--success-color);
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     color: white;
 }
 
@@ -1268,37 +1264,19 @@ kbd {
   color: white;
 }
 
+/* Copy button hover */
 .copy-btn:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
 }
 
-/* Dark themes */
-[data-theme="dark-nostr"] .copy-btn,
-[data-theme="bitcoin-gold"] .copy-btn {
-  background: var(--primary-color);
-  color: white;
-  border: 1px solid var(--primary-color);
-}
-
+/* Dark theme copy buttons just need box-shadow */
 [data-theme="dark-nostr"] .copy-btn:hover,
 [data-theme="bitcoin-gold"] .copy-btn:hover {
-  background: var(--primary-hover);
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* Nostr Purple theme */
-[data-theme="nostr-purple"] .copy-btn {
-  background: var(--primary-color);
-  color: white;
-  border: 1px solid var(--primary-color);
-}
-
-[data-theme="nostr-purple"] .copy-btn:hover {
-  background: var(--primary-hover);
-}
-
-/* Neon Green theme */
+/* Neon Green theme copy button - needs full override */
 [data-theme="neon-green"] .copy-btn {
   background: var(--accent-weak-2) !important;
   border: 1px solid var(--accent-border) !important;
@@ -1411,54 +1389,15 @@ kbd {
     margin-left: 3px;
 }
 
-[data-theme="dark-nostr"] .modal {
+/* Modal theming - all themes use CSS variables, only dark themes need backdrop override */
+[data-theme="dark-nostr"] .modal,
+[data-theme="neon-green"] .modal {
     background: rgba(0, 0, 0, 0.8) !important;
 }
 
-[data-theme="dark-nostr"] .modal-content {
-    background: var(--card-background) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-}
-
-[data-theme="dark-nostr"] .modal-close {
-    background: var(--primary-color) !important;
-    color: white !important;
-}
-
-[data-theme="dark-nostr"] .modal-close:hover {
-    background: var(--primary-hover) !important;
-}
-
-[data-theme="bitcoin-gold"] .modal-content {
-    background: var(--card-background) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-}
-
-[data-theme="bitcoin-gold"] .modal-close {
-    background: var(--primary-color) !important;
-    color: white !important;
-}
-
-[data-theme="bitcoin-gold"] .modal-close:hover {
-    background: var(--primary-hover) !important;
-}
-
-[data-theme="nostr-purple"] .modal-content {
-    background: var(--card-background) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-}
-
-[data-theme="nostr-purple"] .modal-close {
-    background: var(--primary-color) !important;
-    color: white !important;
-}
-
-[data-theme="nostr-purple"] .modal-close:hover {
-    background: var(--primary-hover) !important;
-}
+/* Modal content and close buttons inherit theme variables automatically.
+   The base .modal-content and .modal-close rules already use var(--card-background),
+   var(--text-color), var(--primary-color) etc. No per-theme overrides needed. */
 
 /* Search input theming for all themes */
 #search-input {
@@ -1594,33 +1533,9 @@ kbd {
     text-shadow: 0 0 4px var(--accent);
 }
 
-/* Theme-specific npub button styles */
-[data-theme="nostr-purple"] .npub-copy-btn {
-    background: var(--purple-color);
-    color: white;
-    border: 1px solid var(--purple-color);
-}
-
-[data-theme="nostr-purple"] .npub-copy-btn:hover {
-    background: color-mix(in srgb, var(--purple-color) 80%, #fff);
-}
-
-[data-theme="dark-nostr"] .npub-copy-btn {
-    background: var(--primary-color);
-    color: white;
-}
-
-[data-theme="dark-nostr"] .npub-copy-btn:hover {
-    background: var(--primary-hover);
-}
-
+/* Theme-specific npub button - only bitcoin-gold needs text color fix */
 [data-theme="bitcoin-gold"] .npub-copy-btn {
-    background: var(--primary-color);
     color: var(--card-background);
-}
-
-[data-theme="bitcoin-gold"] .npub-copy-btn:hover {
-    background: var(--primary-hover);
 }
 
 [data-theme="neon-green"] .npub-copy-btn {
@@ -1643,19 +1558,10 @@ kbd {
 }
 
 
-/* Dark themes search input fixes */
+/* Dark themes search input - only override needed for color-scheme */
 [data-theme="dark-nostr"] #search-input,
-[data-theme="bitcoin-gold"] #search-input,
-[data-theme="nostr-purple"] #search-input {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-}
-
-[data-theme="dark-nostr"] #search-input::placeholder,
-[data-theme="bitcoin-gold"] #search-input::placeholder,
-[data-theme="nostr-purple"] #search-input::placeholder {
-    color: var(--text-muted) !important;
+[data-theme="bitcoin-gold"] #search-input {
+    color-scheme: dark;
 }
 
 /* Date input theming */
@@ -1668,24 +1574,13 @@ input[type="date"] {
     font-size: 12px;
 }
 
-[data-theme="dark-nostr"] input[type="date"] {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
-    color-scheme: dark;
-}
-
+/* Dark theme date inputs need color-scheme: dark */
+[data-theme="dark-nostr"] input[type="date"],
 [data-theme="bitcoin-gold"] input[type="date"] {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
     color-scheme: dark;
 }
 
 [data-theme="nostr-purple"] input[type="date"] {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border-color) !important;
     color-scheme: light;
 }
 
@@ -2297,36 +2192,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     border-left: 4px solid var(--secondary-color) !important;
 }
 
-/* Update theme-specific repost colors to use secondary */
-[data-theme="dark-nostr"] .note-card.repost-card {
-    border-left: 4px solid var(--secondary-color) !important;
-}
-
-[data-theme="bitcoin-gold"] .note-card.repost-card {
-    border-left: 4px solid var(--secondary-color) !important;
-}
-
-[data-theme="nostr-purple"] .note-card.repost-card {
-    border-left: 4px solid var(--secondary-color) !important;
-}
-
-[data-theme="neon-green"] .note-card.repost-card {
-    border-left: 4px solid var(--secondary-color) !important;
-}
-
-/* Theme-specific overrides (these will inherit the secondary color from each theme) */
-[data-theme="default"] .note-card.repost-card,
-[data-theme="default"] .note-card.quote-card,
-[data-theme="dark-nostr"] .note-card.repost-card,
-[data-theme="dark-nostr"] .note-card.quote-card,
-[data-theme="bitcoin-gold"] .note-card.repost-card,
-[data-theme="bitcoin-gold"] .note-card.quote-card,
-[data-theme="nostr-purple"] .note-card.repost-card,
-[data-theme="nostr-purple"] .note-card.quote-card,
-[data-theme="neon-green"] .note-card.repost-card,
-[data-theme="neon-green"] .note-card.quote-card {
-    border-left: 4px solid var(--secondary-color) !important;
-}
+/* Repost and quote cards use secondary color - base rule handles all themes via CSS vars */
 
 /* ==================== MOBILE RESPONSIVE STYLES ==================== */
 
@@ -2988,7 +2854,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                 <div class="form-group">
                <label>Your Public Key (npub):</label>
 <input type="text" id="pubkey-input" placeholder="Enter your npub..." style="font-family:monospace;">
-<small style="color: var(--text-muted); font-size:12px;">
+<small style="color: var(--text-muted); font-size:12px;"></small>
                 </div>
                 
                  <button id="connect-btn" class="btn"><span class="emoji">🔍</span> Load My Notes</button>
@@ -3012,7 +2878,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     <div class="header-content">
         <div class="header-left">
             <h2><span class="emoji">📝</span> My Nostr Archive</h2>
-            <small id="pubkey-display" class="npub-display">
+            <small id="pubkey-display" class="npub-display"></small>
         </div>
         <div class="header-actions">
             <button id="deep-scan-btn" class="btn-action btn-action-primary">
@@ -3111,7 +2977,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
             <button id="export-json" class="btn" style="font-size: 14px; padding: 8px;">Export JSON</button>
            <button id="export-md" class="btn" style="font-size: 14px; padding: 8px;">Export CSV</button>
         <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
-        <input type="file" id="import-file" accept=".json,.md,.txt" style="display: none;">
+        <input type="file" id="import-file" accept=".json" style="display: none;">
         <div class="import-archive-block">
   <button id="import-btn" class="btn" style="font-size: 14px; padding: 8px; background: #27ae60;">
     <span class="emoji"></span> Import Archive
@@ -3307,7 +3173,7 @@ function normalizeNpub(input) {
     'wss://relay.damus.io',         
     'wss://nostr.wine',             
     'wss://nos.lol',                
-    'wss://nostr.land/',
+    'wss://nostr.land',
     'wss://fiatjaf.com',
 ];
 
@@ -3731,17 +3597,37 @@ async function saveArchivedNotes() {
     container.innerHTML = Object.keys(namedArchives).map(name => {
         const count = namedArchives[name].size;
         const isActive = currentArchive === name;
+        const safeName = escapeHtml(name);
         
         return `
-            <div class="archive-item ${isActive ? 'active' : ''}" onclick="viewArchive('${name}')">
-                <div class="archive-name">${escapeHtml(name)}</div>
+            <div class="archive-item ${isActive ? 'active' : ''}" data-archive-name="${safeName}">
+                <div class="archive-name">${safeName}</div>
                 <div class="archive-count">(${count})</div>
-                <div class="archive-actions" onclick="event.stopPropagation();">
-                    <button class="btn btn-tiny btn-delete" onclick="deleteArchive('${name}')">×</button>
+                <div class="archive-actions" data-archive-action="stop">
+                    <button class="btn btn-tiny btn-delete" data-archive-delete="${safeName}" aria-label="Delete archive ${safeName}">×</button>
                 </div>
             </div>
         `;
     }).join('');
+    
+    // Event delegation for archive items
+    container.onclick = function(e) {
+        const deleteBtn = e.target.closest('[data-archive-delete]');
+        if (deleteBtn) {
+            e.stopPropagation();
+            deleteArchive(deleteBtn.getAttribute('data-archive-delete'));
+            return;
+        }
+        const actionStop = e.target.closest('[data-archive-action="stop"]');
+        if (actionStop) {
+            e.stopPropagation();
+            return;
+        }
+        const archiveItem = e.target.closest('[data-archive-name]');
+        if (archiveItem) {
+            viewArchive(archiveItem.getAttribute('data-archive-name'));
+        }
+    };
 }
 
         function updateTargetArchiveDropdown() {
@@ -3779,26 +3665,18 @@ async function saveArchivedNotes() {
     
     saveArchivedNotes();
 
-    // Lock the title to prevent updates
-const titleEl = document.getElementById('notes-title');
-const countEl = document.getElementById('notes-count');
-const originalTitle = titleEl.textContent;
-const originalCount = countEl.textContent;
+    // Save current title/count before UI updates (which would otherwise reset them)
+    const titleEl = document.getElementById('notes-title');
+    const countEl = document.getElementById('notes-count');
+    const savedTitle = titleEl.textContent;
+    const savedCount = countEl.textContent;
 
-// Temporarily freeze the title
-Object.defineProperty(titleEl, 'textContent', {
-    set: function() { /* ignore */ },
-    get: function() { return originalTitle; },
-    configurable: true
-});
+    updateArchiveList();
+    updateTagFilters();
 
-updateArchiveList();
-updateTagFilters();
-
-// Unfreeze and restore
-delete titleEl.textContent;
-titleEl.textContent = originalTitle;
-countEl.textContent = originalCount;
+    // Restore the title/count that was overwritten by updateTagFilters
+    titleEl.textContent = savedTitle;
+    countEl.textContent = savedCount;
 
     // Update just the button state for this specific note
     const noteCard = document.querySelector(`[data-note-id="${noteId}"]`);
@@ -3843,9 +3721,10 @@ countEl.textContent = originalCount;
         return;
     }
     
-    // Create custom modal HTML
+    // Create custom modal HTML using data attributes instead of inline onclick
+    const safeNoteId = escapeHtml(noteId);
     const optionsList = archiveNames.map((name, index) => 
-        `<div class="archive-option" data-index="${index}" onclick="selectArchiveOption(${index}, '${noteId}')">
+        `<div class="archive-option" data-archive-index="${index}" data-note-id="${safeNoteId}">
             ${index + 1}. ${escapeHtml(name)}
         </div>`
     ).join('');
@@ -3853,9 +3732,9 @@ countEl.textContent = originalCount;
     const modalHtml = `
         <div class="modal" onclick="closeArchiveModal(event)">
             <div class="modal-content" onclick="event.stopPropagation()">
-                <button class="modal-close" onclick="closeArchiveModal()">×</button>
+                <button class="modal-close" onclick="closeArchiveModal()" aria-label="Close">×</button>
                 <h3>Select archive for this note:</h3>
-                <div class="archive-options">
+                <div class="archive-options" id="archive-selection-options">
                     ${optionsList}
                 </div>
                 <div style="margin-top: 20px; text-align: center;">
@@ -3866,6 +3745,16 @@ countEl.textContent = originalCount;
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Event delegation for archive option clicks
+    document.getElementById('archive-selection-options').onclick = function(e) {
+        const option = e.target.closest('[data-archive-index]');
+        if (option) {
+            const index = parseInt(option.getAttribute('data-archive-index'), 10);
+            const nId = option.getAttribute('data-note-id');
+            selectArchiveOption(index, nId);
+        }
+    };
 }
 
 function selectArchiveOption(index, noteId) {
@@ -6806,6 +6695,9 @@ async function showStorageInfo() {
 <button class="btn btn-small" onclick="optimizeStorage()" style="background: var(--success-color);">
     Optimize Storage
 </button>
+                    </div>
+                </div>
+            </div>
         `;
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
@@ -6862,7 +6754,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.1.1 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.1.2 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -7766,9 +7658,10 @@ function showFilteringIndicator() {
                 let archiveButtonHtml = '';
                 if (isInSpecificArchive && isNoteInCurrentArchive) {
                     // We're viewing a specific archive and this note is in it - show "Remove from [archive]"
+                    // Use data attributes to avoid XSS from archive names
                     archiveButtonHtml = `
                         <button class="btn btn-small" style="background: #e74c3c; color: white;" 
-                                onclick="removeFromSpecificArchive('${note.id}', '${currentArchiveName}')">
+                                data-remove-note="${note.id}" data-remove-archive="${escapeHtml(currentArchiveName)}">
                             Remove
                         </button>`;
                 } else {
@@ -7815,6 +7708,18 @@ function showFilteringIndicator() {
         }
         
         container.innerHTML = html;
+    
+    // Event delegation for archive remove buttons (uses data attributes to prevent XSS)
+    container.addEventListener('click', function(e) {
+        const removeBtn = e.target.closest('[data-remove-note]');
+        if (removeBtn) {
+            removeFromSpecificArchive(
+                removeBtn.getAttribute('data-remove-note'),
+                removeBtn.getAttribute('data-remove-archive')
+            );
+        }
+    });
+    
     setupLazyLoading();
     updateSelectionUI();
     
