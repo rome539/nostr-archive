@@ -884,6 +884,14 @@ input:-ms-input-placeholder {
     color: var(--text-color);
 }
 
+.note-type-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 2px;
+    margin-right: 4px;
+}
+
         .hashtags {
             display: flex;
             flex-wrap: wrap;
@@ -6754,7 +6762,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.1.2 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.1.1 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -7633,20 +7641,13 @@ function showFilteringIndicator() {
                 const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
 
                 // Set appropriate indicator based on note type
-                let noteIndicator = '<span class="emoji">📄</span> '; // Default for original notes
+                let noteIndicator = '<span class="emoji">📄</span><span class="note-type-label">Note</span> '; // Default for original notes
                 if (note.isRepost) {
-                    noteIndicator = '<span class="emoji">🔄</span> ';
+                    noteIndicator = '<span class="emoji">🔄</span><span class="note-type-label">Repost</span> ';
                 } else if (note.isQuote) {
-                    noteIndicator = '<span class="emoji">💭</span> ';
+                    noteIndicator = '<span class="emoji">💭</span><span class="note-type-label">Quote</span> ';
                 } else if (note.isReply) {
-                    // Get the npub they're replying to
-                    const replyTargetNpub = getReplyTargetNpub(note);
-                    if (replyTargetNpub) {
-                        const shortNpub = shortenNpub(replyTargetNpub);
-                        noteIndicator = `<span class="reply-indicator"><span class="emoji">💬</span> Replying to <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" title="Click to copy full npub">${shortNpub}</button></span> `;
-                    } else {
-                        noteIndicator = '<span class="emoji">💬</span> ';
-                    }
+                    noteIndicator = '<span class="emoji">💬</span><span class="note-type-label">Reply</span> ';
                 }
                 
                 // IMPROVED: Check if we're in a specific archive view
@@ -8045,6 +8046,7 @@ function setupLazyLoading() {
                 <p><strong>Author:</strong><br><small style="word-break: break-all;">${note.pubkey}</small></p>
                 <p><strong>Created:</strong> ${date.toLocaleString()}</p>
                 <p><strong>Type:</strong> ${note.isRepost ? 'Repost (kind 6)' : note.isQuote ? 'Quote (kind 1)' : note.isReply ? 'Reply (kind 1)' : 'Original Note (kind 1)'}</p>
+                ${note.isReply ? `<p><strong>Replying to:</strong><br><small style="word-break: break-all;">${(() => { const npub = getReplyTargetNpub(note); return npub ? npub : 'Unknown'; })()}</small>${(() => { const npub = getReplyTargetNpub(note); return npub ? ` <button onclick="copyToClipboard('${npub}')" class="npub-copy-btn" style="margin-left: 8px;">Copy npub</button>` : ''; })()}</p>` : ''}
                 <p><strong>Content Length:</strong> ${note.content.length} characters</p>
                 <p><strong>Hashtags:</strong> ${note.hashtags.length > 0 ? note.hashtags.join(', ') : 'None'}</p>
                 <p><strong>Archives:</strong> ${archiveStatus.length > 0 ? archiveStatus.join(', ') : 'Not archived'}</p>
@@ -10544,13 +10546,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.head.appendChild(scaleStyle);
         }
         
-        // Scale factors based on x-height comparison to system font
+        // Scale factors based on x-height comparison to system font.
+        // These compensate for each font's perceived size at the same px value.
         const scales = {
             'system': null,
-            'nunito': null,
-            'crimson-pro': 1.08,    // Crimson Pro x-height is ~17% smaller, bump sizes
-            'merriweather': null,    // Merriweather is close to system
-            'jetbrains-mono': null   // JetBrains Mono is close to system
+            'nunito': 1.04,          // Nunito has a large x-height, renders bigger — slight scale down
+            'crimson-pro': 1.16,     // Crimson Pro x-height is smaller — bump up more
+            'merriweather': 0.97,    // Merriweather is close but slightly smaller — small bump
+            'jetbrains-mono': 0.97   // JetBrains Mono renders wide and tall for a mono — scale down
         };
         
         const scale = scales[fontKey];
@@ -10566,6 +10569,8 @@ document.addEventListener('DOMContentLoaded', function() {
             body[data-font="${fontKey}"] { font-size: ${Math.round(15 * scale)}px !important; }
             body[data-font="${fontKey}"] .note-content { font-size: ${Math.round(14 * scale)}px !important; }
             body[data-font="${fontKey}"] .note-header { font-size: ${Math.round(12 * scale)}px !important; }
+            body[data-font="${fontKey}"] .note-type-label { font-size: ${Math.round(11 * scale)}px !important; }
+            body[data-font="${fontKey}"] .date-copy-btn { font-size: ${Math.round(12 * scale)}px !important; }
             body[data-font="${fontKey}"] .tag-filter { font-size: ${Math.round(13 * scale)}px !important; }
             body[data-font="${fontKey}"] .hashtag { font-size: ${Math.round(12 * scale)}px !important; }
             body[data-font="${fontKey}"] .btn { font-size: ${Math.round(14 * scale)}px !important; }
