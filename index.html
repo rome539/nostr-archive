@@ -222,24 +222,199 @@ body[data-theme="bitcoin-gold"] .note-card.quote-card .hashtag[data-selected="tr
 
 /* neon-green Neon Green Theme - Toned Down Version */
 [data-theme="neon-green"] {
-  --primary-color: #00cc00;        /* Slightly darker green */
-  --primary-hover: #00ff00;        /* Bright on hover */
-  --secondary-color: #00cc00;
-  --secondary-hover: #00ff00;
-  --success-color: #00cc00;
-  --danger-color: #ff3333;
-  --purple-color: #00cc00;
+  --primary-color: #00ff41;
+  --primary-hover: #00ff41;
+  --secondary-color: #00ff41;
+  --secondary-hover: #00ff41;
+  --success-color: #00ff41;
+  --danger-color: #ff2244;
+  --purple-color: #00ff41;
   --background-color: #000000;
-  --card-background: #0a0a0a;
-  --text-color: #00cc00;           /* Slightly darker text */
-  --text-muted: #009900;           /* More muted */
-  --border-color: #008800;         /* Darker borders */
+  --card-background: #010d01;
+  --text-color: #00ff41;
+  --text-muted: #007a1f;
+  --border-color: #003d0e;
 
-  /* Soft tokens for toned surfaces */
-  --accent: #00cc00;               /* Base green is now darker */
-  --accent-border: #008800;
-  --accent-weak: color-mix(in srgb, var(--accent) 18%, #000);
-  --accent-weak-2: color-mix(in srgb, var(--accent) 10%, #000);
+  /* Soft tokens */
+  --accent: #00ff41;
+  --accent-border: #005215;
+  --accent-weak: color-mix(in srgb, var(--accent) 12%, #000000);
+  --accent-weak-2: color-mix(in srgb, var(--accent) 6%, #000000);
+}
+
+/* Force monospace font + locked font size + weight for terminal feel */
+body[data-theme="neon-green"],
+body[data-theme="neon-green"] * {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  font-weight: 400 !important;
+}
+
+/* Lock font sizes for neon-green regardless of data-font attribute */
+body[data-theme="neon-green"] { font-size: 15px !important; }
+body[data-theme="neon-green"] .note-content { font-size: 15px !important; }
+body[data-theme="neon-green"] .note-header { font-size: 13px !important; }
+body[data-theme="neon-green"] .note-type-label { font-size: 12px !important; }
+body[data-theme="neon-green"] .date-copy-btn { font-size: 13px !important; }
+body[data-theme="neon-green"] .tag-filter { font-size: 13px !important; }
+body[data-theme="neon-green"] .hashtag { font-size: 12px !important; }
+body[data-theme="neon-green"] .btn { font-size: 14px !important; }
+body[data-theme="neon-green"] .btn-small { font-size: 13px !important; }
+body[data-theme="neon-green"] .quick-filter-btn { font-size: 13px !important; }
+body[data-theme="neon-green"] .toast { font-size: 15px !important; }
+body[data-theme="neon-green"] .reactions-box { font-size: 13px !important; }
+body[data-theme="neon-green"] .modal-content { font-size: 14px !important; }
+body[data-theme="neon-green"] select { font-size: 13px !important; }
+body[data-theme="neon-green"] .sidebar h4 { font-size: 14px !important; }
+body[data-theme="neon-green"] .note-card .note-meta { font-size: 12px !important; }
+body[data-theme="neon-green"] .archive-item { font-size: 14px !important; }
+
+/* Also cover when data-font is present — double attribute beats JS-injected single attribute rules */
+body[data-font][data-theme="neon-green"] { font-size: 15px !important; }
+body[data-font][data-theme="neon-green"] .note-content { font-size: 15px !important; }
+body[data-font][data-theme="neon-green"] .note-header { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .note-type-label { font-size: 12px !important; }
+body[data-font][data-theme="neon-green"] .date-copy-btn { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .tag-filter { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .hashtag { font-size: 12px !important; }
+body[data-font][data-theme="neon-green"] .btn { font-size: 14px !important; }
+body[data-font][data-theme="neon-green"] .btn-small { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .quick-filter-btn { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .toast { font-size: 15px !important; }
+body[data-font][data-theme="neon-green"] .reactions-box { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .modal-content { font-size: 14px !important; }
+body[data-font][data-theme="neon-green"] select { font-size: 13px !important; }
+body[data-font][data-theme="neon-green"] .sidebar h4 { font-size: 14px !important; }
+body[data-font][data-theme="neon-green"] .note-card .note-meta { font-size: 12px !important; }
+body[data-font][data-theme="neon-green"] .archive-item { font-size: 14px !important; }
+
+/* Scanline overlay on the whole page */
+body[data-theme="neon-green"]::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.25) 2px,
+    rgba(0, 0, 0, 0.25) 3px
+  );
+}
+
+/* Phosphor glow on all text */
+[data-theme="neon-green"] body {
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.7), 0 0 2px rgba(0, 255, 65, 0.9);
+}
+
+/* Card styling — terminal window feel */
+[data-theme="neon-green"] .note-card {
+  background: var(--card-background) !important;
+  border: 1px solid var(--accent-border) !important;
+  border-left: 3px solid var(--accent) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.06), inset 0 0 30px rgba(0, 255, 65, 0.02) !important;
+  border-radius: 2px !important;
+}
+
+[data-theme="neon-green"] .note-card:hover {
+  border-left-color: var(--primary-hover) !important;
+  box-shadow: 0 0 16px rgba(0, 255, 65, 0.12) !important;
+}
+
+/* Header bar */
+[data-theme="neon-green"] .app-header {
+  border-bottom: 2px solid var(--accent) !important;
+  box-shadow: 0 2px 20px rgba(0, 255, 65, 0.2) !important;
+}
+
+/* Cursor blink on title */
+[data-theme="neon-green"] .app-title::after {
+  content: "_";
+  animation: terminal-blink 1.1s step-end infinite;
+  color: var(--accent);
+}
+
+@keyframes terminal-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Note info boxes in terminal theme */
+[data-theme="neon-green"] .note-info-box {
+  background: var(--accent-weak-2) !important;
+  border: 1px solid var(--accent-border) !important;
+  border-radius: 2px !important;
+}
+
+[data-theme="neon-green"] .note-info-box-label {
+  color: var(--accent) !important;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.6);
+}
+
+/* Sharp corners throughout */
+[data-theme="neon-green"] .sidebar,
+[data-theme="neon-green"] .main-content {
+  border-radius: 2px !important;
+  border: 1px solid var(--accent-border) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.06) !important;
+}
+
+/* Engagement/reactions box */
+[data-theme="neon-green"] .reactions-box {
+  background: var(--accent-weak-2) !important;
+  border: 1px solid var(--accent-border) !important;
+  border-radius: 2px !important;
+  color: var(--accent) !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.5);
+}
+
+[data-theme="neon-green"] .reactions-box:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
+}
+
+[data-theme="neon-green"] .reactions-popup {
+  background: var(--card-background) !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.15) !important;
+}
+
+/* Terminal login screen */
+[data-theme="neon-green"] .connection-box {
+  border-radius: 2px !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.15), inset 0 0 60px rgba(0, 255, 65, 0.02) !important;
+}
+
+[data-theme="neon-green"] .info-box {
+  border-radius: 2px !important;
+  border: 1px solid var(--accent-border) !important;
+  border-left: 3px solid var(--accent) !important;
+  background: var(--accent-weak-2) !important;
+}
+
+/* Search input terminal style */
+[data-theme="neon-green"] #search-input {
+  border-radius: 2px !important;
+  caret-color: var(--accent);
+}
+
+/* Modal terminal window */
+[data-theme="neon-green"] .modal-content {
+  border-radius: 2px !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.2), inset 0 0 60px rgba(0, 255, 65, 0.02) !important;
+}
+
+/* Hashtag pills terminal style */
+[data-theme="neon-green"] .note-info-tag {
+  border-radius: 2px !important;
+  border-color: var(--accent-border) !important;
+  color: var(--accent) !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.5);
 }
 
 /* Hide emojis for neon-green theme only - MORE SPECIFIC */
@@ -588,7 +763,7 @@ input:-ms-input-placeholder {
 [data-theme="neon-green"] .btn-delete {
     background: var(--accent) !important;
     color: #000 !important;
-    box-shadow: 0 0 6px rgba(0, 255, 0, 0.4) !important;
+    box-shadow: 0 0 6px rgba(0, 255, 65, 0.4) !important;
 }
 
         .btn-delete:hover {
@@ -660,10 +835,10 @@ input:-ms-input-placeholder {
 [data-theme="neon-green"] .quick-filter-btn.active {
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
-    box-shadow: 0 0 16px rgba(0, 255, 0, 0.8) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3) !important;
     border: 2px solid var(--accent) !important;
     font-weight: 600 !important;
-    text-shadow: 0 0 4px var(--accent) !important;
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.6) !important;
 }
 
 /* Theme-specific focus styles for quick filter buttons - no glow */
@@ -781,14 +956,14 @@ input:-ms-input-placeholder {
 
 .reactions-popup {
     position: absolute;
-    bottom: 65px; /* Position it above the engagement box (50px padding-bottom + 12px box height + some gap) */
+    bottom: 50px;
     right: 12px;
     background: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px;
     min-width: 200px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
     z-index: 1000;
     display: none;
 }
@@ -1149,6 +1324,12 @@ input:-ms-input-placeholder {
   max-width: 100%;
 }
 
+[data-theme="neon-green"] .sidebar,
+[data-theme="neon-green"] .main-content {
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.08);
+}
+
 .archive-item {
     display: flex;
     justify-content: space-between;
@@ -1234,6 +1415,76 @@ input:-ms-input-placeholder {
     transform: translateY(-1px);
 }
 
+/* Note Info Modal */
+.note-info-modal {
+    max-width: 620px !important;
+}
+
+.note-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.note-info-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-color);
+}
+
+.note-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.note-info-box {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.note-info-box--full {
+    grid-column: 1 / -1;
+}
+
+.note-info-box-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+    opacity: 0.85;
+}
+
+.note-info-box-value {
+    font-size: 13px;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.note-info-box-value.mono {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.note-info-tag {
+    display: inline-block;
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    margin: 2px 3px 2px 0;
+    opacity: 0.8;
+}
+
 /* Stack on small screens */
 @media (max-width: 768px) {
   .app-layout {
@@ -1294,7 +1545,7 @@ kbd {
 
 [data-theme="neon-green"] .copy-btn:hover {
   background: var(--accent-weak) !important;
-  box-shadow: 0 0 6px rgba(0,255,0,0.4) !important;
+  box-shadow: 0 0 6px rgba(0, 255, 65,0.4) !important;
 }
 
 /* Stack Import button + hint with tight spacing */
@@ -1527,13 +1778,13 @@ kbd {
 
 [data-theme="neon-green"] .note-checkbox:hover {
     border-color: var(--accent);
-    box-shadow: 0 0 6px rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 6px rgba(0, 255, 65, 0.3);
 }
 
 [data-theme="neon-green"] .note-checkbox:checked {
     background: var(--accent-weak);
     border-color: var(--accent);
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
 }
 
 [data-theme="neon-green"] .note-checkbox:checked::after {
@@ -1636,7 +1887,7 @@ input[type="date"]:focus {
 
 [data-theme="neon-green"] input[type="date"]:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.3);
 }
 
 /* Neon green search input */
@@ -1663,7 +1914,7 @@ input[type="date"]:focus {
 
 [data-theme="neon-green"] #search-input:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3) !important;
+    box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.3) !important;
 }
 
 /* Nostr purple hashtag hover - only on hover-capable devices */
@@ -1726,8 +1977,8 @@ body[data-theme="neon-green"] .note-card .hashtag,
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4) !important;
-    text-shadow: 0 0 2px var(--accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5) !important;
 }
 
 [data-theme="neon-green"] .btn-action-secondary {
@@ -1791,13 +2042,13 @@ body[data-theme="neon-green"] .note-card .hashtag,
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
     text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
 [data-theme="neon-green"] #deep-scan-btn:hover {
     background: color-mix(in srgb, var(--accent) 28%, #000) !important;
     border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
 }
 
 /* neon-green: utility buttons (refresh, disconnect, clear cache, info, etc.) */
@@ -1809,7 +2060,7 @@ body[data-theme="neon-green"] .note-card .hashtag,
   color: var(--accent) !important;
   border: 1px solid var(--accent-border) !important;
   text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
 [data-theme="neon-green"] #refresh-btn:hover,
@@ -1818,7 +2069,7 @@ body[data-theme="neon-green"] .note-card .hashtag,
 [data-theme="neon-green"] .modal-close:hover {
   background: color-mix(in srgb, var(--accent) 28%, #000) !important;
   border-color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
 }
 
 /* neon-green: All remaining buttons - comprehensive fix */
@@ -1835,7 +2086,7 @@ body[data-theme="neon-green"] .note-card .hashtag,
   color: var(--accent) !important;
   border: 1px solid var(--accent-border) !important;
 text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
 [data-theme="neon-green"] #search-keyword-btn:hover,
@@ -1849,7 +2100,7 @@ text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
 [data-theme="neon-green"] #bulk-delete-btn:hover {
   background: color-mix(in srgb, var(--accent) 28%, #000) !important;
   border-color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
 }
 
 /* neon-green: Dropdown selects */
@@ -1893,7 +2144,7 @@ border-color: var(--accent) !important;
   background: var(--accent-weak) !important;
   border: 2px solid var(--accent) !important;
   color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.25) !important;
 }
 
 /* neon-green: Load More button */
@@ -1902,13 +2153,13 @@ border-color: var(--accent) !important;
   color: var(--accent) !important;
   border: 1px solid var(--accent-border) !important;
   text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
 [data-theme="neon-green"] #load-more-btn:hover {
   background: color-mix(in srgb, var(--accent) 28%, #000) !important;
   border-color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
 }
 
 [data-theme="neon-green"] .modal {
@@ -1919,19 +2170,19 @@ border-color: var(--accent) !important;
     background: var(--card-background) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3) !important;
 }
 
 /* Neon green theme override for Import Archive */
 [data-theme="neon-green"] #import-btn {
-  background: #003300 !important;       /* darker green base */
+  background: var(--accent-weak) !important;
   border: 1px solid var(--accent-border);
   color: var(--accent);
 }
 
 [data-theme="neon-green"] #import-btn:hover {
-  background: #006600 !important;       /* brightens on hover */
-  box-shadow: 0 0 12px rgba(0,255,0,0.35);
+  background: var(--accent-weak-2) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.35);
 }
 
 /* Hashtag group header hover effects - only on devices with actual hover capability */
@@ -1989,7 +2240,7 @@ border-color: var(--accent) !important;
         background: var(--accent-weak) !important;
         border-color: var(--accent) !important;
         color: var(--accent) !important;
-        box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.3) !important;
     }
 }
 
@@ -1999,7 +2250,7 @@ border-color: var(--accent) !important;
         background: var(--accent-weak) !important;
         border-color: var(--accent) !important;
         color: var(--accent) !important;
-        box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.3) !important;
     }
 }
 
@@ -2009,13 +2260,13 @@ border-color: var(--accent) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
     text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
 [data-theme="neon-green"] .search-container button[onclick="clearAllFilters()"]:hover {
     background: color-mix(in srgb, var(--accent) 28%, #000) !important;
     border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.4) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
 }
 
 /* Fix hashtag hover colors for dark themes - only on hover-capable devices */
@@ -2095,7 +2346,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     background: var(--accent-weak) !important;
     color: var(--accent) !important;
     border-color: var(--accent) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.6) !important;
+    box-shadow: 0 0 6px rgba(0, 255, 65, 0.3) !important;
 }
 
 /* Background loading indicator */
@@ -2505,22 +2756,22 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         padding: 5px 10px;
     }
     
-    /* Reactions popup - flush right on mobile */
+    /* Reactions popup - always expands upward from engagement box */
     .reactions-popup {
-        position: fixed;
-        bottom: auto;
-        right: 10px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
         left: auto;
-        top: 50%;
-        transform: translateY(-50%);
-        min-width: 220px;
-        max-width: 280px;
+        top: auto;
+        transform: none;
+        min-width: 200px;
+        max-width: 90%;
         z-index: 10000;
     }
-    
+
     .reactions-popup.show {
         display: block;
-        animation: slideInRight 0.2s ease;
+        animation: slideUpFade 0.2s ease;
     }
     
     @keyframes slideInRight {
@@ -2785,9 +3036,10 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     
     /* Keep reactions popup flush right on small screens too */
     .reactions-popup {
-        right: 10px;
+        bottom: 0;
+        right: 0;
         left: auto;
-        transform: translateY(-50%);
+        transform: none;
         max-width: 260px;
     }
 }
@@ -6762,7 +7014,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.1.1 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.2 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -8036,23 +8288,67 @@ function setupLazyLoading() {
         </div>
     ` : '';
     
+    const noteType = note.isRepost ? 'Repost (kind 6)' : note.isQuote ? 'Quote (kind 1)' : note.isReply ? 'Reply (kind 1)' : 'Original Note (kind 1)';
+    const replyTargetNpub = note.isReply ? (() => { try { return getReplyTargetNpub(note); } catch(e) { return null; } })() : null;
+    const replySection = replyTargetNpub ? `
+        <div class="note-info-box note-info-box--full">
+            <div class="note-info-box-label">Replying To</div>
+            <div class="note-info-box-value mono" style="word-break:break-all;font-size:11px;">${replyTargetNpub}</div>
+            <button onclick="copyToClipboard('${replyTargetNpub}')" class="npub-copy-btn" style="margin-top:8px;">Copy npub</button>
+        </div>` : '';
+
     const modalHtml = `
     <div class="modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeModal()">Close</button>
-            <h3>Note Information</h3> 
-            <p><strong>Nevent:</strong><br><small style="word-break: break-all;">${nevent}</small></p>
-                <p><strong>ID:</strong><br><small style="word-break: break-all;">${note.id}</small></p>
-                <p><strong>Author:</strong><br><small style="word-break: break-all;">${note.pubkey}</small></p>
-                <p><strong>Created:</strong> ${date.toLocaleString()}</p>
-                <p><strong>Type:</strong> ${note.isRepost ? 'Repost (kind 6)' : note.isQuote ? 'Quote (kind 1)' : note.isReply ? 'Reply (kind 1)' : 'Original Note (kind 1)'}</p>
-                ${note.isReply ? `<p><strong>Replying to:</strong><br><small style="word-break: break-all;">${(() => { const npub = getReplyTargetNpub(note); return npub ? npub : 'Unknown'; })()}</small>${(() => { const npub = getReplyTargetNpub(note); return npub ? ` <button onclick="copyToClipboard('${npub}')" class="npub-copy-btn" style="margin-left: 8px;">Copy npub</button>` : ''; })()}</p>` : ''}
-                <p><strong>Content Length:</strong> ${note.content.length} characters</p>
-                <p><strong>Hashtags:</strong> ${note.hashtags.length > 0 ? note.hashtags.join(', ') : 'None'}</p>
-                <p><strong>Archives:</strong> ${archiveStatus.length > 0 ? archiveStatus.join(', ') : 'Not archived'}</p>
-                ${threadSection}
+        <div class="modal-content note-info-modal" onclick="event.stopPropagation()">
+            <div class="note-info-header">
+                <h3 class="note-info-title">Note Information</h3>
+                <button class="modal-close" onclick="closeModal()">Close</button>
             </div>
+
+            <div class="note-info-grid">
+                <div class="note-info-box note-info-box--full">
+                    <div class="note-info-box-label">Nevent</div>
+                    <div class="note-info-box-value mono" style="word-break:break-all;font-size:11px;">${nevent}</div>
+                    <button onclick="copyToClipboard('${nevent}')" class="npub-copy-btn" style="margin-top:8px;">Copy</button>
+                </div>
+
+                <div class="note-info-box note-info-box--full">
+                    <div class="note-info-box-label">Note ID</div>
+                    <div class="note-info-box-value mono" style="word-break:break-all;font-size:11px;">${note.id}</div>
+                    <button onclick="copyToClipboard('${note.id}')" class="npub-copy-btn" style="margin-top:8px;">Copy</button>
+                </div>
+
+                ${replySection}
+
+                <div class="note-info-box">
+                    <div class="note-info-box-label">Created</div>
+                    <div class="note-info-box-value">${date.toLocaleString()}</div>
+                </div>
+
+                <div class="note-info-box">
+                    <div class="note-info-box-label">Type</div>
+                    <div class="note-info-box-value">${noteType}</div>
+                </div>
+
+                <div class="note-info-box">
+                    <div class="note-info-box-label">Content Length</div>
+                    <div class="note-info-box-value">${note.content.length} <span style="opacity:0.6;font-size:12px;">characters</span></div>
+                </div>
+
+                <div class="note-info-box">
+                    <div class="note-info-box-label">Hashtags</div>
+                    <div class="note-info-box-value">${note.hashtags.length > 0 ? note.hashtags.map(h => `<span class="note-info-tag">${h}</span>`).join('') : '<span style="opacity:0.5">None</span>'}</div>
+                </div>
+
+                <div class="note-info-box note-info-box--full">
+                    <div class="note-info-box-label">Archives</div>
+                    <div class="note-info-box-value">${archiveStatus.length > 0 ? archiveStatus.join(', ') : '<span style="opacity:0.5">Not archived</span>'}</div>
+                </div>
+            </div>
+
+            ${threadSection}
         </div>
+    </div>
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
@@ -10362,6 +10658,8 @@ function toggleReactionsPopup(event, noteId) {
     });
     
     popup.classList.toggle('show');
+
+
 }
 
 document.addEventListener('click', function(event) {
@@ -10518,6 +10816,8 @@ document.addEventListener('DOMContentLoaded', function() {
     themeSelector.addEventListener('change', function(e) {
         document.body.setAttribute('data-theme', e.target.value);
         localStorage.setItem('nostr-theme', e.target.value);
+        const currentFont = localStorage.getItem('nostr-font') || 'system';
+        loadFont(currentFont);
     });
 
     // Font URL map
@@ -10530,9 +10830,16 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function loadFont(fontKey) {
+        const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
         const link = document.getElementById('google-font-link');
-        if (link) link.href = fontUrls[fontKey] || '';
-        applyFontScale(fontKey);
+        if (isNeonGreen) {
+            if (link) link.href = fontUrls['jetbrains-mono'];
+            document.body.setAttribute('data-font', 'jetbrains-mono');
+            applyFontScale('system'); // no scaling
+        } else {
+            if (link) link.href = fontUrls[fontKey] || '';
+            applyFontScale(fontKey);
+        }
     }
 
     // Inject a <style> that scales the root font-size to compensate for x-height differences.
@@ -10545,15 +10852,21 @@ document.addEventListener('DOMContentLoaded', function() {
             scaleStyle.id = 'font-scale-style';
             document.head.appendChild(scaleStyle);
         }
-        
-        // Scale factors based on x-height comparison to system font.
-        // These compensate for each font's perceived size at the same px value.
+
+        // Neon-green forces its own monospace font and fixed sizes — skip scaling entirely
+        if (document.body.getAttribute('data-theme') === 'neon-green') {
+            scaleStyle.textContent = '';
+            return;
+        }
+
+        // Scale factors to match JetBrains Mono at 15px as the visual baseline.
+        // Each font is scaled up/down so they all appear the same size.
         const scales = {
-            'system': null,
-            'nunito': 1.04,          // Nunito has a large x-height, renders bigger — slight scale down
-            'crimson-pro': 1.16,     // Crimson Pro x-height is smaller — bump up more
-            'merriweather': 0.97,    // Merriweather is close but slightly smaller — small bump
-            'jetbrains-mono': 0.97   // JetBrains Mono renders wide and tall for a mono — scale down
+            'system': 1.08,          // System UI renders smaller than mono — bump up
+            'nunito': 1.06,          // Nunito is close but slightly smaller — small bump
+            'crimson-pro': 1.18,     // Crimson Pro has a small x-height — bump up significantly
+            'merriweather': .98,    // Merriweather serif reads smaller — bump up
+            'jetbrains-mono': null   // Reference size — no scaling needed
         };
         
         const scale = scales[fontKey];
