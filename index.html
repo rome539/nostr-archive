@@ -3,7 +3,7 @@
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.4/dexie.min.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>Nostr Notes Archive</title>
@@ -1827,10 +1827,6 @@ kbd {
     transition: all 0.2s ease;
     padding: 2px 4px;
     border-radius: 4px;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
 }
 
 @media (hover: hover) {
@@ -1856,14 +1852,6 @@ kbd {
 .date-copy-btn--tapped {
     background: color-mix(in srgb, var(--primary-color) 20%, transparent) !important;
     color: var(--primary-color) !important;
-}
-
-/* Prevent focus/active state from persisting on iOS */
-.date-copy-btn:focus {
-    outline: none;
-}
-.date-copy-btn:not(.date-copy-btn--tapped) {
-    background: transparent;
 }
 
 [data-theme="neon-green"] .date-copy-btn--tapped {
@@ -2813,15 +2801,9 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         width: 95%;
         max-width: 95%;
         margin: 20px auto;
-        max-height: 85vh;
-        max-height: calc(85vh - env(safe-area-inset-bottom, 0px));
+        max-height: 90vh;
         overflow-y: auto;
-        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-    }
-    
-    /* Note info modal - ensure thread button isn't clipped by iPhone home bar */
-    .note-info-modal {
-        padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: 24px;
     }
     
     /* Ensure note info modal thread button has proper touch target on mobile */
@@ -3059,6 +3041,11 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     input[type="date"] {
         min-height: 44px;
         padding: 10px 8px !important;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+        -webkit-appearance: none;
+        appearance: none;
     }
 
     /* Select dropdowns - proper touch size */
@@ -3234,14 +3221,6 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     body {
         -webkit-text-size-adjust: 100%;
     }
-    
-    /* iOS safe area: ensure modal content isn't hidden behind the home indicator */
-    .modal-content {
-        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-    }
-    .note-info-modal {
-        padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
-    }
 }
 
 /* Improve scrolling on mobile */
@@ -3344,16 +3323,16 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 </div>
     
     <!-- Date range filters -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-        <div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; overflow: hidden;">
+        <div style="min-width: 0;">
             <label style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px; display: block;">FROM DATE</label>
             <input type="date" id="date-from" onchange="applyDateFilters()" 
-                   style="width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
+                   style="width: 100%; max-width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
         </div>
-        <div>
+        <div style="min-width: 0;">
             <label style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px; display: block;">TO DATE</label>
             <input type="date" id="date-to" onchange="applyDateFilters()"
-                   style="width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
+                   style="width: 100%; max-width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
         </div>
     </div>
     
@@ -8048,6 +8027,7 @@ function showFilteringIndicator() {
                         return `<span class="hashtag" 
                                onmousedown="startHashtagSelection('${tag}', event)" 
                                onmouseenter="continueHashtagSelection('${tag}', event)"
+                               ontouchstart="startHashtagSelection('${tag}', event)"
                                data-tag="${tag}"
                                ${isSelected ? 'data-selected="true"' : ''}>${tag}</span>`;
                     }).join(' ') : '';
@@ -8444,7 +8424,7 @@ function setupLazyLoading() {
     
     // Thread info section (only show if part of thread)
     const threadSection = isThreaded ? `
-        <div style="margin-top: 16px; padding-top: 16px; padding-bottom: 16px; border-top: 1px solid var(--border-color);">
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
             <p><strong>${threadIcon}Thread:</strong> ${threadNotes.length} of your notes in this conversation</p>
             <button class="btn btn-small" onclick="showThreadView('${noteId}')" style="margin-top: 8px; width: 100%; margin-left: 0; margin-right: 0; min-height: 44px; position: relative; z-index: 1;">
                 View Thread
@@ -10561,15 +10541,7 @@ function copyNeventToClipboard(noteId) {
     const btn = document.querySelector(`.note-card[data-note-id="${noteId}"] .date-copy-btn`);
     if (btn) {
         btn.classList.add('date-copy-btn--tapped');
-        // Remove highlight and blur to prevent iOS stuck-highlight
-        setTimeout(() => {
-            btn.classList.remove('date-copy-btn--tapped');
-            btn.blur();
-            // Force remove any lingering iOS focus/active state
-            if (document.activeElement === btn) {
-                document.activeElement.blur();
-            }
-        }, 400);
+        setTimeout(() => btn.classList.remove('date-copy-btn--tapped'), 400);
     }
     
     const nevent = createNevent(note);
@@ -10980,41 +10952,6 @@ window.showToast = showToast;
 window.startHashtagSelection = startHashtagSelection;
 window.continueHashtagSelection = continueHashtagSelection;
 window.endHashtagSelection = endHashtagSelection;
-
-// Delegated touch handler for inline hashtag pills in note cards.
-// Unlike the sidebar tag-filters, these are inside a scrollable area.
-// We must NOT call preventDefault() on touchstart (which blocks scrolling).
-// Instead, we wait until touchend and only fire if the finger didn't move.
-(function initInlineHashtagTouch() {
-    document.addEventListener('touchstart', function(e) {
-        const pill = e.target.closest('.note-card .hashtag[data-tag]');
-        if (!pill) return;
-        // Do NOT preventDefault — let the browser scroll normally.
-        const tag = pill.dataset.tag;
-        const touch = e.touches[0];
-        const startX = touch.clientX;
-        const startY = touch.clientY;
-        const scrollThreshold = 10;
-
-        function onTouchEnd(endEvent) {
-            document.removeEventListener('touchend', onTouchEnd);
-            document.removeEventListener('touchcancel', onCancel);
-            const endTouch = endEvent.changedTouches[0];
-            const dx = Math.abs(endTouch.clientX - startX);
-            const dy = Math.abs(endTouch.clientY - startY);
-            // Only treat as a tap if the finger barely moved
-            if (dx < scrollThreshold && dy < scrollThreshold) {
-                handleSingleTagClick(tag);
-            }
-        }
-        function onCancel() {
-            document.removeEventListener('touchend', onTouchEnd);
-            document.removeEventListener('touchcancel', onCancel);
-        }
-        document.addEventListener('touchend', onTouchEnd);
-        document.addEventListener('touchcancel', onCancel);
-    }, { passive: true });
-})();
 
 // Theme & Font functionality - immediate execution when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
