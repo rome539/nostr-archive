@@ -2262,6 +2262,17 @@ text-shadow: 0 0 3px var(--accent) !important;
   box-shadow: 0 0 10px rgba(0, 255, 65, 0.25) !important;
 }
 
+/* neon-green: active archive count should be green, not white */
+[data-theme="neon-green"] .archive-item.active .archive-count {
+  color: var(--accent) !important;
+}
+
+/* neon-green: Notes title should be bright and prominent */
+[data-theme="neon-green"] #notes-title {
+  color: var(--accent) !important;
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+}
+
 /* neon-green: Load More button */
 [data-theme="neon-green"] #load-more-btn {
   background: var(--accent-weak) !important;
@@ -3505,7 +3516,6 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 <div id="empty-state" class="hidden" style="text-align: center; padding: 50px; color: #666;">
 <div style="font-size: 48px; margin-bottom: 20px;"><span class="emoji">📝</span></div>
   <h3>No notes found</h3>
-  <p>Make sure you've posted notes to Nostr, or check your public key.</p>
 </div>
                 </div>
             </div>
