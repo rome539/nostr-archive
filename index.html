@@ -181,6 +181,11 @@ body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npu
     border-color: #f7931a !important;
 }
 
+/* Modal close buttons need dark text on gold background */
+[data-theme="bitcoin-gold"] .modal-close {
+    color: #1a0a00 !important;
+}
+
 /* Bulk control buttons have dark backgrounds - need white text */
 [data-theme="bitcoin-gold"] #select-all-visible,
 [data-theme="bitcoin-gold"] #deselect-all,
@@ -1605,6 +1610,10 @@ kbd {
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+[data-theme="bitcoin-gold"] .copy-btn {
+  color: #1a0a00 !important;
+}
+
 /* Neon Green theme copy button - needs full override */
 [data-theme="neon-green"] .copy-btn {
   background: var(--accent-weak-2) !important;
@@ -1897,7 +1906,7 @@ kbd {
 
 /* Theme-specific npub button - only bitcoin-gold needs text color fix */
 [data-theme="bitcoin-gold"] .npub-copy-btn {
-    color: var(--card-background);
+    color: #1a0a00 !important;
 }
 
 [data-theme="neon-green"] .npub-copy-btn {
@@ -3432,17 +3441,6 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         </div>
 
         <div class="sidebar-section">
-    <h4>Keyboard Shortcuts</h4>
-    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
-        <div><kbd>/</kbd> or <kbd>Ctrl+K</kbd> Focus search</div>
-        <div><kbd>Esc</kbd> Clear search/selections</div>
-        <div><kbd>A</kbd> Select all visible</div>
-        <div><kbd>Del</kbd> Remove selected</div>
-    </div>
-</div>
-        
-        
-    <div class="sidebar-section">
             <h4>Theme</h4>
             <select id="theme-selector" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color);">
                 <option value="default">Default Blue</option>
@@ -3790,62 +3788,89 @@ function setupKeyboardShortcuts() {
     // ⭐ CANCEL ENGAGEMENT FETCH FIRST - before anything else
     cancelEngagementFetch = true;
     
-    // Always clear everything and go back to "All Notes" state
     const searchInput = document.getElementById('search-input');
+    const isInArchive = currentArchive !== 'default' && currentTag.startsWith('__archive_');
+    const hasActiveFilters = activeQuickFilters.size > 0 || 
+        selectedTags.size > 0 || 
+        searchQuery || 
+        searchInput.value.trim() ||
+        document.getElementById('date-from').value || 
+        document.getElementById('date-to').value ||
+        currentSortMode;
     
-    // Clear search input
-    searchInput.value = '';
-    searchQuery = '';
-    
-    // Clear ALL filters and states
-    activeQuickFilters.clear();
-    selectedTags.clear();
-    currentTag = '';
-    currentArchive = 'default';
-    currentSortMode = null;  // ⭐ Clear sort mode
-    window.inAdvancedSearchMode = false;
-    
-    // Clear all UI active states
-    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    document.querySelectorAll('.archive-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    document.querySelectorAll('.tag-filter').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.tag === '') {
-            btn.classList.add('active');
-        }
-    });
-    
-    // Clear date filters
-    document.getElementById('date-from').value = '';
-    document.getElementById('date-to').value = '';
-    
-    // Clear dropdown
-    const dropdown = document.getElementById('secondary-filter-dropdown');
-    if (dropdown) dropdown.value = '';
-    
-    // Clear selections
-    deselectAll();
-    
-    // Re-sort notes to original chronological order
-    allNotes.sort((a, b) => b.created_at - a.created_at);
-    
-    // Force reset to all notes
-    filteredNotes = allNotes.slice();
-    resetPagination();
-    renderNotes();
-    
-    // Reset title and count
-    document.getElementById('notes-title').textContent = 'All Notes';
-    document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
-    
-    // Blur the search input
-    searchInput.blur();
+    if (isInArchive && hasActiveFilters) {
+        // FIRST ESCAPE: Clear filters but stay in archive
+        searchInput.value = '';
+        searchQuery = '';
+        activeQuickFilters.clear();
+        selectedTags.clear();
+        currentSortMode = null;
+        window.inAdvancedSearchMode = false;
+        
+        // Clear UI states
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelectorAll('.tag-filter').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+        const dropdown = document.getElementById('secondary-filter-dropdown');
+        if (dropdown) dropdown.value = '';
+        
+        deselectAll();
+        
+        // Re-apply archive filter only
+        applyFilters();
+        renderNotes();
+        
+        const archiveName = currentTag.replace('__archive_', '');
+        document.getElementById('notes-title').textContent = `Archive: ${archiveName}`;
+        document.getElementById('notes-count').textContent = `${filteredNotes.length} notes`;
+        
+        searchInput.blur();
+    } else {
+        // SECOND ESCAPE (or no filters): Clear everything, go to All Notes
+        searchInput.value = '';
+        searchQuery = '';
+        
+        activeQuickFilters.clear();
+        selectedTags.clear();
+        currentTag = '';
+        currentArchive = 'default';
+        currentSortMode = null;
+        window.inAdvancedSearchMode = false;
+        
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelectorAll('.archive-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.tag-filter').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tag === '') {
+                btn.classList.add('active');
+            }
+        });
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+        const dropdown2 = document.getElementById('secondary-filter-dropdown');
+        if (dropdown2) dropdown2.value = '';
+        
+        deselectAll();
+        
+        allNotes.sort((a, b) => b.created_at - a.created_at);
+        filteredNotes = allNotes.slice();
+        resetPagination();
+        renderNotes();
+        
+        document.getElementById('notes-title').textContent = 'All Notes';
+        document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
+        
+        searchInput.blur();
+    }
     break;
                 
             case 'k':
@@ -5986,60 +6011,54 @@ applyDetailedFilters(notes, filters) {
             return false;
         }
         
-        // Image filter (excludes GIFs - use GIFs Only filter for those)
-        if (filters.hasImages) {
-            const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|webp))/i;
-            if (!imageRegex.test(note.content)) {
-                return false;
-            }
-        }
-        
-        // GIFs-only filter
-        if (filters.hasGifs) {
-            const urls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
-            const hasGif = urls.some(url => /\.gif(\?[^\s"<>]*)?$/i.test(url));
-            if (!hasGif) {
-                return false;
-            }
-        }
-        
-        // YouTube filter
-        if (filters.hasYouTube) {
-            const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
-            if (!youtubeRegex.test(note.content)) {
-                return false;
-            }
-        }
-
-        // Links filter
-        if (filters.hasLinks) {
-            // Match all URLs
-            const allUrls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+        // Media type filters - OR these together (note matches if it has ANY selected media type)
+        const hasMediaFilters = filters.hasImages || filters.hasGifs || filters.hasYouTube || filters.hasLinks || filters.hasMusic;
+        if (hasMediaFilters) {
+            let matchesAnyMedia = false;
             
-            if (allUrls.length === 0) return false; // No links at all
+            // Image filter
+            if (filters.hasImages) {
+                const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|webp))/i;
+                if (imageRegex.test(note.content)) matchesAnyMedia = true;
+            }
             
-            // If we're ALSO filtering for images, videos, or gifs, allow those
-            if (filters.hasImages || filters.hasYouTube || filters.hasGifs) {
-                // Already has links, and we want images/videos - this is fine
-            } else {
-                // Links-only filter: exclude notes that ONLY have images/videos
-                const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
+            // GIFs-only filter
+            if (!matchesAnyMedia && filters.hasGifs) {
+                const urls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+                if (urls.some(url => /\.gif(\?[^\s"<>]*)?$/i.test(url))) matchesAnyMedia = true;
+            }
+            
+            // YouTube filter
+            if (!matchesAnyMedia && filters.hasYouTube) {
                 const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
-                
-                // Check if there's at least one link that's NOT just an image or video
-                const hasNonMediaLink = allUrls.some(url => !imageRegex.test(url) && !youtubeRegex.test(url));
-                if (!hasNonMediaLink) {
-                    return false;
+                if (youtubeRegex.test(note.content)) matchesAnyMedia = true;
+            }
+            
+            // Links filter
+            if (!matchesAnyMedia && filters.hasLinks) {
+                const allUrls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+                if (allUrls.length > 0) {
+                    // If other media filters are also active, any link counts
+                    if (filters.hasImages || filters.hasYouTube || filters.hasGifs || filters.hasMusic) {
+                        matchesAnyMedia = true;
+                    } else {
+                        // Links-only: exclude notes that ONLY have images/videos
+                        const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
+                        const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+                        if (allUrls.some(url => !imageRegex.test(url) && !youtubeRegex.test(url))) {
+                            matchesAnyMedia = true;
+                        }
+                    }
                 }
             }
-        }
-        
-        // Music filter
-        if (filters.hasMusic) {
-            const musicRegex = /(song\.link\/|open\.spotify\.com\/(track|album|playlist)\/|music\.youtube\.com\/watch|music\.apple\.com\/)/i;
-            if (!musicRegex.test(note.content)) {
-                return false;
+            
+            // Music filter
+            if (!matchesAnyMedia && filters.hasMusic) {
+                const musicRegex = /(song\.link\/|open\.spotify\.com\/(track|album|playlist)\/|music\.youtube\.com\/watch|music\.apple\.com\/)/i;
+                if (musicRegex.test(note.content)) matchesAnyMedia = true;
             }
+            
+            if (!matchesAnyMedia) return false;
         }
         
         // Length filters
@@ -7164,14 +7183,27 @@ async function showAppInfo() {
                 <div style="line-height: 1.6; margin-bottom: 24px;">
                     <p><strong>Key Features:</strong></p>
                     <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li>View all your original notes and replies</li>
+                        <li>View all your original notes, replies, reposts, and quotes</li>
                         <li>Create custom archives to organize notes</li>
+                        <li>Bulk select and archive notes</li>
                         <li>Search by content, hashtags, and date ranges</li>
-                        <li>Filter by images, videos, and note length</li>
-                        <li>Export notes as JSON or CSV</li>
+                        <li>Filter by images, videos, links, music, GIFs, and note length</li>
+                        <li>Sort by most liked, most zapped, most reposted, or most quoted</li>
+                        <li>View conversation threads</li>
+                        <li>Import and export archives as JSON or CSV</li>
                         <li>Fast IndexedDB caching for better performance</li>
-                        <li>Multiple theme options including Neon Green</li>
-                        <li>Keyboard shortcuts for power users</li>
+                        <li>5 themes and multiple font options</li>
+                    </ul>
+                </div>
+
+                <div style="line-height: 1.6; margin-bottom: 24px;">
+                    <p><strong>Tips:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Click on a note's timestamp to copy its nevent link</li>
+                        <li>Press <kbd style="background: var(--background-color); padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 12px;">/</kbd> to focus the search bar</li>
+                        <li>Press <kbd style="background: var(--background-color); padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 12px;">Esc</kbd> to clear filters and go back</li>
+                        <li>Press <kbd style="background: var(--background-color); padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 12px;">A</kbd> to select/deselect all visible notes</li>
+                        <li>Press <kbd style="background: var(--background-color); padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 12px;">Del</kbd> to remove selected notes from archives</li>
                     </ul>
                 </div>
 
@@ -7193,7 +7225,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.2 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.3 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -7680,13 +7712,20 @@ function toggleTag(tag) {
         // If all 4 content types are selected, clear them but keep quick filters and dates
         if (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4) {
             selectedTags.clear();
-            currentTag = '';
             
             if (activeQuickFilters.size > 0 || hasManualDates) {
                 // Quick filters or dates are active, use advanced search
                 applyAllFilters();
+            } else if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+                // We're in an archive - stay in it
+                applyFilters();
+                renderNotes();
+                const archiveName = currentTag.replace('__archive_', '');
+                document.getElementById('notes-title').textContent = `Archive: ${archiveName}`;
+                document.getElementById('notes-count').textContent = `${filteredNotes.length} notes`;
             } else {
                 // No filters active, go to "All Notes"
+                currentTag = '';
                 document.querySelectorAll('.tag-filter').forEach(btn => {
                     btn.classList.remove('active');
                     if (btn.dataset.tag === '') {
@@ -7708,13 +7747,20 @@ function toggleTag(tag) {
         } else if (hasOriginal && hasReplies && selectedTags.size === 2 && !hasReposts && !hasQuotes) {
             // If only original and replies are selected, clear them but keep quick filters and dates
             selectedTags.clear();
-            currentTag = '';
             
             if (activeQuickFilters.size > 0 || hasManualDates) {
                 // Quick filters or dates are active, use advanced search
                 applyAllFilters();
+            } else if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+                // We're in an archive - stay in it
+                applyFilters();
+                renderNotes();
+                const archiveName = currentTag.replace('__archive_', '');
+                document.getElementById('notes-title').textContent = `Archive: ${archiveName}`;
+                document.getElementById('notes-count').textContent = `${filteredNotes.length} notes`;
             } else {
                 // No filters active, go to "All Notes"
+                currentTag = '';
                 document.querySelectorAll('.tag-filter').forEach(btn => {
                     btn.classList.remove('active');
                     if (btn.dataset.tag === '') {
@@ -8329,7 +8375,20 @@ function setupLazyLoading() {
 }
 
         function exportAsJSON() {
-    const dataToExport = filteredNotes;
+    let dataToExport;
+    
+    // If in an archive, export ALL notes in the archive (ignore active filters)
+    if (currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        if (namedArchives[archiveName]) {
+            const archiveSet = namedArchives[archiveName];
+            dataToExport = allNotes.filter(note => archiveSet.has(note.id));
+        } else {
+            dataToExport = filteredNotes;
+        }
+    } else {
+        dataToExport = filteredNotes;
+    }
     
     let filterType;
     let displayName;
@@ -8388,7 +8447,20 @@ function setupLazyLoading() {
 }
 
         function exportAsCSV() {
-    const dataToExport = filteredNotes;
+    let dataToExport;
+    
+    // If in an archive, export ALL notes in the archive (ignore active filters)
+    if (currentTag.startsWith('__archive_')) {
+        const archiveName = currentTag.replace('__archive_', '');
+        if (namedArchives[archiveName]) {
+            const archiveSet = namedArchives[archiveName];
+            dataToExport = allNotes.filter(note => archiveSet.has(note.id));
+        } else {
+            dataToExport = filteredNotes;
+        }
+    } else {
+        dataToExport = filteredNotes;
+    }
     
     const filterType = currentTag.startsWith('__archive_') 
         ? currentTag.replace('__archive_', '') 
@@ -9692,52 +9764,51 @@ function performInMemorySearch(query, filters) {
         results = results.filter(note => note.content.length <= filters.maxLength);
     }
     
-    // Apply image filter (excludes GIFs - use GIFs Only filter for those)
-    if (filters.hasImages) {
-        const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|webp))/i;
-        results = results.filter(note => imageRegex.test(note.content));
-    }
-    
-    // Apply GIFs-only filter
-    if (filters.hasGifs) {
+    // Media type filters - OR these together (note matches if it has ANY selected media type)
+    const hasMediaFilters = filters.hasImages || filters.hasGifs || filters.hasYouTube || filters.hasLinks || filters.hasMusic;
+    if (hasMediaFilters) {
         results = results.filter(note => {
-            const urls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
-            return urls.some(url => /\.gif(\?[^\s"<>]*)?$/i.test(url));
-        });
-    }
-    
-    // Apply YouTube filter
-    if (filters.hasYouTube) {
-        const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
-        results = results.filter(note => youtubeRegex.test(note.content));
-    }
-    
-    // Apply links filter
-    if (filters.hasLinks) {
-        results = results.filter(note => {
-            // Match all URLs
-            const allUrls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
-            
-            if (allUrls.length === 0) return false; // No links at all
-            
-            // If we're ALSO filtering for images, videos, or gifs, allow those
-            if (filters.hasImages || filters.hasYouTube || filters.hasGifs) {
-                return true; // Already has links, and we want images/videos/gifs
+            // Image filter
+            if (filters.hasImages) {
+                const imageRegex = /(https?:\/\/[^\s]+\.(jpg|jpeg|png|webp))/i;
+                if (imageRegex.test(note.content)) return true;
             }
             
-            // If links-only filter, exclude notes that ONLY have images/videos
-            const imageRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
-            const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+            // GIFs filter
+            if (filters.hasGifs) {
+                const urls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+                if (urls.some(url => /\.gif(\?[^\s"<>]*)?$/i.test(url))) return true;
+            }
             
-            // Check if there's at least one link that's NOT just an image or video
-            return allUrls.some(url => !imageRegex.test(url) && !youtubeRegex.test(url));
+            // YouTube filter
+            if (filters.hasYouTube) {
+                const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+                if (youtubeRegex.test(note.content)) return true;
+            }
+            
+            // Links filter
+            if (filters.hasLinks) {
+                const allUrls = note.content.match(/https?:\/\/[^\s<>"]+/gi) || [];
+                if (allUrls.length > 0) {
+                    // If other media filters are also active, any link counts
+                    if (filters.hasImages || filters.hasYouTube || filters.hasGifs || filters.hasMusic) {
+                        return true;
+                    }
+                    // Links-only: exclude notes that ONLY have images/videos
+                    const imgRegex = /\.(jpg|jpeg|png|gif|webp)(\?[^\s"<>]*)?$/i;
+                    const ytRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/i;
+                    if (allUrls.some(url => !imgRegex.test(url) && !ytRegex.test(url))) return true;
+                }
+            }
+            
+            // Music filter
+            if (filters.hasMusic) {
+                const musicRegex = /(song\.link\/|open\.spotify\.com\/(track|album|playlist)\/|music\.youtube\.com\/watch|music\.apple\.com\/)/i;
+                if (musicRegex.test(note.content)) return true;
+            }
+            
+            return false;
         });
-    }
-    
-    // Apply music filter
-    if (filters.hasMusic) {
-        const musicRegex = /(song\.link\/|open\.spotify\.com\/(track|album|playlist)\/|music\.youtube\.com\/watch|music\.apple\.com\/)/i;
-        results = results.filter(note => musicRegex.test(note.content));
     }
     
     // Apply text search
@@ -9820,10 +9891,23 @@ function toggleQuickFilter(type, buttonElement) {
     // Check what's still active
     const hasSearchText = searchQuery || document.getElementById('search-input').value.trim();
     const hasManualDatesActive = document.getElementById('date-from').value || document.getElementById('date-to').value;
+    const isInArchive = currentArchive !== 'default' && currentTag.startsWith('__archive_');
     if (activeQuickFilters.size === 0 && selectedTags.size === 0 && !hasSearchText && !hasManualDatesActive) {
         if (currentSortMode) {
             // Only sort mode is active - apply it to ALL notes
             applyAllFilters();
+        } else if (isInArchive) {
+            // We're in an archive - stay in it, just remove the quick filter
+            window.inAdvancedSearchMode = false;
+            applyFilters();
+            renderNotes();
+            
+            const archiveName = currentTag.replace('__archive_', '');
+            document.getElementById('notes-title').textContent = `Archive: ${archiveName}`;
+            document.getElementById('notes-count').textContent = `${filteredNotes.length} notes`;
+            
+            setActiveTagButtons();
+            return;
         } else {
             // Nothing active at all - back to All Notes
             window.inAdvancedSearchMode = false;
@@ -10009,6 +10093,13 @@ function handleSecondaryFilter() {
             // Re-apply any active filters (without engagement sort)
             if (activeQuickFilters.size > 0 || selectedTags.size > 0 || searchQuery) {
                 applyAllFilters();
+            } else if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
+                // We're in an archive - stay in it
+                applyFilters();
+                renderNotes();
+                const archiveName = currentTag.replace('__archive_', '');
+                document.getElementById('notes-title').textContent = `Archive: ${archiveName}`;
+                document.getElementById('notes-count').textContent = `${filteredNotes.length} notes`;
             } else {
                 filteredNotes = allNotes.slice();
                 resetPagination();
