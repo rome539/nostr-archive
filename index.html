@@ -677,6 +677,36 @@ input:-ms-input-placeholder {
     flex-shrink: 0;
 }
 
+/* Prevent iOS from keeping buttons highlighted after tap */
+@media (hover: none) {
+    .btn-action:focus,
+    .btn-action:focus-visible,
+    .btn:focus,
+    .btn:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* Remove tap highlight color globally on buttons */
+.btn-action,
+.btn {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+/* Disabled state should not look highlighted */
+.btn-action:disabled,
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    -webkit-tap-highlight-color: transparent;
+    outline: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 .btn-action {
     display: inline-flex;
     align-items: center;
@@ -853,15 +883,22 @@ input:-ms-input-placeholder {
     text-shadow: 0 0 6px rgba(0, 255, 65, 0.6) !important;
 }
 
-/* Theme-specific focus styles for quick filter buttons - no glow */
+/* Theme-specific focus styles - only on keyboard focus, not tap */
 [data-theme="dark-nostr"] .quick-filter-btn:focus,
 [data-theme="bitcoin-gold"] .quick-filter-btn:focus,
-[data-theme="nostr-purple"] .quick-filter-btn:focus {
+[data-theme="nostr-purple"] .quick-filter-btn:focus,
+[data-theme="neon-green"] .quick-filter-btn:focus {
+    outline: none !important;
+}
+
+[data-theme="dark-nostr"] .quick-filter-btn:focus-visible,
+[data-theme="bitcoin-gold"] .quick-filter-btn:focus-visible,
+[data-theme="nostr-purple"] .quick-filter-btn:focus-visible {
     border: 2px solid var(--primary-color) !important;
     background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background)) !important;
 }
 
-[data-theme="neon-green"] .quick-filter-btn:focus {
+[data-theme="neon-green"] .quick-filter-btn:focus-visible {
     border: 2px solid var(--accent) !important;
     background: var(--accent-weak-2) !important;
 }
@@ -1400,6 +1437,7 @@ input:-ms-input-placeholder {
     max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     border: 1px solid var(--border-color);
     transform: scale(0.9);
@@ -1753,6 +1791,8 @@ kbd {
 
 /* Hide scrollbar but keep scrolling functionality */
 .thread-scroll {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none !important; /* Firefox */
     -ms-overflow-style: none !important; /* IE and Edge */
 }
@@ -2827,9 +2867,11 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         cursor: pointer;
     }
     
-    /* Better focus feedback for quick filter buttons - no glow, just subtle visual change */
+    /* Better focus feedback for quick filter buttons - only show on keyboard focus, not tap */
     .quick-filter-btn:focus {
         outline: none !important;
+    }
+    .quick-filter-btn:focus-visible {
         border: 2px solid var(--primary-color) !important;
         background: color-mix(in srgb, var(--primary-color) 10%, white) !important;
     }
@@ -3497,8 +3539,14 @@ document.getElementById('search-input').addEventListener('input', function(e) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => handleSearch(e), 300);
 });
-            document.getElementById('refresh-btn').addEventListener('click', refreshNotes);
-            document.getElementById('deep-scan-btn').addEventListener('click', performDeepScan);
+            document.getElementById('refresh-btn').addEventListener('click', function() {
+                this.blur();
+                refreshNotes();
+            });
+            document.getElementById('deep-scan-btn').addEventListener('click', function() {
+                this.blur();
+                performDeepScan();
+            });
             document.getElementById('export-json').addEventListener('click', exportAsJSON);
             document.getElementById('export-md').addEventListener('click', exportAsCSV);
             document.getElementById('create-archive-btn').addEventListener('click', createNewArchive);
@@ -4897,6 +4945,8 @@ async function performDeepScan() {
     }
     
     if (!confirm('Deep scan will thoroughly search ALL relays for every note. This may take 2-5 minutes for large accounts. Continue?')) {
+        const deepScanBtn = document.getElementById('deep-scan-btn');
+        if (deepScanBtn) deepScanBtn.blur();
         return;
     }
     
@@ -4955,6 +5005,7 @@ async function performDeepScan() {
         if (deepScanBtn) {
             deepScanBtn.disabled = false;
             deepScanBtn.textContent = 'Deep Scan';
+            deepScanBtn.blur();
         }
     }
 }
@@ -7028,7 +7079,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.2 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.1.1 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
