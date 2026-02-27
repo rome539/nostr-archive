@@ -329,9 +329,11 @@ body[data-theme="neon-green"]::before {
   border-radius: 2px !important;
 }
 
-[data-theme="neon-green"] .note-card:hover {
-  border-left-color: var(--primary-hover) !important;
-  box-shadow: 0 0 16px rgba(0, 255, 65, 0.12) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .note-card:hover {
+    border-left-color: var(--primary-hover) !important;
+    box-shadow: 0 0 16px rgba(0, 255, 65, 0.12) !important;
+  }
 }
 
 /* Header bar */
@@ -382,9 +384,11 @@ body[data-theme="neon-green"]::before {
   text-shadow: 0 0 4px rgba(0, 255, 65, 0.5);
 }
 
-[data-theme="neon-green"] .reactions-box:hover {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .reactions-box:hover {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
+  }
 }
 
 [data-theme="neon-green"] .reactions-popup {
@@ -771,8 +775,10 @@ input:-ms-input-placeholder {
     color: white;
 }
 
-.btn-secondary:hover {
-    background: var(--text-color);
+@media (hover: hover) {
+  .btn-secondary:hover {
+      background: var(--text-color);
+  }
 }
 
 
@@ -808,9 +814,11 @@ input:-ms-input-placeholder {
     box-shadow: 0 0 6px rgba(0, 255, 65, 0.4) !important;
 }
 
-        .btn-delete:hover {
-            background: #c0392b;
-        }
+@media (hover: hover) {
+          .btn-delete:hover {
+              background: #c0392b;
+          }
+}
 
         .error {
             background: #e74c3c;
@@ -839,8 +847,10 @@ input:-ms-input-placeholder {
     border: 2px solid var(--primary-color);
 }
 
-.btn-small:hover {
-    transform: translateY(-1px);
+@media (hover: hover) {
+  .btn-small:hover {
+      transform: translateY(-1px);
+  }
 }
 
 .btn-small:active {
@@ -1000,9 +1010,11 @@ input:-ms-input-placeholder {
     font-style: italic;
 }
 
-.reactions-box:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+@media (hover: hover) {
+  .reactions-box:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+  }
 }
 
 .reactions-popup {
@@ -1070,9 +1082,11 @@ input:-ms-input-placeholder {
     padding: 8px 0;
 }
 
-.note-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+@media (hover: hover) {
+  .note-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
 }
 
 /* High specificity rules to override everything */
@@ -1335,9 +1349,11 @@ input:-ms-input-placeholder {
     color: var(--accent) !important;
 }
 
-[data-theme="neon-green"] .archive-option:hover {
-    background: var(--accent-weak) !important;
-    border-color: var(--accent) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .archive-option:hover {
+      background: var(--accent-weak) !important;
+      border-color: var(--accent) !important;
+  }
 }
 
 
@@ -1462,9 +1478,11 @@ input:-ms-input-placeholder {
     transition: all 0.2s ease;
 }
 
-.modal-close:hover {
-    background: var(--primary-hover) !important;
-    transform: translateY(-1px);
+@media (hover: hover) {
+  .modal-close:hover {
+      background: var(--primary-hover) !important;
+      transform: translateY(-1px);
+  }
 }
 
 /* Note Info Modal */
@@ -1595,9 +1613,11 @@ kbd {
   text-shadow: 0 0 3px var(--accent);
 }
 
-[data-theme="neon-green"] .copy-btn:hover {
-  background: var(--accent-weak) !important;
-  box-shadow: 0 0 6px rgba(0, 255, 65,0.4) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .copy-btn:hover {
+    background: var(--accent-weak) !important;
+    box-shadow: 0 0 6px rgba(0, 255, 65,0.4) !important;
+  }
 }
 
 /* Stack Import button + hint with tight spacing */
@@ -1819,9 +1839,11 @@ kbd {
 }
 
 /* Theme-specific */
-[data-theme="neon-green"] .date-copy-btn:hover {
-    background: var(--accent-weak-2);
-    color: var(--accent);
+@media (hover: hover) {
+  [data-theme="neon-green"] .date-copy-btn:hover {
+      background: var(--accent-weak-2);
+      color: var(--accent);
+  }
 }
 
 /* Neon Green theme checkboxes */
@@ -1830,9 +1852,11 @@ kbd {
     background: var(--accent-weak-2);
 }
 
-[data-theme="neon-green"] .note-checkbox:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 6px rgba(0, 255, 65, 0.3);
+@media (hover: hover) {
+  [data-theme="neon-green"] .note-checkbox:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 6px rgba(0, 255, 65, 0.3);
+  }
 }
 
 [data-theme="neon-green"] .note-checkbox:checked {
@@ -1859,9 +1883,11 @@ kbd {
     text-shadow: 0 0 3px var(--accent) !important;
 }
 
-[data-theme="neon-green"] .npub-copy-btn:hover {
-    background: var(--accent-weak) !important;
-    border-color: var(--accent) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .npub-copy-btn:hover {
+      background: var(--accent-weak) !important;
+      border-color: var(--accent) !important;
+  }
 }
 
 /* Prevent button from staying in stuck state */
@@ -2005,9 +2031,11 @@ body[data-theme="neon-green"] .note-card .hashtag,
   border: 1px solid var(--accent-border);
   text-shadow: 0 0 2px var(--accent);
 }
-[data-theme="neon-green"] .btn:hover {
-  background: color-mix(in srgb, var(--accent) 28%, #000);
-  border-color: var(--accent);
+@media (hover: hover) {
+  [data-theme="neon-green"] .btn:hover {
+    background: color-mix(in srgb, var(--accent) 28%, #000);
+    border-color: var(--accent);
+  }
 }
 
 /* Theme-specific action button styles */
@@ -2099,10 +2127,12 @@ body[data-theme="neon-green"] .note-card .hashtag,
     box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
-[data-theme="neon-green"] #deep-scan-btn:hover {
-    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] #deep-scan-btn:hover {
+      background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+  }
 }
 
 /* neon-green: utility buttons (refresh, disconnect, clear cache, info, etc.) */
@@ -2117,13 +2147,15 @@ body[data-theme="neon-green"] .note-card .hashtag,
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
-[data-theme="neon-green"] #refresh-btn:hover,
-[data-theme="neon-green"] #disconnect-btn:hover,
-[data-theme="neon-green"] #clear-cache-btn:hover,
-[data-theme="neon-green"] .modal-close:hover {
-  background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] #refresh-btn:hover,
+  [data-theme="neon-green"] #disconnect-btn:hover,
+  [data-theme="neon-green"] #clear-cache-btn:hover,
+  [data-theme="neon-green"] .modal-close:hover {
+    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+  }
 }
 
 /* neon-green: All remaining buttons - comprehensive fix */
@@ -2143,18 +2175,20 @@ text-shadow: 0 0 2px var(--accent) !important;  /* Reduced from 4px to 2px */
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
-[data-theme="neon-green"] #search-keyword-btn:hover,
-[data-theme="neon-green"] #select-all-visible:hover,
-[data-theme="neon-green"] #deselect-all:hover,
-[data-theme="neon-green"] #select-all-keyword:hover,
-[data-theme="neon-green"] #deselect-all-keyword:hover,
-[data-theme="neon-green"] #bulk-add-to-archive:hover,
-[data-theme="neon-green"] #bulk-remove-from-archive:hover,
-[data-theme="neon-green"] #bulk-archive-btn:hover,
-[data-theme="neon-green"] #bulk-delete-btn:hover {
-  background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] #search-keyword-btn:hover,
+  [data-theme="neon-green"] #select-all-visible:hover,
+  [data-theme="neon-green"] #deselect-all:hover,
+  [data-theme="neon-green"] #select-all-keyword:hover,
+  [data-theme="neon-green"] #deselect-all-keyword:hover,
+  [data-theme="neon-green"] #bulk-add-to-archive:hover,
+  [data-theme="neon-green"] #bulk-remove-from-archive:hover,
+  [data-theme="neon-green"] #bulk-archive-btn:hover,
+  [data-theme="neon-green"] #bulk-delete-btn:hover {
+    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+  }
 }
 
 /* neon-green: Dropdown selects */
@@ -2180,9 +2214,11 @@ color: var(--accent) !important;
 border: 1px solid var(--accent-border) !important;
 text-shadow: 0 0 3px var(--accent) !important;
 }
-[data-theme="neon-green"] .btn-small:hover {
-background: var(--accent-weak) !important;
-border-color: var(--accent) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .btn-small:hover {
+    background: var(--accent-weak) !important;
+    border-color: var(--accent) !important;
+  }
 }
 
 /* neon-green: Regular archives (non-active) */
@@ -2210,10 +2246,12 @@ border-color: var(--accent) !important;
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
-[data-theme="neon-green"] #load-more-btn:hover {
-  background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] #load-more-btn:hover {
+    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+  }
 }
 
 [data-theme="neon-green"] .modal {
@@ -2234,9 +2272,11 @@ border-color: var(--accent) !important;
   color: var(--accent);
 }
 
-[data-theme="neon-green"] #import-btn:hover {
-  background: var(--accent-weak-2) !important;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.35);
+@media (hover: hover) {
+  [data-theme="neon-green"] #import-btn:hover {
+    background: var(--accent-weak-2) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.35);
+  }
 }
 
 /* Hashtag group header hover effects - only on devices with actual hover capability */
@@ -2317,10 +2357,12 @@ border-color: var(--accent) !important;
     box-shadow: 0 0 8px rgba(0, 255, 65, 0.2) !important;
 }
 
-[data-theme="neon-green"] .search-container button[onclick="clearAllFilters()"]:hover {
-    background: color-mix(in srgb, var(--accent) 28%, #000) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+@media (hover: hover) {
+  [data-theme="neon-green"] .search-container button[onclick="clearAllFilters()"]:hover {
+      background: color-mix(in srgb, var(--accent) 28%, #000) !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 12px rgba(0, 255, 65, 0.4) !important;
+  }
 }
 
 /* Fix hashtag hover colors for dark themes - only on hover-capable devices */
@@ -2748,6 +2790,15 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         margin: 20px auto;
         max-height: 90vh;
         overflow-y: auto;
+        padding-bottom: 24px;
+    }
+    
+    /* Ensure note info modal thread button has proper touch target on mobile */
+    .note-info-modal .btn-small {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .archive-modal-content {
@@ -2890,6 +2941,15 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         /* Ensure the active state is immediately visible */
         background: var(--primary-color) !important;
         color: white !important;
+    }
+    
+    /* Neon green mobile quick filter active - override the generic one above */
+    [data-theme="neon-green"] .quick-filter-btn.active {
+        background: var(--accent-weak) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 0 10px rgba(0, 255, 65, 0.3) !important;
+        border: 2px solid var(--accent) !important;
+        text-shadow: 0 0 6px rgba(0, 255, 65, 0.6) !important;
     }
     
     /* Prevent focus from keeping buttons highlighted after tap on mobile */
@@ -3173,7 +3233,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 <small style="color: var(--text-muted); font-size:12px;"></small>
                 </div>
                 
-                 <button id="connect-btn" class="btn"><span class="emoji">🔍</span> Load My Notes</button>
+                 <button id="connect-btn" class="btn"><span class="emoji"></span> Load My Notes</button>
                 
                 <div class="info-box">
                     <strong>How to find your public key:</strong><br>
@@ -7079,7 +7139,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.1.1 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.2 • Open Source • No Tracking</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
                             View on GitHub
@@ -8348,7 +8408,7 @@ function setupLazyLoading() {
     const threadSection = isThreaded ? `
         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
             <p><strong>${threadIcon}Thread:</strong> ${threadNotes.length} of your notes in this conversation</p>
-            <button class="btn btn-small" onclick="showThreadView('${noteId}')" style="margin-top: 8px; width: 100%;">
+            <button class="btn btn-small" onclick="showThreadView('${noteId}')" style="margin-top: 8px; width: 100%; margin-left: 0; margin-right: 0; min-height: 44px; position: relative; z-index: 1;">
                 View Thread
             </button>
         </div>
