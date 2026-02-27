@@ -1829,20 +1829,11 @@ kbd {
     border-radius: 4px;
 }
 
-/* Tap feedback class applied via JS - works reliably on all devices including iOS */
-.date-copy-btn--tapped {
-    background: color-mix(in srgb, var(--primary-color) 20%, transparent);
-    color: var(--primary-color);
-}
-
-[data-theme="neon-green"] .date-copy-btn--tapped {
-    background: var(--accent-weak-2);
-    color: var(--accent);
-}
-
-.date-copy-btn:hover {
-    background: color-mix(in srgb, var(--primary-color) 15%, transparent);
-    color: var(--primary-color);
+@media (hover: hover) {
+  .date-copy-btn:hover {
+      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+      color: var(--primary-color);
+  }
 }
 
 .date-copy-btn:active {
@@ -10528,13 +10519,6 @@ function copyNeventToClipboard(noteId) {
     if (!note) {
         showToast('Note not found', 'error');
         return;
-    }
-    
-    // Visual tap feedback on the timestamp
-    const btn = document.querySelector(`.note-card[data-note-id="${noteId}"] .date-copy-btn`);
-    if (btn) {
-        btn.classList.add('date-copy-btn--tapped');
-        setTimeout(() => btn.classList.remove('date-copy-btn--tapped'), 300);
     }
     
     const nevent = createNevent(note);
