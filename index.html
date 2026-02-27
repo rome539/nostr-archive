@@ -1829,19 +1829,20 @@ kbd {
     border-radius: 4px;
 }
 
-@media (hover: hover) {
-  .date-copy-btn:hover {
-      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
-      color: var(--primary-color);
-  }
+/* Tap feedback class applied via JS - works reliably on all devices including iOS */
+.date-copy-btn--tapped {
+    background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+    color: var(--primary-color);
 }
 
-/* Mobile tap feedback for timestamp */
-@media (hover: none) {
-  .date-copy-btn:active {
-      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
-      color: var(--primary-color);
-  }
+[data-theme="neon-green"] .date-copy-btn--tapped {
+    background: var(--accent-weak-2);
+    color: var(--accent);
+}
+
+.date-copy-btn:hover {
+    background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+    color: var(--primary-color);
 }
 
 .date-copy-btn:active {
@@ -1851,13 +1852,6 @@ kbd {
 /* Theme-specific */
 @media (hover: hover) {
   [data-theme="neon-green"] .date-copy-btn:hover {
-      background: var(--accent-weak-2);
-      color: var(--accent);
-  }
-}
-
-@media (hover: none) {
-  [data-theme="neon-green"] .date-copy-btn:active {
       background: var(--accent-weak-2);
       color: var(--accent);
   }
@@ -7433,7 +7427,7 @@ function trackLoadTime() {
             const tag = btn.dataset.tag;
             if (!tag || !tag.startsWith('#')) return;
             startHashtagSelection(tag, e);
-        }, { passive: true });
+        }, { passive: false });
 
         // Continue while holding the button, over real hashtags only
         tagFiltersEl.addEventListener('mouseover', (e) => {
@@ -9138,16 +9132,11 @@ let selectionStarted = false;
 let selectionMode = null; // 'add' or 'remove'
 
 function startHashtagSelection(tag, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
     // Detect if this is a touch event or mouse event
     const isTouchEvent = event.type === 'touchstart';
-    
-    // For mouse events, prevent default immediately (no scroll conflict)
-    if (!isTouchEvent) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    // For touch events, do NOT preventDefault here — it blocks scrolling.
-    // We'll only act on touchend if the user didn't scroll.
     
     // Store initial position to detect if this is a drag or click
     const startX = isTouchEvent ? event.touches[0].clientX : event.clientX;
@@ -9156,7 +9145,6 @@ function startHashtagSelection(tag, event) {
     
     // Set up temporary move listener to detect drag
     let hasMoved = false;
-    let isScrolling = false;
     const dragThreshold = isTouchEvent ? 10 : 5; // Higher threshold for touch to avoid accidental drags
     const moveHandler = (moveEvent) => {
         if (isTouchEvent && (!moveEvent.touches || !moveEvent.touches[0])) return;
@@ -9165,14 +9153,8 @@ function startHashtagSelection(tag, event) {
         const deltaX = Math.abs(currentX - startX);
         const deltaY = Math.abs(currentY - startY);
         
-        // For touch: if vertical movement exceeds horizontal, it's a scroll — bail out
-        if (isTouchEvent && deltaY > dragThreshold && deltaY > deltaX) {
-            isScrolling = true;
-            return;
-        }
-        
-        // If moved more than threshold horizontally, consider it a drag (desktop drag-select)
-        if (!isTouchEvent && (deltaX > dragThreshold || deltaY > dragThreshold)) {
+        // If moved more than threshold, consider it a drag
+        if (deltaX > dragThreshold || deltaY > dragThreshold) {
             hasMoved = true;
             startDragMode(tag);
         }
@@ -9188,11 +9170,6 @@ function startHashtagSelection(tag, event) {
         
         const timeDiff = Date.now() - startTime;
         
-        // If user was scrolling, don't do anything
-        if (isScrolling) {
-            return;
-        }
-        
         // If it was a quick tap/click without movement, treat as single click
         if (!hasMoved && timeDiff < 300) {
             handleSingleTagClick(tag);
@@ -9204,7 +9181,7 @@ function startHashtagSelection(tag, event) {
     
     // Add listeners for both touch and mouse events
     if (isTouchEvent) {
-        document.addEventListener('touchmove', moveHandler, { passive: true });
+        document.addEventListener('touchmove', moveHandler);
         document.addEventListener('touchend', endHandler);
     } else {
         document.addEventListener('mousemove', moveHandler);
@@ -10551,6 +10528,13 @@ function copyNeventToClipboard(noteId) {
     if (!note) {
         showToast('Note not found', 'error');
         return;
+    }
+    
+    // Visual tap feedback on the timestamp
+    const btn = document.querySelector(`.note-card[data-note-id="${noteId}"] .date-copy-btn`);
+    if (btn) {
+        btn.classList.add('date-copy-btn--tapped');
+        setTimeout(() => btn.classList.remove('date-copy-btn--tapped'), 300);
     }
     
     const nevent = createNevent(note);
