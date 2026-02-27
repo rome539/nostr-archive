@@ -1594,15 +1594,19 @@ kbd {
 }
 
 /* Copy button hover */
-.copy-btn:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
+@media (hover: hover) {
+  .copy-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
 }
 
 /* Dark theme copy buttons just need box-shadow */
-[data-theme="dark-nostr"] .copy-btn:hover,
-[data-theme="bitcoin-gold"] .copy-btn:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+@media (hover: hover) {
+  [data-theme="dark-nostr"] .copy-btn:hover,
+  [data-theme="bitcoin-gold"] .copy-btn:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
 }
 
 /* Neon Green theme copy button - needs full override */
@@ -1764,9 +1768,11 @@ kbd {
     -webkit-tap-highlight-color: transparent !important;
 }
 
-.npub-copy-btn:hover {
-    background: var(--primary-hover);
-    transform: scale(1.05);
+@media (hover: hover) {
+  .npub-copy-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+  }
 }
 
 .npub-copy-btn:active {
@@ -1829,9 +1835,11 @@ kbd {
     border-radius: 4px;
 }
 
-.date-copy-btn:hover {
-    background: color-mix(in srgb, var(--primary-color) 15%, transparent);
-    color: var(--primary-color);
+@media (hover: hover) {
+  .date-copy-btn:hover {
+      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+      color: var(--primary-color);
+  }
 }
 
 .date-copy-btn:active {
