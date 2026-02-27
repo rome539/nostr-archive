@@ -8136,7 +8136,8 @@ async function refreshNotes() {
         // Re-enable refresh button
         if (refreshBtn) {
             refreshBtn.disabled = false;
-            refreshBtn.textContent = 'Refresh Notes';
+            refreshBtn.textContent = 'Refresh';
+            refreshBtn.blur();
         }
     }
 }
