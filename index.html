@@ -3041,11 +3041,6 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
     input[type="date"] {
         min-height: 44px;
         padding: 10px 8px !important;
-        min-width: 0;
-        max-width: 100%;
-        overflow: hidden;
-        -webkit-appearance: none;
-        appearance: none;
     }
 
     /* Select dropdowns - proper touch size */
@@ -3323,16 +3318,16 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 </div>
     
     <!-- Date range filters -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; overflow: hidden;">
-        <div style="min-width: 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+        <div>
             <label style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px; display: block;">FROM DATE</label>
             <input type="date" id="date-from" onchange="applyDateFilters()" 
-                   style="width: 100%; max-width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
+                   style="width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
         </div>
-        <div style="min-width: 0;">
+        <div>
             <label style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px; display: block;">TO DATE</label>
             <input type="date" id="date-to" onchange="applyDateFilters()"
-                   style="width: 100%; max-width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
+                   style="width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: var(--background-color); color: var(--text-color);">
         </div>
     </div>
     
@@ -10968,6 +10963,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.setAttribute('data-theme', e.target.value);
         localStorage.setItem('nostr-theme', e.target.value);
         const currentFont = localStorage.getItem('nostr-font') || 'system';
+        
+        if (e.target.value === 'neon-green') {
+            // Lock font selector to JetBrains Mono during neon-green
+            if (fontSelector) {
+                fontSelector.value = 'jetbrains-mono';
+                fontSelector.disabled = true;
+            }
+        } else {
+            // Restore user's saved font when leaving neon-green
+            if (fontSelector) {
+                fontSelector.value = currentFont;
+                fontSelector.disabled = false;
+            }
+        }
+        
         loadFont(currentFont);
     });
 
@@ -11055,7 +11065,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.setAttribute('data-font', savedFont);
     loadFont(savedFont);
     if (fontSelector) {
-        fontSelector.value = savedFont;
+        // If neon-green is active on startup, lock font selector to mono
+        if (savedTheme === 'neon-green') {
+            fontSelector.value = 'jetbrains-mono';
+            fontSelector.disabled = true;
+        } else {
+            fontSelector.value = savedFont;
+        }
         
         fontSelector.addEventListener('change', function(e) {
             document.body.setAttribute('data-font', e.target.value);
