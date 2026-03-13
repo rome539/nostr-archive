@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0d1020">
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Nostr%20Notes%20Archive%22%2C%22short_name%22%3A%22Nostr%20Archive%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230d1020%22%2C%22theme_color%22%3A%22%230d1020%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2527http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2527%2520viewBox%253D%25270%25200%2520128%2520128%2527%253E%253Cdefs%253E%253ClinearGradient%2520id%253D%2527bg%2527%2520x1%253D%25270%252525%2527%2520y1%253D%25270%252525%2527%2520x2%253D%2527100%252525%2527%2520y2%253D%2527100%252525%2527%253E%253Cstop%2520offset%253D%25270%252525%2527%2520style%253D%2527stop-color%253A%25236b4eff%2527%252F%253E%253Cstop%2520offset%253D%2527100%252525%2527%2520style%253D%2527stop-color%253A%25238a7cff%2527%252F%253E%253C%252FlinearGradient%253E%253C%252Fdefs%253E%253Crect%2520width%253D%2527128%2527%2520height%253D%2527128%2527%2520rx%253D%252728%2527%2520fill%253D%2527url(%252523bg)%2527%252F%253E%253Crect%2520x%253D%252728%2527%2520y%253D%252752%2527%2520width%253D%252772%2527%2520height%253D%252748%2527%2520rx%253D%25276%2527%2520fill%253D%2527none%2527%2520stroke%253D%2527white%2527%2520stroke-width%253D%25275%2527%252F%253E%253Crect%2520x%253D%252724%2527%2520y%253D%252736%2527%2520width%253D%252780%2527%2520height%253D%252720%2527%2520rx%253D%25275%2527%2520fill%253D%2527none%2527%2520stroke%253D%2527white%2527%2520stroke-width%253D%25275%2527%252F%253E%253Crect%2520x%253D%252750%2527%2520y%253D%252770%2527%2520width%253D%252728%2527%2520height%253D%252710%2527%2520rx%253D%25274%2527%2520fill%253D%2527none%2527%2520stroke%253D%2527white%2527%2520stroke-width%253D%25274%2527%252F%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+    <link rel="manifest" href="manifest.json">
     <title>Nostr Notes Archive</title>
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFaUlEQVR4nK2W6W8TVxTF579DQoJSSGLHW7zGcbzM2ONlvCSO7cQpIEFb0U9NvzT0Qwtd8qEsVRu2FpIQiE02iipVaiVUtZCwSCAVkVOd92bGk0RURWp05FhZfvf6zLn3PQXAzmsAePwn5mYxrSHngtoHrZ/KDlA5N6UPQvcg70Hei4KPKvpRDKA0JBRENYrTY7h0HtuPYGOVnR1+u30dRR+iB5A8LOh90Ab+Gz1g0o0gjBAKAWhuNFLoLIgaO1BIv4r4QSTfIU42bvbu4qfJDTroPosesHoPCnoIRhjlMCox1OJmJVlDefQHil7StQHLmTf17tvX+256OYJKlBqLw4igqWLrEZS5TxE7QNz/Ra/GUB3GeAK6H5e+hNJW6bvpjKS73kD373LG2E+PmfTaMMYS/MmHTSjMzDGTzgIuQimv9Tz9jrRY3HKI0D3csbhJr41gTKiRhmI7I+lZFxKHkDiM0SNU8l0kjyJ9FOljSPch0wd1gNJcTEvWjewgch7kvJTuEwUkPYHxUUpxOsP2BzkNa7dxbxH3lkyt3nZouac1qTt83VjBhXNEs0CCz2A8iXoSiv1UdQ8bn5vlgJjof4daWr+LNaGd17h4DoUhTCRNOgvYmdE9GD2M7iIVO4hMPw3J7PfEY3qi+4T8yAdQDCLjEvXu8n09ZdLraVFAZibvpendBbNAj+i2iAKa9wsF2GlxiLiSyJJqFwhhIiVqpDGRFimSicz7kDxC61eX8clJLF3DwrzQFVOLVx26xj8wdR3LP2H2I2x0aFcpTK6pDBQ77wU/MzN3lvP96m+87dcr8S8Xz7NAQzXpjQwUSedA+Sjdg1828GQLP15mpwuOxp0tO7V8A7fm8XQLv/7M/NRTREt6Q4XinNVSgKnviMcQP0TrsyLmuhfaIN9n7cj76XUpxH7LUf529Q4l2yc6g4aGpgalt4H9nNVMvxlHzc0pLUc5rkYIrQymslQ7h7aOqRyqcdFvkm4YET6AzQ6MKHdcQ+VrU0MzC6W338X+YgERfNUl1kCEObnyLV6+wLMneP4Mz59SL1/g2kXOrSxQinDQNjooxwTXordyUJz73Qgy8nKaNDc3TCmIZhpPt/FegbYYYv8UhnDCwLNttPOoJbhw5CeQBVpZ0luCbhawd5kR2lugHOH0P/wN3SXcuIyb3+PmD7jxHYf84e80enyUr0ZUFOiiMizQUjlM6lAkXfpjhDlfLHCHj1TuyFIIH9QdcRJBWryKM5M8vJgWlY1vdrDZRSWOSdH4pKBP5qE4T49yhI3LAjkP6VV5BIahuqEOiix5kfUh5+NDltPUVFEeZvsbXVRHBFfSdUwVoDjPpnKEi2Ftmc8557VW44jwIUWvGwLXVNHS0BRZ5PssG19f4SeoJjCVF+i8EAvIY0Tsk4pI9L0l3O8i1bdr7RSCjBOzH6aMCH1niIdJL4TwYI01ZAGb3i5CcZ6r1Rgb/2KGQ3+/S6/W71paoZhFEUen1lfwYJ3/8s1nGEuiXejRWaAaE+Y4zlUjjM9n9qLX96O79ES+bnbx9Vk+bWfv7SJOVKGcrvEOIy8E8k5QG6Ytup8/L4iFbG6FiOVMjKoIcyojtKWSYO9O+nSJEfr4FJQL5+h7Ld67cdTivRO1nhTLK8W0yOUlp7SlObIo0rLHmeMV1FXMX4Cy9RcTUgqRa94J4tapbZ2rrCESKbcY14A1q7LGHmeOl/n+1AS3Mq+OK7fohhEhUV43dtGTDrr9CcSs7qdPl9j7VAEtHWsrjstvZwEtlb6Xo2bw7d7lyWfud9G73GJyE0zu7r2l05nTEwxF7/Ira2w/xuWvcKbFCbLdfyv6yRpm3seVS1yONvYfNmdE83dWE24AAAAASUVORK5CYII=">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%3E%20%3Cdefs%3E%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%20%3Cstop%20offset%3D%220%25%22%20style%3D%22stop-color%3A%236b4eff%22%2F%3E%20%3Cstop%20offset%3D%22100%25%22%20style%3D%22stop-color%3A%238a7cff%22%2F%3E%20%3C%2FlinearGradient%3E%20%3C%2Fdefs%3E%20%3Crect%20width%3D%22128%22%20height%3D%22128%22%20rx%3D%2228%22%20fill%3D%22url%28%23bg%29%22%2F%3E%20%3Crect%20x%3D%2228%22%20y%3D%2252%22%20width%3D%2272%22%20height%3D%2248%22%20rx%3D%226%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225%22%20stroke-linejoin%3D%22round%22%2F%3E%20%3Crect%20x%3D%2224%22%20y%3D%2236%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%225%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225%22%20stroke-linejoin%3D%22round%22%2F%3E%20%3Crect%20x%3D%2250%22%20y%3D%2270%22%20width%3D%2228%22%20height%3D%2210%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%224%22%2F%3E%20%3C%2Fsvg%3E">
@@ -80,6 +80,11 @@ body[data-font="jetbrains-mono"] {
 body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npub-copy-btn):not(#pubkey-input) {
     font-family: inherit !important;
 }
+
+/* Normalize visual size across fonts — serif fonts render larger at same px */
+body[data-font="merriweather"] { font-size: 13.5px; }
+body[data-font="crimson-pro"] { font-size: 14px; }
+body[data-font="jetbrains-mono"] { font-size: 13.5px; }
 
 /* Nostr Purple – stronger + primary=purple */
 [data-theme="nostr-purple"] {
@@ -339,8 +344,8 @@ body[data-theme="neon-green"]::before {
 
 @media (hover: hover) {
   [data-theme="neon-green"] .note-card:hover {
-    border-left-color: var(--primary-hover) !important;
-    box-shadow: 0 0 16px rgba(0, 255, 65, 0.12) !important;
+    border-left-color: var(--accent) !important;
+    box-shadow: none !important;
   }
 }
 
@@ -990,7 +995,6 @@ input:-ms-input-placeholder {
     padding: 16px;
     padding-bottom: 50px; /* Space for the engagement box */
     margin-bottom: 16px;
-    transition: box-shadow 0.2s ease;
 }
 
 .reactions-box {
@@ -1093,8 +1097,8 @@ input:-ms-input-placeholder {
 
 @media (hover: hover) {
   .note-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      transform: none;
+      box-shadow: none;
   }
 }
 
