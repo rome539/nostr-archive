@@ -3598,9 +3598,11 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         appearance: none;
     }
 
-    /* Select dropdowns - proper touch size */
+    /* Select dropdowns - proper touch size + prevent scroll jump */
     select {
         min-height: 44px;
+        -webkit-appearance: none;
+        font-size: 16px !important; /* prevents iOS zoom on focus */
     }
 
     /* Note checkbox - larger touch target */
@@ -11787,6 +11789,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         loadFont(currentFont);
+        this.blur(); // dismiss iOS picker cleanly
     });
 
     // Font URL map
@@ -11905,6 +11908,14 @@ document.addEventListener('DOMContentLoaded', function() {
             applyFontScale(currentFont);
         });
     }
+
+    // Global mobile fix: blur all selects after change to dismiss iOS picker cleanly
+    // and prevent scroll position jumping
+    document.querySelectorAll('select').forEach(sel => {
+        sel.addEventListener('change', function() {
+            setTimeout(() => this.blur(), 50);
+        });
+    });
 });
 
 // One-time cleanup of old global archives - remove after running once
