@@ -3925,35 +3925,35 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         </div>
 
         <div class="sidebar-section">
-            <h4>Export</h4>
-            <button id="export-json" class="btn" style="font-size: 14px; padding: 8px;">Export JSON</button>
-           <button id="export-md" class="btn" style="font-size: 14px; padding: 8px;">Export CSV</button>
-        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
-        <input type="file" id="import-file" accept=".json" style="display: none;">
-        <div class="import-archive-block">
-  <button id="import-btn" class="btn" style="font-size: 14px; padding: 8px; background: #27ae60;">
-    <span class="emoji"></span> Import Archive
-  </button>
-  <small class="import-hint">Supports JSON exports from this app</small>
-</div>
-    </div>
-    
-    <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;"><span class="emoji"></span> Clear Cache</button>
-</div>
-
-<button id="storage-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
-    Storage Info
-</button>
-
-        <div class="sidebar-section">
-            <h4>About</h4>
-            <button id="app-info-btn" class="btn" style="font-size: 14px; padding: 8px;">
-                App Info
-            </button>
+            <h4 class="collapsible-toggle" data-panel="tools-panel" data-key="nostr-tools-open" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">Tools <span class="toggle-arrow tools-arrow" style="font-size: 12px; color: var(--text-muted);">▸</span></h4>
+            <div id="tools-panel" style="display: none;">
+                <button id="export-json" class="btn" style="font-size: 14px; padding: 8px;">Export JSON</button>
+                <button id="export-md" class="btn" style="font-size: 14px; padding: 8px;">Export CSV</button>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                    <input type="file" id="import-file" accept=".json" style="display: none;">
+                    <div class="import-archive-block">
+                        <button id="import-btn" class="btn" style="font-size: 14px; padding: 8px; background: #27ae60;">
+                            <span class="emoji"></span> Import Archive
+                        </button>
+                        <small class="import-hint">Supports JSON exports from this app</small>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                    <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;"><span class="emoji"></span> Clear Cache</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button id="storage-info-btn" class="btn" style="font-size: 14px; padding: 8px;">Storage Info</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button id="app-info-btn" class="btn" style="font-size: 14px; padding: 8px;">App Info</button>
+                </div>
+            </div>
         </div>
 
         <div class="sidebar-section">
-            <h4>Theme</h4>
+            <h4 class="collapsible-toggle" data-panel="appearance-panel" data-key="nostr-appearance-open" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">Appearance <span class="toggle-arrow appearance-arrow" style="font-size: 12px; color: var(--text-muted);">▸</span></h4>
+            <div id="appearance-panel" style="display: none;">
+            <label style="font-size: 11px; color: var(--text-muted); margin: 0 0 4px 0; display: block;">Theme</label>
             <select id="theme-selector" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color);">
                 <option value="default">Default Blue</option>
                 <option value="nostr-purple">Nostr Purple</option>
@@ -3978,8 +3978,70 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                 <span style="font-size: 16px; color: var(--text-muted); font-weight: 600;">A</span>
                 <span id="font-size-value" style="font-size: 11px; color: var(--text-muted); min-width: 30px; text-align: right;">15px</span>
             </div>
+            </div>
     </div>
 </div>
+<script>
+// Restore collapsible panel states + swipe-safe toggle handlers
+(function() {
+    // Restore saved states
+    ['nostr-tools-open', 'nostr-appearance-open'].forEach(key => {
+        if (localStorage.getItem(key) === 'true') {
+            const panelId = key === 'nostr-tools-open' ? 'tools-panel' : 'appearance-panel';
+            const arrowClass = key === 'nostr-tools-open' ? '.tools-arrow' : '.appearance-arrow';
+            const p = document.getElementById(panelId);
+            const a = document.querySelector(arrowClass);
+            if (p) p.style.display = 'block';
+            if (a) a.textContent = '▾';
+        }
+    });
+
+    // Swipe-safe toggle: only fires if finger didn't move more than 10px
+    document.querySelectorAll('.collapsible-toggle').forEach(toggle => {
+        let startX = 0, startY = 0;
+
+        toggle.addEventListener('touchstart', function(e) {
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+        }, { passive: true });
+
+        toggle.addEventListener('touchend', function(e) {
+            const touch = e.changedTouches[0];
+            const dx = Math.abs(touch.clientX - startX);
+            const dy = Math.abs(touch.clientY - startY);
+            if (dx > 10 || dy > 10) return; // was a swipe, ignore
+
+            togglePanel(this);
+        });
+
+        // Desktop click
+        toggle.addEventListener('click', function(e) {
+            // Only handle mouse clicks, touch is handled above
+            if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
+            togglePanel(this);
+        });
+    });
+
+    function togglePanel(el) {
+        const panelId = el.dataset.panel;
+        const key = el.dataset.key;
+        const panel = document.getElementById(panelId);
+        const arrow = el.querySelector('.toggle-arrow');
+        if (!panel) return;
+
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            if (arrow) arrow.textContent = '▾';
+            localStorage.setItem(key, 'true');
+        } else {
+            panel.style.display = 'none';
+            if (arrow) arrow.textContent = '▸';
+            localStorage.setItem(key, 'false');
+        }
+    }
+})();
+</script>
 
 
     <div class="main-content">
@@ -7746,7 +7808,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.41 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.4 • Open Source • No Tracking</p>
                     <p style="margin-top: 12px; font-style: italic; opacity: 0.6; font-size: 11px;">Verba volant, scripta manent.</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
@@ -7929,6 +7991,54 @@ function trackLoadTime() {
         hashtagGroups[firstLetter].push(tag);
     });
 
+    // Add collapsible Hashtags header
+    const totalHashtags = Object.keys(tagCounts).length;
+    if (totalHashtags > 0) {
+        const hashtagToggle = document.createElement('button');
+        hashtagToggle.type = 'button';
+        hashtagToggle.id = 'hashtag-toggle-btn';
+        hashtagToggle.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            border-top: 1px solid var(--border-color);
+            padding: 12px 0 8px 0;
+            margin: 12px 0 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: inherit;
+        `;
+        const isOpen = localStorage.getItem('nostr-hashtags-open') === 'true';
+        hashtagToggle.innerHTML = `Hashtags (${totalHashtags}) <span style="font-size: 12px;">${isOpen ? '▾' : '▸'}</span>`;
+        hashtagToggle.onclick = function() {
+            const panel = document.getElementById('hashtag-groups-panel');
+            const arrow = this.querySelector('span');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                arrow.textContent = '▾';
+                localStorage.setItem('nostr-hashtags-open', 'true');
+            } else {
+                panel.style.display = 'none';
+                arrow.textContent = '▸';
+                localStorage.setItem('nostr-hashtags-open', 'false');
+            }
+            this.blur();
+        };
+        container.appendChild(hashtagToggle);
+
+        // Hashtag groups panel
+        const hashtagPanel = document.createElement('div');
+        hashtagPanel.id = 'hashtag-groups-panel';
+        hashtagPanel.style.display = isOpen ? 'block' : 'none';
+
     // Add grouped hashtags with collapsible sections
     Object.keys(hashtagGroups).sort().forEach(letter => {
         const groupCount = hashtagGroups[letter].length;
@@ -7961,7 +8071,7 @@ function trackLoadTime() {
             setTimeout(() => this.blur(), 100);
         };
         
-        container.appendChild(letterHeader);
+        hashtagPanel.appendChild(letterHeader);
         
         // Add container for hashtags (initially hidden)
         const hashtagContainer = document.createElement('div');
@@ -7983,8 +8093,11 @@ function trackLoadTime() {
             hashtagContainer.appendChild(button);
         });
         
-        container.appendChild(hashtagContainer);
+        hashtagPanel.appendChild(hashtagContainer);
     });
+
+    container.appendChild(hashtagPanel);
+    } // end if totalHashtags > 0
     
     // Add click handlers
     const allNotesBtn = container.querySelector('[data-tag=""]');
