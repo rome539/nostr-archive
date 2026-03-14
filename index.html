@@ -75,6 +75,9 @@ body[data-font="merriweather"] {
 body[data-font="jetbrains-mono"] {
     font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
 }
+body[data-font="courier-prime"] {
+    font-family: 'Courier Prime', 'Courier New', 'Courier', monospace !important;
+}
 
 /* Force font inheritance on all elements except explicit monospace */
 body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npub-copy-btn):not(#pubkey-input) {
@@ -82,9 +85,10 @@ body[data-font] *:not([style*="monospace"]):not(code):not(pre):not(kbd):not(.npu
 }
 
 /* Normalize visual size across fonts — serif fonts render larger at same px */
-body[data-font="merriweather"] { font-size: 13.5px; }
-body[data-font="crimson-pro"] { font-size: 14px; }
-body[data-font="jetbrains-mono"] { font-size: 13.5px; }
+/* Per-font size normalization — matches x-height to JetBrains Mono */
+body[data-font="merriweather"] { font-size: 15.5px; }
+body[data-font="crimson-pro"] { font-size: 18.5px; }
+body[data-font="courier-prime"] { font-size: 16px; }
 
 /* Nostr Purple – stronger + primary=purple */
 [data-theme="nostr-purple"] {
@@ -274,43 +278,474 @@ body[data-theme="neon-green"] * {
   font-weight: 400 !important;
 }
 
-/* Lock font sizes for neon-green regardless of data-font attribute */
-body[data-theme="neon-green"] { font-size: 15px !important; }
-body[data-theme="neon-green"] .note-content { font-size: 15px !important; }
-body[data-theme="neon-green"] .note-header { font-size: 13px !important; }
-body[data-theme="neon-green"] .note-type-label { font-size: 12px !important; }
-body[data-theme="neon-green"] .date-copy-btn { font-size: 13px !important; }
-body[data-theme="neon-green"] .tag-filter { font-size: 13px !important; }
-body[data-theme="neon-green"] .hashtag { font-size: 12px !important; }
-body[data-theme="neon-green"] .btn { font-size: 14px !important; }
-body[data-theme="neon-green"] .btn-small { font-size: 13px !important; }
-body[data-theme="neon-green"] .quick-filter-btn { font-size: 13px !important; }
-body[data-theme="neon-green"] .toast { font-size: 15px !important; }
-body[data-theme="neon-green"] .reactions-box { font-size: 13px !important; }
-body[data-theme="neon-green"] .modal-content { font-size: 14px !important; }
-body[data-theme="neon-green"] select { font-size: 13px !important; }
-body[data-theme="neon-green"] .sidebar h4 { font-size: 14px !important; }
-body[data-theme="neon-green"] .note-card .note-meta { font-size: 12px !important; }
-body[data-theme="neon-green"] .archive-item { font-size: 14px !important; }
+/* Neon-green font sizes now controlled by the size slider via JS */
 
-/* Also cover when data-font is present — double attribute beats JS-injected single attribute rules */
-body[data-font][data-theme="neon-green"] { font-size: 15px !important; }
-body[data-font][data-theme="neon-green"] .note-content { font-size: 15px !important; }
-body[data-font][data-theme="neon-green"] .note-header { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .note-type-label { font-size: 12px !important; }
-body[data-font][data-theme="neon-green"] .date-copy-btn { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .tag-filter { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .hashtag { font-size: 12px !important; }
-body[data-font][data-theme="neon-green"] .btn { font-size: 14px !important; }
-body[data-font][data-theme="neon-green"] .btn-small { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .quick-filter-btn { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .toast { font-size: 15px !important; }
-body[data-font][data-theme="neon-green"] .reactions-box { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .modal-content { font-size: 14px !important; }
-body[data-font][data-theme="neon-green"] select { font-size: 13px !important; }
-body[data-font][data-theme="neon-green"] .sidebar h4 { font-size: 14px !important; }
-body[data-font][data-theme="neon-green"] .note-card .note-meta { font-size: 12px !important; }
-body[data-font][data-theme="neon-green"] .archive-item { font-size: 14px !important; }
+/* (neon-green double-attribute font sizes removed — slider handles all sizing) */
+
+/* ============================================
+   Calm — Warm muted tones, easy on the CNS
+   Low contrast, no pure black/white, no sharp edges
+   ============================================ */
+[data-theme="calm"] {
+  --primary-color: #78706a;
+  --primary-hover: #635b56;
+  --secondary-color: #8a837e;
+  --secondary-hover: #7a7370;
+  --success-color: #7a8072;
+  --danger-color: #9a7a72;
+  --purple-color: #7a7280;
+  --background-color: #cdc5bc;
+  --card-background: #d8d1ca;
+  --text-color: #3a3530;
+  --text-muted: #87807a;
+  --border-color: #c2bab2;
+}
+
+/* ── Paper texture on the page background ── */
+body[data-theme="calm"] {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E") !important;
+}
+
+/* ── Panels: sidebar, header, main-content ── */
+[data-theme="calm"] .top-header,
+[data-theme="calm"] .sidebar {
+  background-color: #d5cec6 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E") !important;
+  border-color: #c2bab2 !important;
+}
+
+[data-theme="calm"] .main-content {
+  background-color: #d5cec6 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E") !important;
+  border-color: #c2bab2 !important;
+}
+
+/* Modal content — paper feel too */
+[data-theme="calm"] .modal-content {
+  background-color: #d8d1ca !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E") !important;
+  border-color: #c2bab2 !important;
+}
+
+/* ── ALL note cards — same as panels, border defines the card ── */
+[data-theme="calm"] .note-card,
+[data-theme="calm"] .note-card.reply-card,
+[data-theme="calm"] .note-card.repost-card,
+[data-theme="calm"] .note-card.quote-card,
+[data-theme="calm"] .note-card.archived,
+[data-theme="calm"] .note-card.reply-card.archived {
+  background-color: #d5cec6 !important;
+  background-image: none !important;
+  border: 1px solid #bfb9b2 !important;
+  box-shadow: none !important;
+}
+
+/* ── Card left-border accents — thin, muted, consistent ── */
+[data-theme="calm"] .note-card:not(.reply-card):not(.repost-card):not(.quote-card):not(.archived) {
+  border-left: 3px solid #b0a9a2 !important;
+}
+[data-theme="calm"] .note-card.reply-card:not(.archived) {
+  border-left: 3px solid #a9a2b0 !important;
+}
+[data-theme="calm"] .note-card.repost-card:not(.archived) {
+  border-left: 3px solid #a2aba8 !important;
+}
+[data-theme="calm"] .note-card.quote-card:not(.archived) {
+  border-left: 3px solid #ada9a2 !important;
+}
+[data-theme="calm"] .note-card.archived {
+  border-left: 3px solid #a2ada8 !important;
+}
+
+/* Hide UI emojis in calm theme */
+[data-theme="calm"] .emoji,
+[data-theme="calm"] button .emoji,
+[data-theme="calm"] .tag-filter .emoji {
+  display: none !important;
+}
+
+/* Force ALL emojis (including user-posted) to render as grayscale/monochrome.
+   Uses grayscale + contrast to strip color. Works on Safari/Chrome/Firefox. */
+[data-theme="calm"] .note-content,
+[data-theme="calm"] .thread-scroll {
+  -webkit-text-stroke: 0;
+}
+
+/* Target emoji characters specifically via unicode-range isn't possible in CSS,
+   so we desaturate the entire note content area — text is already monochrome
+   so only the color emojis are visually affected */
+[data-theme="calm"] .note-content {
+  filter: grayscale(1) !important;
+}
+
+[data-theme="calm"] .thread-scroll {
+  filter: grayscale(1) !important;
+}
+
+/* Images in calm — no shadow, no hover scale, warm placeholder */
+[data-theme="calm"] .note-image {
+  box-shadow: none !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .note-image:hover {
+    transform: none !important;
+  }
+}
+
+/* Image/video/music placeholder boxes — warm tones */
+[data-theme="calm"] .image-preview,
+[data-theme="calm"] .youtube-preview,
+[data-theme="calm"] .music-preview {
+  background: #d5cec6 !important;
+  border-color: #bcb5ad !important;
+  color: #87807a !important;
+}
+
+/* Remove all shadows, gradients, transforms for a still, restful look */
+[data-theme="calm"] .note-card,
+[data-theme="calm"] .sidebar,
+[data-theme="calm"] .top-header,
+[data-theme="calm"] .modal-content,
+[data-theme="calm"] .reactions-popup,
+[data-theme="calm"] .toast,
+[data-theme="calm"] .bulk-controls,
+[data-theme="calm"] .info-box {
+  box-shadow: none !important;
+}
+
+/* Gentle border radii — rounded enough to feel soft, not sharp */
+[data-theme="calm"] .note-card,
+[data-theme="calm"] .sidebar,
+[data-theme="calm"] .top-header,
+[data-theme="calm"] .main-content,
+[data-theme="calm"] .modal-content,
+[data-theme="calm"] .tag-filter,
+[data-theme="calm"] .archive-item,
+[data-theme="calm"] .search-box,
+[data-theme="calm"] .keyword-input,
+[data-theme="calm"] .btn,
+[data-theme="calm"] .btn-action,
+[data-theme="calm"] .btn-action-primary,
+[data-theme="calm"] .btn-action-secondary,
+[data-theme="calm"] .btn-small,
+[data-theme="calm"] .hashtag,
+[data-theme="calm"] .reactions-box,
+[data-theme="calm"] .bulk-controls {
+  border-radius: 10px !important;
+}
+
+/* Slow down ALL transitions for a calmer feel */
+[data-theme="calm"] *,
+[data-theme="calm"] *::before,
+[data-theme="calm"] *::after {
+  transition-duration: 0.35s !important;
+  animation-duration: 0.4s !important;
+}
+
+/* Kill all hover transforms — no movement */
+@media (hover: hover) {
+  [data-theme="calm"] .btn:hover,
+  [data-theme="calm"] .btn-small:hover,
+  [data-theme="calm"] .btn-action:hover,
+  [data-theme="calm"] .hashtag:hover,
+  [data-theme="calm"] .npub-copy-btn:hover,
+  [data-theme="calm"] .note-card:hover {
+    transform: none !important;
+  }
+}
+
+/* (card left borders handled above with all card variants) */
+
+/* Flat buttons — warm muted tones, no glare */
+[data-theme="calm"] .btn,
+[data-theme="calm"] .btn-action-primary {
+  background: #6b6360 !important;
+  color: #d9d3cc !important;
+  border-color: #6b6360 !important;
+  box-shadow: none !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .btn:hover,
+  [data-theme="calm"] .btn-action-primary:hover {
+    background: #565150 !important;
+    border-color: #565150 !important;
+  }
+}
+
+[data-theme="calm"] .btn-action-secondary {
+  background: transparent !important;
+  color: #6b6360 !important;
+  border-color: #bcb5ad !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .btn-action-secondary:hover {
+    background: #d2cbc3 !important;
+    border-color: #a59e98 !important;
+  }
+}
+
+/* Small buttons */
+[data-theme="calm"] .btn-small {
+  box-shadow: none !important;
+}
+
+/* Modal close */
+[data-theme="calm"] .modal-close {
+  background: #6b6360 !important;
+  color: #d9d3cc !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .modal-close:hover {
+    background: #565150 !important;
+  }
+}
+
+/* Modal backdrop — softer, less dramatic */
+[data-theme="calm"] .modal {
+  background: rgba(61, 56, 53, 0.4) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+/* Progress bar */
+[data-theme="calm"] .progress-bar {
+  background: #c8c1b9 !important;
+  border-color: #bcb5ad !important;
+}
+
+[data-theme="calm"] .progress-fill {
+  background: #8a8280 !important;
+  color: #d9d3cc !important;
+}
+
+/* Input placeholders */
+[data-theme="calm"] #search-input::placeholder,
+[data-theme="calm"] #keyword-input::placeholder,
+[data-theme="calm"] #new-archive-name::placeholder {
+  color: #b0aaa6 !important;
+}
+
+/* Search input focus — subtle warm glow instead of bright ring */
+[data-theme="calm"] #search-input:focus,
+[data-theme="calm"] .search-box:focus,
+[data-theme="calm"] .keyword-input:focus,
+[data-theme="calm"] input[type="date"]:focus {
+  border-color: #8a8280 !important;
+  box-shadow: 0 0 0 2px rgba(107, 99, 96, 0.12) !important;
+}
+
+/* Date inputs */
+[data-theme="calm"] input[type="date"] {
+  color-scheme: light;
+}
+
+/* Active tag filters — muted, not stark */
+[data-theme="calm"] .tag-filter.active,
+[data-theme="calm"] .tag-filter[data-tag="__original"],
+[data-theme="calm"] .tag-filter[data-tag="__replies"],
+[data-theme="calm"] .tag-filter[data-tag="__archived"],
+[data-theme="calm"] .tag-filter[data-tag^="__archive_"] {
+  color: #d9d3cc !important;
+  background: #7a7572 !important;
+  border-color: #7a7572 !important;
+}
+
+/* Tag filter hover */
+@media (hover: hover) {
+  [data-theme="calm"] .tag-filter:hover:not(.active) {
+    background: #c8c1b9 !important;
+    border-color: #a59e98 !important;
+  }
+}
+
+/* Active archive item */
+[data-theme="calm"] .archive-item.active {
+  color: #d9d3cc !important;
+  background: #7a7572 !important;
+  border-color: #7a7572 !important;
+}
+
+[data-theme="calm"] .archive-item.active .archive-count {
+  color: #c8c1b9 !important;
+}
+
+/* Archive item hover */
+@media (hover: hover) {
+  [data-theme="calm"] .archive-item:hover:not(.active) {
+    background: #d2cbc3 !important;
+    border-color: #a59e98 !important;
+  }
+}
+
+/* Archive option hover */
+@media (hover: hover) {
+  [data-theme="calm"] .archive-option:hover {
+    background: #7a7572 !important;
+    color: #d9d3cc !important;
+    border-color: #7a7572 !important;
+  }
+}
+
+/* Selected hashtag pills */
+body[data-theme="calm"] .note-card .hashtag[data-selected="true"],
+body[data-theme="calm"] .note-card.reply-card .hashtag[data-selected="true"],
+body[data-theme="calm"] .note-card.archived .hashtag[data-selected="true"],
+body[data-theme="calm"] .note-card.repost-card .hashtag[data-selected="true"],
+body[data-theme="calm"] .note-card.quote-card .hashtag[data-selected="true"] {
+  color: #d9d3cc !important;
+  background: #7a7572 !important;
+  border-color: #7a7572 !important;
+}
+
+/* Hashtag base — very subtle pill */
+[data-theme="calm"] .hashtag {
+  background: #ccc5be !important;
+  border-color: #d0cbc7 !important;
+  color: #6b6360 !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .hashtag:hover {
+    background: #c8c1b9 !important;
+    border-color: #a59e98 !important;
+    color: #3d3835 !important;
+  }
+}
+
+/* Quick filter active — calm muted style */
+[data-theme="calm"] .quick-filter-btn.active {
+  background: #7a7572 !important;
+  color: #d9d3cc !important;
+  box-shadow: none !important;
+  border: 2px solid #7a7572 !important;
+  font-weight: 600 !important;
+  transform: none !important;
+}
+
+[data-theme="calm"] .quick-filter-btn:focus {
+  outline: none !important;
+}
+
+[data-theme="calm"] .quick-filter-btn:focus-visible {
+  border: 2px solid #8a8280 !important;
+  background: #ccc5be !important;
+}
+
+/* Checkbox — warm tones */
+[data-theme="calm"] .note-checkbox:checked {
+  background: #7a7572 !important;
+  border-color: #7a7572 !important;
+}
+
+[data-theme="calm"] .note-checkbox:hover {
+  border-color: #8a8280 !important;
+}
+
+/* Reactions box */
+[data-theme="calm"] .reactions-box {
+  background: #d2cbc3 !important;
+  border-color: #c8c1b9 !important;
+  color: #8a8480 !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .reactions-box:hover {
+    border-color: #8a8280 !important;
+    color: #6b6360 !important;
+  }
+}
+
+/* Npub copy button */
+[data-theme="calm"] .npub-copy-btn {
+  background: #8a8280 !important;
+  color: #d9d3cc !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .npub-copy-btn:hover {
+    background: #6b6360 !important;
+  }
+}
+
+/* Toast notifications — subdued */
+[data-theme="calm"] .toast {
+  background: #d9d3cc !important;
+  color: #3d3835 !important;
+  border-color: #c8c1b9 !important;
+  border-left-color: #8a8280 !important;
+  box-shadow: 0 2px 8px rgba(61, 56, 53, 0.08) !important;
+}
+
+[data-theme="calm"] .toast.success {
+  background: #d9d3cc !important;
+  color: #3d3835 !important;
+  border-color: #c8c1b9 !important;
+  border-left-color: #7a8072 !important;
+}
+
+[data-theme="calm"] .toast.error {
+  background: #d9d3cc !important;
+  color: #3d3835 !important;
+  border-color: #c8c1b9 !important;
+  border-left-color: #9a7a72 !important;
+}
+
+[data-theme="calm"] .toast.warning {
+  background: #d9d3cc !important;
+  color: #3d3835 !important;
+  border-color: #c8c1b9 !important;
+  border-left-color: #a09a72 !important;
+}
+
+/* Sidebar section dividers — very faint */
+[data-theme="calm"] .sidebar-section {
+  border-bottom-color: rgba(61, 56, 53, 0.06) !important;
+}
+
+/* Info box — muted left accent */
+[data-theme="calm"] .info-box {
+  border-left-color: #a59e98 !important;
+  background: #d2cbc4 !important;
+}
+
+/* Bulk controls */
+[data-theme="calm"] #select-all-visible,
+[data-theme="calm"] #deselect-all,
+[data-theme="calm"] #bulk-add-to-archive,
+[data-theme="calm"] #bulk-remove-from-archive {
+  color: #d9d3cc !important;
+}
+
+/* Select/dropdown */
+[data-theme="calm"] select {
+  background: #d9d3cc !important;
+  color: #3d3835 !important;
+  border-color: #c8c1b9 !important;
+}
+
+/* Clear All Filters */
+[data-theme="calm"] button[onclick="clearAllFilters()"] {
+  color: #d9d3cc !important;
+}
+
+/* Note content links — muted, underlined instead of bright */
+[data-theme="calm"] .note-content a {
+  color: #6b6360 !important;
+  text-decoration: underline !important;
+  text-decoration-color: #bcb5ad !important;
+  text-underline-offset: 2px !important;
+}
+
+@media (hover: hover) {
+  [data-theme="calm"] .note-content a:hover {
+    text-decoration-color: #6b6360 !important;
+  }
+}
+/* (neon-green font sizes controlled by slider) */
 
 /* Scanline overlay on the whole page */
 body[data-theme="neon-green"]::before {
@@ -812,7 +1247,7 @@ input:-ms-input-placeholder {
     border: none !important;
     width: 28px !important;
     height: 28px !important;
-    border-radius: 50% !important;
+    border-radius: 6px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -2017,6 +2452,75 @@ input[type="date"]:focus {
     background: var(--accent-weak-2) !important;
     color: var(--accent) !important;
     border: 1px solid var(--accent-border) !important;
+}
+
+/* ── Range slider theming for all themes ── */
+#font-size-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+    outline: none;
+}
+
+#font-size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid var(--card-background);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+#font-size-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid var(--card-background);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+#font-size-slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+}
+
+#font-size-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+}
+
+/* Neon green range slider */
+[data-theme="neon-green"] #font-size-slider {
+    background: var(--accent-border) !important;
+}
+
+[data-theme="neon-green"] #font-size-slider::-webkit-slider-thumb {
+    background: var(--accent) !important;
+    border-color: var(--card-background) !important;
+    box-shadow: 0 0 6px rgba(0, 255, 65, 0.4) !important;
+}
+
+[data-theme="neon-green"] #font-size-slider::-moz-range-thumb {
+    background: var(--accent) !important;
+    border-color: var(--card-background) !important;
+    box-shadow: 0 0 6px rgba(0, 255, 65, 0.4) !important;
+}
+
+[data-theme="neon-green"] #font-size-slider::-webkit-slider-runnable-track {
+    background: var(--accent-border) !important;
+}
+
+[data-theme="neon-green"] #font-size-slider::-moz-range-track {
+    background: var(--accent-border) !important;
 }
 
 /* Neon green archive name input placeholder */
@@ -3456,6 +3960,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                 <option value="dark-nostr">Dark Nostr</option>
                 <option value="bitcoin-gold">Bitcoin Gold</option>
                 <option value="neon-green">Neon Green</option>
+                <option value="calm">Calm (Easy on CNS)</option>
             </select>
             <label style="font-size: 11px; color: var(--text-muted); margin: 10px 0 4px 0; display: block;">Font</label>
             <select id="font-selector" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color);">
@@ -3464,7 +3969,15 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                 <option value="crimson-pro" style="font-family: 'Crimson Pro', serif;">Crimson Pro</option>
                 <option value="merriweather" style="font-family: 'Merriweather', serif;">Merriweather</option>
                 <option value="jetbrains-mono" style="font-family: 'JetBrains Mono', monospace;">JetBrains Mono</option>
+                <option value="courier-prime" style="font-family: 'Courier Prime', 'Courier New', monospace;">Courier Prime</option>
             </select>
+            <label style="font-size: 11px; color: var(--text-muted); margin: 10px 0 4px 0; display: block;">Size</label>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; color: var(--text-muted);">A</span>
+                <input type="range" id="font-size-slider" min="12" max="20" step="0.5" value="15" style="flex: 1; accent-color: var(--primary-color); background: var(--background-color);">
+                <span style="font-size: 16px; color: var(--text-muted); font-weight: 600;">A</span>
+                <span id="font-size-value" style="font-size: 11px; color: var(--text-muted); min-width: 30px; text-align: right;">15px</span>
+            </div>
     </div>
 </div>
 
@@ -7233,7 +7746,7 @@ async function showAppInfo() {
 
                 <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
                     <p>Built with ❤️ for the Nostr community</p>
-                    <p style="margin-top: 8px;">Version 3.4 • Open Source • No Tracking</p>
+                    <p style="margin-top: 8px;">Version 3.45 • Open Source • No Tracking</p>
                     <p style="margin-top: 12px; font-style: italic; opacity: 0.6; font-size: 11px;">Verba volant, scripta manent.</p>
                     <p style="margin-top: 8px;">
                         <a href="https://github.com/rome539/nostr-archive" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none;">
@@ -8664,8 +9177,9 @@ function showThreadView(noteId) {
         return;
     }
     
-    // Check for neon-green theme (needed for note type emojis)
+    // Check for neon-green or calm theme (needed for note type emojis)
     const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+    const isCalm = document.body.getAttribute('data-theme') === 'calm';
     
     // Thread icon removed - no emoji
     const threadIcon = '';
@@ -8673,7 +9187,7 @@ function showThreadView(noteId) {
     // Build the thread display
     const threadHtml = threadNotes.map(note => {
     const date = new Date(note.created_at * 1000);
-    const noteType = isNeonGreen ? '' : (note.isRepost ? '🔄 ' : note.isQuote ? '💭 ' : note.isReply ? '💬 ' : '📝 ');
+    const noteType = (isNeonGreen || isCalm) ? '' : (note.isRepost ? '🔄 ' : note.isQuote ? '💭 ' : note.isReply ? '💬 ' : '📝 ');
     
     return `
         <div style="padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
@@ -11147,6 +11661,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 fontSelector.value = 'jetbrains-mono';
                 fontSelector.disabled = true;
             }
+        } else if (e.target.value === 'calm') {
+            if (fontSelector) {
+                fontSelector.value = 'courier-prime';
+                fontSelector.disabled = true;
+            }
         } else {
             if (fontSelector) {
                 fontSelector.value = currentFont;
@@ -11163,25 +11682,31 @@ document.addEventListener('DOMContentLoaded', function() {
         'nunito': 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap',
         'crimson-pro': 'https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap',
         'merriweather': 'https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap',
-        'jetbrains-mono': 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'
+        'jetbrains-mono': 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap',
+        'courier-prime': 'https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap'
     };
 
     function loadFont(fontKey) {
         const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
+        const isCalm = document.body.getAttribute('data-theme') === 'calm';
         const link = document.getElementById('google-font-link');
         if (isNeonGreen) {
             if (link) link.href = fontUrls['jetbrains-mono'];
             document.body.setAttribute('data-font', 'jetbrains-mono');
-            applyFontScale('system'); // no scaling
+            applyFontScale('jetbrains-mono');
+        } else if (isCalm) {
+            if (link) link.href = fontUrls['courier-prime'];
+            document.body.setAttribute('data-font', 'courier-prime');
+            applyFontScale('courier-prime');
         } else {
             if (link) link.href = fontUrls[fontKey] || '';
+            document.body.setAttribute('data-font', fontKey);
             applyFontScale(fontKey);
         }
     }
 
     // Inject a <style> that scales the root font-size to compensate for x-height differences.
-    // This makes every em/rem/%-based size scale up, and for the remaining px-based sizes
-    // we override the key ones directly.
+    // Uses the user's chosen base size from the slider.
     function applyFontScale(fontKey) {
         let scaleStyle = document.getElementById('font-scale-style');
         if (!scaleStyle) {
@@ -11190,49 +11715,42 @@ document.addEventListener('DOMContentLoaded', function() {
             document.head.appendChild(scaleStyle);
         }
 
-        // Neon-green forces its own monospace font and fixed sizes — skip scaling entirely
-        if (document.body.getAttribute('data-theme') === 'neon-green') {
-            scaleStyle.textContent = '';
-            return;
-        }
+        // User's chosen base size (default 15)
+        const baseSize = parseFloat(localStorage.getItem('nostr-font-size') || '15');
 
-        // Scale factors to match JetBrains Mono at 15px as the visual baseline.
-        // Each font is scaled up/down so they all appear the same size.
+        // Scale factors derived from x-height metrics to match JetBrains Mono.
         const scales = {
-            'system': 1.08,          // System UI renders smaller than mono — bump up
-            'nunito': 1.06,          // Nunito is close but slightly smaller — small bump
-            'crimson-pro': 1.18,     // Crimson Pro has a small x-height — bump up significantly
-            'merriweather': 1.10,    // Merriweather serif reads smaller — bump up
-            'jetbrains-mono': null   // Reference size — no scaling needed
+            'system': 1.06,
+            'nunito': 1.06,
+            'crimson-pro': 1.24,
+            'merriweather': 1.04,
+            'courier-prime': 1.08,
+            'jetbrains-mono': 1.0
         };
         
-        const scale = scales[fontKey];
-        if (!scale) {
-            scaleStyle.textContent = '';
-            return;
-        }
+        const scale = scales[fontKey] || 1.0;
+        const size = baseSize * scale;
         
-        // Scale the html font-size so all relative units scale up.
-        // Then override common hardcoded px sizes on key elements.
+        const sel = `body[data-font="${fontKey}"]`;
+        
         scaleStyle.textContent = `
-            html[style] { font-size: ${scale * 100}% !important; }
-            body[data-font="${fontKey}"] { font-size: ${Math.round(15 * scale)}px !important; }
-            body[data-font="${fontKey}"] .note-content { font-size: ${Math.round(14 * scale)}px !important; }
-            body[data-font="${fontKey}"] .note-header { font-size: ${Math.round(12 * scale)}px !important; }
-            body[data-font="${fontKey}"] .note-type-label { font-size: ${Math.round(11 * scale)}px !important; }
-            body[data-font="${fontKey}"] .date-copy-btn { font-size: ${Math.round(12 * scale)}px !important; }
-            body[data-font="${fontKey}"] .tag-filter { font-size: ${Math.round(13 * scale)}px !important; }
-            body[data-font="${fontKey}"] .hashtag { font-size: ${Math.round(12 * scale)}px !important; }
-            body[data-font="${fontKey}"] .btn { font-size: ${Math.round(14 * scale)}px !important; }
-            body[data-font="${fontKey}"] .btn-small { font-size: ${Math.round(13 * scale)}px !important; }
-            body[data-font="${fontKey}"] .quick-filter-btn { font-size: ${Math.round(13 * scale)}px !important; }
-            body[data-font="${fontKey}"] .toast { font-size: ${Math.round(15 * scale)}px !important; }
-            body[data-font="${fontKey}"] .reactions-box { font-size: ${Math.round(12 * scale)}px !important; }
-            body[data-font="${fontKey}"] .modal-content { font-size: ${Math.round(14 * scale)}px !important; }
-            body[data-font="${fontKey}"] select { font-size: ${Math.round(13 * scale)}px !important; }
-            body[data-font="${fontKey}"] .sidebar h4 { font-size: ${Math.round(14 * scale)}px !important; }
-            body[data-font="${fontKey}"] .note-card .note-meta { font-size: ${Math.round(12 * scale)}px !important; }
-            body[data-font="${fontKey}"] .archive-item { font-size: ${Math.round(14 * scale)}px !important; }
+            ${sel} { font-size: ${size.toFixed(1)}px !important; }
+            ${sel} .note-content { font-size: ${(size * 0.933).toFixed(1)}px !important; }
+            ${sel} .note-header { font-size: ${(size * 0.8).toFixed(1)}px !important; }
+            ${sel} .note-type-label { font-size: ${(size * 0.733).toFixed(1)}px !important; }
+            ${sel} .date-copy-btn { font-size: ${(size * 0.8).toFixed(1)}px !important; }
+            ${sel} .tag-filter { font-size: ${(size * 0.867).toFixed(1)}px !important; }
+            ${sel} .hashtag { font-size: ${(size * 0.8).toFixed(1)}px !important; }
+            ${sel} .btn { font-size: ${(size * 0.933).toFixed(1)}px !important; }
+            ${sel} .btn-small { font-size: ${(size * 0.867).toFixed(1)}px !important; }
+            ${sel} .quick-filter-btn { font-size: ${(size * 0.867).toFixed(1)}px !important; }
+            ${sel} .toast { font-size: ${size.toFixed(1)}px !important; }
+            ${sel} .reactions-box { font-size: ${(size * 0.8).toFixed(1)}px !important; }
+            ${sel} .modal-content { font-size: ${(size * 0.933).toFixed(1)}px !important; }
+            ${sel} select { font-size: ${(size * 0.867).toFixed(1)}px !important; }
+            ${sel} .sidebar h4 { font-size: ${(size * 0.933).toFixed(1)}px !important; }
+            ${sel} .note-card .note-meta { font-size: ${(size * 0.8).toFixed(1)}px !important; }
+            ${sel} .archive-item { font-size: ${(size * 0.933).toFixed(1)}px !important; }
         `;
     }
 
@@ -11244,6 +11762,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (savedTheme === 'neon-green') {
             fontSelector.value = 'jetbrains-mono';
             fontSelector.disabled = true;
+        } else if (savedTheme === 'calm') {
+            fontSelector.value = 'courier-prime';
+            fontSelector.disabled = true;
         } else {
             fontSelector.value = savedFont;
         }
@@ -11252,6 +11773,23 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.setAttribute('data-font', e.target.value);
             localStorage.setItem('nostr-font', e.target.value);
             loadFont(e.target.value);
+        });
+    }
+
+    // Font size slider
+    const sizeSlider = document.getElementById('font-size-slider');
+    const sizeValue = document.getElementById('font-size-value');
+    if (sizeSlider) {
+        const savedSize = localStorage.getItem('nostr-font-size') || '15';
+        sizeSlider.value = savedSize;
+        if (sizeValue) sizeValue.textContent = savedSize + 'px';
+
+        sizeSlider.addEventListener('input', function(e) {
+            const size = e.target.value;
+            localStorage.setItem('nostr-font-size', size);
+            if (sizeValue) sizeValue.textContent = size + 'px';
+            const currentFont = document.body.getAttribute('data-font') || 'system';
+            applyFontScale(currentFont);
         });
     }
 });
