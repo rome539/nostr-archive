@@ -208,8 +208,6 @@ body[data-font="courier-prime"] { font-size: 16px; }
 
 /* Tag filters: dark text when active or special */
 [data-theme="bitcoin-gold"] .tag-filter.active,
-[data-theme="bitcoin-gold"] .tag-filter[data-tag="__original"],
-[data-theme="bitcoin-gold"] .tag-filter[data-tag="__replies"],
 [data-theme="bitcoin-gold"] .tag-filter[data-tag="__archived"],
 [data-theme="bitcoin-gold"] .tag-filter[data-tag^="__archive_"] {
     color: #1a0a00 !important;
@@ -362,12 +360,6 @@ body[data-theme="calm"] {
   border-left: 3px solid #a2ada8 !important;
 }
 
-/* Hide UI emojis in calm theme */
-[data-theme="calm"] .emoji,
-[data-theme="calm"] button .emoji,
-[data-theme="calm"] .tag-filter .emoji {
-  display: none !important;
-}
 
 /* Force ALL emojis (including user-posted) to render as grayscale/monochrome.
    Uses grayscale + contrast to strip color. Works on Safari/Chrome/Firefox. */
@@ -558,8 +550,6 @@ body[data-theme="calm"] {
 
 /* Active tag filters — muted, not stark */
 [data-theme="calm"] .tag-filter.active,
-[data-theme="calm"] .tag-filter[data-tag="__original"],
-[data-theme="calm"] .tag-filter[data-tag="__replies"],
 [data-theme="calm"] .tag-filter[data-tag="__archived"],
 [data-theme="calm"] .tag-filter[data-tag^="__archive_"] {
   color: #d9d3cc !important;
@@ -894,17 +884,6 @@ body[data-theme="neon-green"]::before {
   text-shadow: 0 0 4px rgba(0, 255, 65, 0.5);
 }
 
-/* Hide emojis for neon-green theme only - MORE SPECIFIC */
-[data-theme="neon-green"] .emoji,
-[data-theme="neon-green"] button .emoji,
-[data-theme="neon-green"] .tag-filter .emoji {
-    display: none !important;
-}
-
-/* But keep them visible in other themes */
-.emoji {
-    display: inline !important;
-}
 
         * {
             margin: 0;
@@ -1552,15 +1531,44 @@ input:-ms-input-placeholder {
 
 /* High specificity rules to override everything */
 .note-card.reply-card:not(.archived) {
-    border-left: 4px solid var(--purple-color) !important;
+    border-left: 4px solid color-mix(in srgb, var(--purple-color) 60%, transparent) !important;
 }
 
-.note-card:not(.reply-card):not(.archived) {
-    border-left: 4px solid var(--primary-color) !important;
+.note-card:not(.reply-card):not(.repost-card):not(.quote-card):not(.archived) {
+    border-left: 4px solid color-mix(in srgb, var(--primary-color) 60%, transparent) !important;
+}
+
+.note-card.repost-card:not(.archived),
+.note-card.quote-card:not(.archived) {
+    border-left: 4px solid color-mix(in srgb, #0891b2 60%, transparent) !important;
 }
 
 .note-card.archived {
-    border-left: 4px solid var(--success-color) !important;
+    border-left: 4px solid color-mix(in srgb, var(--success-color) 60%, transparent) !important;
+}
+
+/* Nostr-purple subtle accents */
+[data-theme="nostr-purple"] .note-card.reply-card:not(.archived) {
+    border-left-color: color-mix(in srgb, #a855f7 60%, transparent) !important;
+}
+[data-theme="nostr-purple"] .note-card.repost-card:not(.archived),
+[data-theme="nostr-purple"] .note-card.quote-card:not(.archived) {
+    border-left-color: color-mix(in srgb, #d946ef 60%, transparent) !important;
+}
+
+/* Dark-nostr subtle accents */
+[data-theme="dark-nostr"] .note-card.reply-card:not(.archived) {
+    border-left-color: color-mix(in srgb, #c084fc 60%, transparent) !important;
+}
+[data-theme="dark-nostr"] .note-card.repost-card:not(.archived),
+[data-theme="dark-nostr"] .note-card.quote-card:not(.archived) {
+    border-left-color: color-mix(in srgb, #e879f9 60%, transparent) !important;
+}
+
+/* Bitcoin-gold subtle accents */
+[data-theme="bitcoin-gold"] .note-card.repost-card:not(.archived),
+[data-theme="bitcoin-gold"] .note-card.quote-card:not(.archived) {
+    border-left-color: color-mix(in srgb, var(--success-color) 60%, transparent) !important;
 }
 
      .note-header {
@@ -1681,25 +1689,53 @@ input:-ms-input-placeholder {
   color: #fff;
 }
 
-/* Special pills that match your theme variables */
-.tag-filter[data-tag="__original"] {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
-  color: #fff;
-}
-.tag-filter[data-tag="__replies"] {
-  background: var(--purple-color);
-  border-color: var(--purple-color);
-  color: #fff;
+/* Special pills — only highlighted when selected (.active) */
+
+/* Default: blue / purple / teal */
+.tag-filter[data-tag="__original"].active {
+  background: var(--primary-color); border-color: var(--primary-color); color: #fff;
 }
 .tag-filter[data-tag="__replies"].active {
-  background: var(--purple-color);
+  background: var(--purple-color); border-color: var(--purple-color); color: #fff;
 }
-.tag-filter[data-tag="__archived"],
-.tag-filter[data-tag^="__archive_"] {
-  background: var(--success-color);
-  border-color: var(--success-color);
-  color: #fff;
+.tag-filter[data-tag="__reposts"].active,
+.tag-filter[data-tag="__quotes"].active {
+  background: #0891b2; border-color: #0891b2; color: #fff;
+}
+
+/* Nostr-purple: violet / magenta */
+[data-theme="nostr-purple"] .tag-filter[data-tag="__replies"].active {
+  background: #a855f7; border-color: #a855f7; color: #fff;
+}
+[data-theme="nostr-purple"] .tag-filter[data-tag="__reposts"].active,
+[data-theme="nostr-purple"] .tag-filter[data-tag="__quotes"].active {
+  background: #d946ef; border-color: #d946ef; color: #fff;
+}
+
+/* Dark-nostr: lilac / magenta */
+[data-theme="dark-nostr"] .tag-filter[data-tag="__replies"].active {
+  background: #c084fc; border-color: #c084fc; color: #fff;
+}
+[data-theme="dark-nostr"] .tag-filter[data-tag="__reposts"].active,
+[data-theme="dark-nostr"] .tag-filter[data-tag="__quotes"].active {
+  background: #e879f9; border-color: #e879f9; color: #fff;
+}
+
+/* Bitcoin-gold: use theme vars, dark text */
+[data-theme="bitcoin-gold"] .tag-filter[data-tag="__original"].active,
+[data-theme="bitcoin-gold"] .tag-filter[data-tag="__replies"].active,
+[data-theme="bitcoin-gold"] .tag-filter[data-tag="__reposts"].active,
+[data-theme="bitcoin-gold"] .tag-filter[data-tag="__quotes"].active {
+  color: #1a0a00;
+}
+[data-theme="bitcoin-gold"] .tag-filter[data-tag="__reposts"].active,
+[data-theme="bitcoin-gold"] .tag-filter[data-tag="__quotes"].active {
+  background: var(--success-color); border-color: var(--success-color);
+}
+
+.tag-filter[data-tag="__archived"].active,
+.tag-filter[data-tag^="__archive_"].active {
+  background: var(--success-color); border-color: var(--success-color); color: #fff;
 }
 
 
@@ -2922,8 +2958,8 @@ text-shadow: 0 0 3px var(--accent) !important;
 
 /* Fix hashtag button hover text color for dark themes - only on hover-capable devices */
 @media (hover: hover) {
-    [data-theme="dark-nostr"] .tag-filter:hover,
-    [data-theme="bitcoin-gold"] .tag-filter:hover {
+    [data-theme="dark-nostr"] .tag-filter:hover:not(.active),
+    [data-theme="bitcoin-gold"] .tag-filter:hover:not(.active) {
         color: var(--card-background) !important;
     }
 }
@@ -2974,12 +3010,12 @@ text-shadow: 0 0 3px var(--accent) !important;
 
 /* Fix hashtag hover colors for dark themes - only on hover-capable devices */
 @media (hover: hover) {
-    [data-theme="dark-nostr"] .tag-filter:hover {
+    [data-theme="dark-nostr"] .tag-filter:hover:not(.active) {
         color: var(--text-color) !important;
         background: color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
     }
 
-    [data-theme="bitcoin-gold"] .tag-filter:hover {
+    [data-theme="bitcoin-gold"] .tag-filter:hover:not(.active) {
         color: var(--text-color) !important;
         background: color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
     }
@@ -3848,7 +3884,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
         <!-- Connection Screen -->
         <div id="connection-screen">
             <div class="header">
-                <h1><span class="emoji"></span> Nostr Notes Archive</h1>
+                <h1>Nostr Notes Archive</h1>
                 <p>View and organize your Nostr notes</p>
             </div>
 
@@ -3861,7 +3897,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 <small style="color: var(--text-muted); font-size:12px;"></small>
                 </div>
                 
-                 <button id="connect-btn" class="btn"><span class="emoji"></span> Load My Notes</button>
+                 <button id="connect-btn" class="btn">Load My Notes</button>
                 
                 <div class="info-box">
                     <strong>How to find your public key:</strong><br>
@@ -3881,7 +3917,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
             <div class="top-header">
     <div class="header-content">
         <div class="header-left">
-            <h2><span class="emoji"></span> My Nostr Archive</h2>
+            <h2>My Nostr Archive</h2>
             <small id="pubkey-display" class="npub-display"></small>
         </div>
         <div class="header-actions">
@@ -3963,7 +3999,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
             </div>
             <div style="margin-top: 15px;">
                 <input type="text" id="new-archive-name" class="keyword-input" placeholder="New archive name..." maxlength="30">
-               <button id="create-archive-btn" class="btn" style="font-size: 14px; padding: 8px;"><span class="emoji"></span> Create Archive</button>
+               <button id="create-archive-btn" class="btn" style="font-size: 14px; padding: 8px;">Create Archive</button>
               </div>
         </div>
 
@@ -3971,8 +4007,8 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
             <h4>Filter by Tags</h4>
             <div id="tag-filters">
                 <button class="tag-filter active" data-tag="">All Notes (0)</button>
-               <button class="tag-filter" data-tag="__original" style="background: #3498db; color: white;"><span class="emoji">📝</span> Original Notes (0)</button>
-               <button class="tag-filter" data-tag="__replies" style="background: #9b59b6; color: white;"><span class="emoji">💬</span> Replies (0)</button>
+               <button class="tag-filter" data-tag="__original" style="background: #3498db; color: white;">Original Notes (0)</button>
+               <button class="tag-filter" data-tag="__replies" style="background: #9b59b6; color: white;">Replies (0)</button>
             </div>
         </div>
 
@@ -3985,13 +4021,13 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                     <input type="file" id="import-file" accept=".json" style="display: none;">
                     <div class="import-archive-block">
                         <button id="import-btn" class="btn" style="font-size: 14px; padding: 8px; background: #27ae60;">
-                            <span class="emoji"></span> Import Archive
+                            Import Archive
                         </button>
                         <small class="import-hint">Supports JSON exports from this app</small>
                     </div>
                 </div>
                 <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
-                    <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;"><span class="emoji"></span> Clear Cache</button>
+                    <button id="clear-cache-btn" class="btn" style="font-size: 14px; padding: 8px; background: #e74c3c;">Clear Cache</button>
                 </div>
                 <div style="margin-top: 10px;">
                     <button id="storage-info-btn" class="btn" style="font-size: 14px; padding: 8px;">Storage Info</button>
@@ -4124,8 +4160,8 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
                            <select id="bulk-archive-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color); margin-bottom: 8px;">
                                 <option value="">Select archive...</option>
                             </select>
-                           <button id="bulk-add-to-archive" class="btn btn-small" style="background: #27ae60; width: 100%;"><span class="emoji"></span> Add to Archive</button>
-                           <button id="bulk-remove-from-archive" class="btn btn-small" style="background: #e74c3c; width: 100%;"><span class="emoji"></span> Remove from Archive</button>
+                           <button id="bulk-add-to-archive" class="btn btn-small" style="background: #27ae60; width: 100%;">Add to Archive</button>
+                           <button id="bulk-remove-from-archive" class="btn btn-small" style="background: #e74c3c; width: 100%;">Remove from Archive</button>
                         </div>
                     </div>
                   <!-- Loader: ALL loader UI goes inside #loading -->
@@ -4152,7 +4188,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 
 <!-- Empty state also OUTSIDE the loading box -->
 <div id="empty-state" class="hidden" style="text-align: center; padding: 50px; color: #666;">
-<div style="font-size: 48px; margin-bottom: 20px;"><span class="emoji"></span></div>
+<div style="font-size: 48px; margin-bottom: 20px;"></div>
   <h3>No notes found</h3>
 </div>
                 </div>
@@ -5329,10 +5365,10 @@ async function initDatabase(pubkey) {
         });
         
         await db.open();
-        console.log('✅ Database opened:', dbName);
+        console.log('Database opened:', dbName);
         return db;
     } catch (error) {
-        console.error('❌ Database init failed:', error);
+        console.error('Database init failed:', error);
         disableIndexedDB(error);
         return null;
     }
@@ -8044,10 +8080,10 @@ function trackLoadTime() {
 
     container.innerHTML = `
     <button type="button" class="tag-filter active" data-tag="" onclick="this.blur()">All Notes (${allNotes.length})</button>
-    <button type="button" class="tag-filter" data-tag="__original" onclick="this.blur()"><span class="emoji">📄</span> Original Notes (${originalNotesCount})</button>
-    <button type="button" class="tag-filter" data-tag="__replies" onclick="this.blur()"><span class="emoji">💬</span> Replies (${repliesCount})</button>
-    <button type="button" class="tag-filter" data-tag="__reposts" onclick="this.blur()"><span class="emoji">🔄</span> Reposts (${repostsCount})</button>
-    <button type="button" class="tag-filter" data-tag="__quotes" onclick="this.blur()"><span class="emoji">💭</span> Quotes (${quotesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__original" onclick="this.blur()">Original Notes (${originalNotesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__replies" onclick="this.blur()">Replies (${repliesCount})</button>
+    <button type="button" class="tag-filter" data-tag="__reposts" onclick="this.blur()">Reposts (${repostsCount})</button>
+    <button type="button" class="tag-filter" data-tag="__quotes" onclick="this.blur()">Quotes (${quotesCount})</button>
 `;
 
     // Group hashtags alphabetically
@@ -8448,41 +8484,6 @@ function toggleTag(tag) {
                 document.getElementById('notes-title').textContent = 'All Notes';
                 document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
             }
-        } else if (hasOriginal && hasReplies && selectedTags.size === 2 && !hasReposts && !hasQuotes) {
-            // If only original and replies are selected, clear them but keep quick filters and dates
-            selectedTags.clear();
-            
-            if (activeQuickFilters.size > 0 || hasManualDates) {
-                // Quick filters or dates are active, use advanced search
-                applyAllFilters();
-            } else if (currentArchive !== 'default' && currentTag.startsWith('__archive_')) {
-                // We're in an archive - stay in it
-                applyFilters();
-                renderNotes();
-                const archiveName = currentTag.replace('__archive_', '');
-                document.getElementById('notes-title').textContent = `Archive: ${archiveName}`;
-                document.getElementById('notes-count').textContent = `${filteredNotes.length} notes`;
-            } else {
-                // No filters active, go to "All Notes"
-                currentTag = '';
-                document.querySelectorAll('.tag-filter').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.dataset.tag === '') {
-                        btn.classList.add('active');
-                    }
-                });
-                window.inAdvancedSearchMode = false;
-                filteredNotes = allNotes.slice();
-                resetPagination();
-                renderNotes();
-                
-                // Force advanced mode off AGAIN after render
-                window.inAdvancedSearchMode = false;
-                
-                // Force update the count display
-                document.getElementById('notes-title').textContent = 'All Notes';
-                document.getElementById('notes-count').textContent = `${allNotes.length} notes`;
-            }
         } else {
             // Normal tag selection - use appropriate filter system
             if (activeQuickFilters.size > 0 || hasManualDates) {
@@ -8706,9 +8707,8 @@ function showFilteringIndicator() {
             const hasReposts = selectedTags.has('__reposts');
             const hasQuotes = selectedTags.has('__quotes');
             
-            if ((hasOriginal && hasReplies && selectedTags.size === 2) ||
-                (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4)) {
-                // If only original and replies are selected, OR all 4 types are selected, show "All Notes"
+            if (hasOriginal && hasReplies && hasReposts && hasQuotes && selectedTags.size === 4) {
+                // Only all 4 types selected equals "All Notes"
                 title.textContent = 'All Notes';
             } else {
                 // Multi-tag selection takes priority
@@ -8821,13 +8821,13 @@ function showFilteringIndicator() {
                 const cardClass = `note-card ${isArchived ? 'archived' : ''} ${note.isReply ? 'reply-card' : ''} ${note.isRepost ? 'repost-card' : ''} ${note.isQuote ? 'quote-card' : ''}`;
 
                 // Set appropriate indicator based on note type
-                let noteIndicator = '<span class="emoji">📄</span><span class="note-type-label">Note</span> '; // Default for original notes
+                let noteIndicator = '<span class="note-type-label">Note</span> '; // Default for original notes
                 if (note.isRepost) {
-                    noteIndicator = '<span class="emoji">🔄</span><span class="note-type-label">Repost</span> ';
+                    noteIndicator = '<span class="note-type-label">Repost</span> ';
                 } else if (note.isQuote) {
-                    noteIndicator = '<span class="emoji">💭</span><span class="note-type-label">Quote</span> ';
+                    noteIndicator = '<span class="note-type-label">Quote</span> ';
                 } else if (note.isReply) {
-                    noteIndicator = '<span class="emoji">💬</span><span class="note-type-label">Reply</span> ';
+                    noteIndicator = '<span class="note-type-label">Reply</span> ';
                 }
                 
                 // IMPROVED: Check if we're in a specific archive view
@@ -8850,7 +8850,7 @@ function showFilteringIndicator() {
                     archiveButtonHtml = `
                         <button class="btn btn-small btn-archive ${isArchived ? 'archived' : ''}" 
                                 onclick="toggleArchiveNote('${note.id}')">
-                            ${isArchived ? '✓ Archived' : '<span class="emoji"></span> Archive'}
+                            ${isArchived ? '✓ Archived' : 'Archive'}
                         </button>`;
                 }
                 
@@ -9369,7 +9369,7 @@ function showThreadView(noteId) {
     // Build the thread display
     const threadHtml = threadNotes.map(note => {
     const date = new Date(note.created_at * 1000);
-    const noteType = (isNeonGreen || isCalm) ? '' : (note.isRepost ? '🔄 ' : note.isQuote ? '💭 ' : note.isReply ? '💬 ' : '📝 ');
+    const noteType = note.isRepost ? 'Repost ' : note.isQuote ? 'Quote ' : note.isReply ? 'Reply ' : '';
     
     return `
         <div style="padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
