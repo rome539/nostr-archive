@@ -436,12 +436,21 @@ body[data-theme="calm"] {
   border-radius: 10px !important;
 }
 
-/* Slow down ALL transitions for a calmer feel */
-[data-theme="calm"] *,
-[data-theme="calm"] *::before,
-[data-theme="calm"] *::after {
-  transition-duration: 0.35s !important;
-  animation-duration: 0.4s !important;
+/* Slower transitions on interactive elements only — not the whole DOM */
+[data-theme="calm"] .btn,
+[data-theme="calm"] .btn-action,
+[data-theme="calm"] .btn-action-primary,
+[data-theme="calm"] .btn-action-secondary,
+[data-theme="calm"] .btn-small,
+[data-theme="calm"] .tag-filter,
+[data-theme="calm"] .hashtag,
+[data-theme="calm"] .archive-item,
+[data-theme="calm"] .reactions-box,
+[data-theme="calm"] .note-checkbox,
+[data-theme="calm"] .search-box,
+[data-theme="calm"] .modal-close,
+[data-theme="calm"] .npub-copy-btn {
+  transition-duration: 0.3s !important;
 }
 
 /* Kill all hover transforms — no movement */
@@ -5166,7 +5175,7 @@ if (!loadedFromChunkCache) {
 }
 // Check if neon-green theme is active
 const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-const checkmark = isNeonGreen ? '' : '✅ ';
+const checkmark = (isNeonGreen || document.body.getAttribute('data-theme') === 'calm') ? '' : '✅ ';
 
 // If we loaded from cache with substantial notes (1000+), don't background fetch
 // The incremental update in loadNotesHybrid already handled getting new notes
@@ -5183,7 +5192,6 @@ updateStatus(`${checkmark}Successfully loaded ${allNotes.length} notes!`);
         connectBtn.textContent = 'Load My Notes';
     }
 }
-    
 
         // Add these global variables at the top of your script
 let isLoadingCancelled = false;
@@ -5369,7 +5377,7 @@ async function fetchNotesFromRelays(pubkey) {
         } catch (error) {
             relayStatuses.set(relay, 'failed');
             const failedCount = Array.from(relayStatuses.values()).filter(s => s === 'failed').length;
-            updateStatus(`❌ ${relayName}: ${error.message} (${failedCount} failed)`);
+            updateStatus(`<span class="emoji">❌</span> ${relayName}: ${error.message} (${failedCount} failed)`);
             return { relay, events: [], success: false, error: error.message };
         }
     });
@@ -5566,7 +5574,7 @@ async function fetchNotesFromRelaysComplete(pubkey) {
     // Emoji helpers - return empty string for neon-green
     const rocket = isNeonGreen ? '' : '🚀 ';
     const satellite = isNeonGreen ? '' : '📡 ';
-    const checkmark = isNeonGreen ? '' : '✅ ';
+    const checkmark = (isNeonGreen || document.body.getAttribute('data-theme') === 'calm') ? '' : '✅ ';
     const cross = isNeonGreen ? '' : '❌ ';
     
     updateStatus(`${rocket}Starting complete relay scan...`);
@@ -5821,7 +5829,7 @@ async function fetchNotesFromRelaysSince(pubkey, sinceTimestamp) {
     const allEvents = [];
     const completedRelays = [];
     
-    updateStatus('🔄 Checking relays for new notes...');
+    updateStatus('<span class="emoji">🔄</span> Checking relays for new notes...');
     
     const relayPromises = RELAYS.map(async (relay, index) => {
         const relayName = relay.replace('wss://', '');
@@ -5830,11 +5838,11 @@ async function fetchNotesFromRelaysSince(pubkey, sinceTimestamp) {
             // Only fetch notes newer than our newest stored note
             const newNotes = await fetchNewNotesFromRelay(relay, pubkey, sinceTimestamp);
             
-            updateStatus(`✅ ${relayName}: ${newNotes.length} new notes`);
+            updateStatus(`<span class="emoji">✅</span> ${relayName}: ${newNotes.length} new notes`);
             return { relay, events: newNotes, success: true };
             
         } catch (error) {
-            updateStatus(`❌ ${relayName}: ${error.message}`);
+            updateStatus(`<span class="emoji">❌</span> ${relayName}: ${error.message}`);
             return { relay, events: [], success: false };
         }
     });
@@ -6069,39 +6077,36 @@ async function loadNotesHybrid(pubkey, silent = false) {
                 
                 // 🆕 INCREMENTAL UPDATE: Check for new notes since last sync
                 const lastSyncTime = await chunkStorage.getLastSyncTime();
+                const hoursSinceSync = lastSyncTime ? (Date.now() - lastSyncTime) / (1000 * 60 * 60) : 999;
                 
-                if (lastSyncTime) {
-                    const hoursSinceSync = (Date.now() - lastSyncTime) / (1000 * 60 * 60);
+                if (hoursSinceSync > 0.5) { // Check if it's been more than 30 minutes (or never synced)
+                    if (!silent) updateStatus(`${lastSyncTime ? `Last synced ${hoursSinceSync.toFixed(1)} hours ago` : 'First sync'} - checking for new notes...`);
                     
-                    if (hoursSinceSync > 1) { // Only check if it's been more than 1 hour
-                        if (!silent) updateStatus(`Last synced ${hoursSinceSync.toFixed(1)} hours ago - checking for new notes...`);
+                    // Get newest timestamp from cached notes
+                    const newestTimestamp = Math.max(...cachedNotes.map(n => n.created_at));
+                    
+                    // Fetch only NEW notes
+                    const newNotes = await fetchNotesFromRelaysSince(pubkey, newestTimestamp);
+                    
+                    if (newNotes.length > 0) {
+                        if (!silent) updateStatus(`Found ${newNotes.length} new notes since last sync!`);
                         
-                        // Get newest timestamp from cached notes
-                        const newestTimestamp = Math.max(...cachedNotes.map(n => n.created_at));
+                        // Merge and deduplicate
+                        const mergedNotes = [...cachedNotes, ...newNotes];
+                        const uniqueNotes = Array.from(
+                            new Map(mergedNotes.map(n => [n.id, n])).values()
+                        );
                         
-                        // Fetch only NEW notes
-                        const newNotes = await fetchNotesFromRelaysSince(pubkey, newestTimestamp);
+                        // Update chunk storage with new notes
+                        await chunkStorage.storeNotesInChunks(uniqueNotes);
+                        await chunkStorage.storeLastSyncTime();
                         
-                        if (newNotes.length > 0) {
-                            if (!silent) updateStatus(`Found ${newNotes.length} new notes since last sync!`);
-                            
-                            // Merge and deduplicate
-                            const mergedNotes = [...cachedNotes, ...newNotes];
-                            const uniqueNotes = Array.from(
-                                new Map(mergedNotes.map(n => [n.id, n])).values()
-                            );
-                            
-                            // Update chunk storage with new notes
-                            await chunkStorage.storeNotesInChunks(uniqueNotes);
-                            await chunkStorage.storeLastSyncTime();
-                            
-                            if (!silent) updateStatus(`Updated storage with ${newNotes.length} new notes`);
-                            
-                            return uniqueNotes;
-                        } else {
-                            if (!silent) updateStatus('No new notes found');
-                            await chunkStorage.storeLastSyncTime(); // Update sync time anyway
-                        }
+                        if (!silent) updateStatus(`Updated storage with ${newNotes.length} new notes`);
+                        
+                        return uniqueNotes;
+                    } else {
+                        if (!silent) updateStatus('No new notes found');
+                        await chunkStorage.storeLastSyncTime(); // Update sync time anyway
                     }
                 }
                 
@@ -6923,7 +6928,7 @@ async function loadNotes(silent = false, isRefresh = false) {
         
         // Check if neon-green theme is active
 const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-const checkmark = isNeonGreen ? '' : '✅ ';
+const checkmark = (isNeonGreen || document.body.getAttribute('data-theme') === 'calm') ? '' : '✅ ';
 
 // Calculate what was actually new
 const newNotesCount = allNotes.length - previousNotesCount;
@@ -7278,13 +7283,13 @@ async function loadRecentNotesFromRelays(pubkey, daysBack) {
 
 // Check if neon-green theme is active
 const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-const checkmark = isNeonGreen ? '' : '✅ ';
+const checkmark = (isNeonGreen || document.body.getAttribute('data-theme') === 'calm') ? '' : '✅ ';
 
 updateStatus(`${checkmark}${relayName}: ${recentNotes.length} recent notes`);
 return { relay, events: recentNotes, success: true };
             
         } catch (error) {
-            updateStatus(`❌ ${relayName}: ${error.message}`);
+            updateStatus(`<span class="emoji">❌</span> ${relayName}: ${error.message}`);
             return { relay, events: [], success: false };
         }
     });
@@ -7311,7 +7316,7 @@ return { relay, events: recentNotes, success: true };
     
     // Check if neon-green theme is active
 const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-const checkmark = isNeonGreen ? '' : '✅ ';
+const checkmark = (isNeonGreen || document.body.getAttribute('data-theme') === 'calm') ? '' : '✅ ';
 
 updateStatus(`${checkmark}Loaded ${uniqueEvents.length} recent notes from relays`);
 return uniqueEvents;
@@ -7385,7 +7390,7 @@ if (fullNotes.length > currentNoteCount) {
     // We found more notes - update chunks
     await chunkStorage.storeNotesInChunks(fullNotes);
     const newStats = await chunkStorage.getStats();
-    updateStatus(`✅ Updated chunk storage: ${newStats.totalChunks} chunks, ${newStats.totalNotes} notes`);
+    updateStatus(`<span class="emoji">✅</span> Updated chunk storage: ${newStats.totalChunks} chunks, ${newStats.totalNotes} notes`);
 } else {
     // We have same or fewer notes - don't overwrite!
     updateStatus(`⚠️ Skipped chunk update: already have ${currentNoteCount} notes (background got ${fullNotes.length})`);
@@ -7415,7 +7420,7 @@ if (fullNotes.length > currentNoteCount) {
         
         hideBackgroundLoadingIndicator();
         // REMOVED: Don't show toast for background loading - it's silent
-        updateStatus(`✅ Background loading: +${newNotes.length} older notes (${allNotes.length} total)`);
+        updateStatus(`<span class="emoji">✅</span> Background loading: +${newNotes.length} older notes (${allNotes.length} total)`);
     } else {
         console.log('Skipping UI update - user switched');
         hideBackgroundLoadingIndicator();
@@ -7425,7 +7430,7 @@ if (fullNotes.length > currentNoteCount) {
     
     // Check if neon-green theme is active
     const isNeonGreen = document.body.getAttribute('data-theme') === 'neon-green';
-    const checkmark = isNeonGreen ? '' : '✅ ';
+    const checkmark = (isNeonGreen || document.body.getAttribute('data-theme') === 'calm') ? '' : '✅ ';
     
     updateStatus(`${checkmark}Background loading complete: chunk storage updated, no additional notes in memory`);
 }
