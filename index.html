@@ -1813,6 +1813,42 @@ input:-ms-input-placeholder {
     border: 1px solid var(--border-color);
 }
 
+.bulk-header {
+    margin-bottom: 10px;
+}
+
+.bulk-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.bulk-buttons .btn-small {
+    flex: 1;
+}
+
+.bulk-archive-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Desktop: archive row can be horizontal */
+@media (min-width: 769px) {
+    .bulk-archive-row {
+        flex-direction: row;
+        align-items: center;
+    }
+    .bulk-archive-row select {
+        flex: 1;
+        margin-bottom: 0 !important;
+    }
+    .bulk-archive-row .btn-small {
+        width: auto !important;
+        white-space: nowrap;
+    }
+}
+
         .bulk-controls.hidden {
             display: none;
         }
@@ -3976,7 +4012,7 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
             <label style="font-size: 11px; color: var(--text-muted); margin: 10px 0 4px 0; display: block;">Size</label>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 11px; color: var(--text-muted);">A</span>
-                <input type="range" id="font-size-slider" min="12" max="20" step="0.5" value="15" style="flex: 1; accent-color: var(--primary-color); background: var(--background-color);">
+                <input type="range" id="font-size-slider" min="12" max="18" step="0.5" value="15" style="flex: 1; accent-color: var(--primary-color); background: var(--background-color);">
                 <span style="font-size: 16px; color: var(--text-muted); font-weight: 600;">A</span>
                 <span id="font-size-value" style="font-size: 11px; color: var(--text-muted); min-width: 30px; text-align: right;">15px</span>
             </div>
@@ -4063,19 +4099,19 @@ body[data-theme="neon-green"] .note-card .hashtag[data-selected="true"],
 
 
                     <div id="bulk-controls" class="bulk-controls hidden">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div class="bulk-header">
                             <span id="selected-count" style="font-weight: bold;">0 notes selected</span>
-                            <div>
-                                <button id="select-all-visible" class="btn btn-small" style="background: #34495e;">Select All Visible</button>
-                                <button id="deselect-all" class="btn btn-small" style="background: #7f8c8d;">Deselect All</button>
-                            </div>
                         </div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                           <select id="bulk-archive-dropdown" style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color);">
+                        <div class="bulk-buttons">
+                            <button id="select-all-visible" class="btn btn-small" style="background: #34495e;">Select All Visible</button>
+                            <button id="deselect-all" class="btn btn-small" style="background: #7f8c8d;">Deselect All</button>
+                        </div>
+                        <div class="bulk-archive-row">
+                           <select id="bulk-archive-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--card-background); color: var(--text-color); margin-bottom: 8px;">
                                 <option value="">Select archive...</option>
                             </select>
-                           <button id="bulk-add-to-archive" class="btn btn-small" style="background: #27ae60;"><span class="emoji"></span> Add to Archive</button>
-                           <button id="bulk-remove-from-archive" class="btn btn-small" style="background: #e74c3c;"><span class="emoji"></span> Remove from Archive</button>
+                           <button id="bulk-add-to-archive" class="btn btn-small" style="background: #27ae60; width: 100%;"><span class="emoji"></span> Add to Archive</button>
+                           <button id="bulk-remove-from-archive" class="btn btn-small" style="background: #e74c3c; width: 100%;"><span class="emoji"></span> Remove from Archive</button>
                         </div>
                     </div>
                   <!-- Loader: ALL loader UI goes inside #loading -->
