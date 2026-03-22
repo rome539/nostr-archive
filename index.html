@@ -6299,9 +6299,25 @@ organizeNotesIntoChunks(notes) {
         try {
             const chunks = this.organizeNotesIntoChunks(notes);
             
-            // Clear existing chunks
+            // Preserve archives before clearing indices
+            let savedArchives = null;
+            try {
+                const archivesData = await this.db.indices.get('archives');
+                if (archivesData) {
+                    savedArchives = archivesData;
+                }
+            } catch (e) {
+                console.warn('Could not read archives before clearing:', e);
+            }
+            
+            // Clear existing chunks and indices
             await this.db.chunks.clear();
             await this.db.indices.clear();
+            
+            // Restore archives immediately after clearing
+            if (savedArchives) {
+                await this.db.indices.put(savedArchives);
+            }
             
             // Store chunks
             for (const chunk of chunks) {
@@ -6779,8 +6795,25 @@ async function clearChunkStorage(pubkey) {
         const ready = await chunkStorage.init();
         
         if (ready && chunkStorage.db) {
+            // Preserve archives before clearing
+            let savedArchives = null;
+            try {
+                const archivesData = await chunkStorage.db.indices.get('archives');
+                if (archivesData) {
+                    savedArchives = archivesData;
+                }
+            } catch (e) {
+                console.warn('Could not read archives before clearing:', e);
+            }
+            
             await chunkStorage.db.chunks.clear();
             await chunkStorage.db.indices.clear();
+            
+            // Restore archives after clearing
+            if (savedArchives) {
+                await chunkStorage.db.indices.put(savedArchives);
+            }
+            
             return true;
         }
         
