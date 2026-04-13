@@ -31,7 +31,27 @@
     
     <!-- General meta -->
     <meta name="description" content="View, search & organize your Nostr notes. Filter by hashtags, archive favorites, track engagement stats. Free, open source, single HTML file.">
-    
+    <link rel="canonical" href="https://nostrarchive.app/">
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Nostr Notes Archive",
+      "url": "https://nostrarchive.app/",
+      "description": "View, search & organize your Nostr notes. Filter by hashtags, archive favorites, track engagement stats. Free, open source, single HTML file.",
+      "applicationCategory": "SocialNetworkingApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "image": "https://nostrarchive.app/og-preview.png"
+    }
+    </script>
+
     <!-- Google Fonts - loaded dynamically based on selection -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
